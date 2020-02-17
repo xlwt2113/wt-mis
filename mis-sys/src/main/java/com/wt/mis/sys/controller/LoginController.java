@@ -3,6 +3,7 @@ package com.wt.mis.sys.controller;
 import com.wt.mis.core.repository.BaseRepository;
 import com.wt.mis.sys.entity.Menu;
 import com.wt.mis.sys.repository.MenuRepository;
+import com.wt.mis.sys.service.SysService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,12 +24,17 @@ public class LoginController {
     @Autowired
     MenuRepository menuRepository;
 
+    @Autowired
+    SysService  sysService;
+
 
     @ApiOperation("进入后台主界面")
     @GetMapping("/main")
     public ModelAndView main(HttpServletRequest request) {
         ModelAndView view = new ModelAndView();
         view.setViewName("main");
+        //获取系统名称
+        view.addObject("SYSTEM_TITLE",sysService.getRegisterValue("SYSTEM_TITLE"));
         return view;
     }
 
@@ -50,7 +56,7 @@ public class LoginController {
         homeInfo.put("href", "page/welcome-1.html?mpi=m-p-i-0");
         initJson.put("homeInfo", homeInfo);
         //网站logo配置
-        logoInfo.put("title", "HBOA");
+        logoInfo.put("title", sysService.getRegisterValue("SYSTEM_TITLE"));
         logoInfo.put("image", "images/logo.png");
         logoInfo.put("href", "");
         initJson.put("logoInfo", logoInfo);

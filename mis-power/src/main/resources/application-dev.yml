@@ -9,7 +9,7 @@ spring:
     time-zone: GMT+8
   #数据库连接
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/mis?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3306/power?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
     username: root
     password: root
     driver-class-name:  com.mysql.jdbc.Driver
@@ -36,4 +36,4 @@ spring:
 location:
   basedir: ./output
   #模板输出路径
-  templete-out-path : ./mis-power/src/main
+  templete-out-path : ./mis-sys/src/main

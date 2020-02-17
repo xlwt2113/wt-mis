@@ -31,6 +31,8 @@ public class CodeInfo extends BaseEntity {
     @Column(columnDefinition = " varchar(100) COMMENT '对应po类名'")
     private String poName;
 
+
+
     @OneToMany(mappedBy = "codeInfo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CodeInfoItem> codeInfoItemList;
 

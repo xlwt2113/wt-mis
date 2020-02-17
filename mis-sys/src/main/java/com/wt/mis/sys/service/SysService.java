@@ -7,4 +7,6 @@ import java.util.List;
 public interface SysService {
 
     public List<UploadFiles> getUploadFilesByIds(List<Long> ids);
+
+    public String getRegisterValue(String itemName);
 }
