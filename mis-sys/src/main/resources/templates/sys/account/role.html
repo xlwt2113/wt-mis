@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title th:replace="common/base::pagetitle"></title>
+    <link th:replace="common/base::static"/>
+</head>
+<body>
+<form class="layui-form" action="" th:object="${model}">
+    <input type="hidden" th:field="*{id}">
+    <input type="hidden" th:field="*{name}">
+    <input type="hidden" th:field="*{realName}">
+    <div class="layui-form-item">
+        <div>
+            <each th:each="po:${roleList}">
+                <input type="checkbox" name="ids" th:title="${po.name}" th:value="${po.id}">
+            </each>
+        </div>
+    </div>
+
+
+    <div class="layui-form-item  layui-hide">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="saveBtn" id="saveBtn">保存</button>
+        </div>
+    </div>
+</form>
+
+
+<script th:replace="common/base::mianJs"></script>
+<script>
+
+    var submitUrl = '[[${#request.servletPath}]]';
+
+    layui.use(['form'], function () {
+        var form = layui.form
+            , $ = layui.jquery;
+
+        var selected = "[[${ids}]]".split(",");
+
+            $('input[type=checkbox]').each(function () {
+            let checkbox = this;
+            $.each(selected,function (i, n) {
+                if ($(checkbox).val() == n) {
+                    $(checkbox).attr("checked", true);
+                    layui.form.render();
+                }
+            });
+
+        });
+
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            //获取选中的checkbox
+            var arr_box = [];
+            $('input[type=checkbox]:checked').each(function () {
+                arr_box.push($(this).val());
+            });
+
+            let index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            $.post(submitUrl,$.extend(data.field, {ids: arr_box.toString()}),function (result) {
+                let r = JSON.parse(result);
+                if(r.code == 200){
+                    parent.layer.close(index); //再执行关闭
+                    parent.layui.table.reload('searchListTable');
+                }
+                parent.layer.msg(r.message);
+            });
+            return false;
+
+        });
+    });
+</script>
+</body>
+</html>

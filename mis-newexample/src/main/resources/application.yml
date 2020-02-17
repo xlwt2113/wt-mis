@@ -1,0 +1,56 @@
+server:
+  port: 8081
+  tomcat:
+    accesslog:
+      enabled: true
+      pattern: common
+      prefix: access_log
+      suffix: .log
+      request-attributes-enabled: true
+      rename-on-rotate: true
+    basedir: ${location.tomcat}/
+  servlet:
+    session:
+      timeout: 72000
+spring:
+  profiles:
+    active: dev
+#    active: prod
+  servlet:
+    multipart:
+      # 单个文件的最大值
+      max-file-size: 30MB
+      # 上传文件总的最大值
+      max-request-size: 100MB
+  mvc:
+    date-format: yyyy-MM-dd
+  jpa:
+    database: mysql
+    show-sql: true
+    open-in-view: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  thymeleaf:
+    #指定资源位置
+    prefix: classpath:/templates/
+    check-template-location: true
+    suffix: .html
+    encoding: UTF-8
+    mode: LEGACYHTML5
+    cache: false
+  resources:
+    static-locations:
+      - classpath:/META-INF/resources/
+      - classpath:/resources/
+      - classpath:/static/
+      - file:${location.static}/
+location:
+  log:  ${location.basedir}/logs
+  #包外保存静态资源 打包更快
+  static: ${location.basedir}/static
+  tomcat: ${location.basedir}/tomcat
+logging:
+  path: ${location.log}/

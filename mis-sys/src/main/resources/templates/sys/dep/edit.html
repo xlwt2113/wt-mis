@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title th:replace="common/base::pagetitle"></title>
+    <link th:replace="common/base::static"/>
+</head>
+<body>
+<form class="layui-form" action="" th:object="${model}">
+    <input type="hidden" th:field="*{id}"> <!--此处必须有业务主键的id-->
+    <input type="hidden" th:field="*{pid}">
+    <div class="layui-form-item">
+        <label class="layui-form-label">机构名称</label>
+        <div class="layui-input-block">
+            <input type="text" th:field="*{name}" lay-verify="name" autocomplete="off" placeholder="请输入机构名称" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">机构类型</label>
+        <div class="layui-input-block">
+            <select name="interest" th:field="*{depType}" lay-verify="depType">
+                <list th:each="po:*{depTypeMap}" th:remove="tag">
+                    <option th:value="${po.key}" th:text="${po.value}"></option>
+                </list>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">排序号</label>
+        <div class="layui-input-block">
+            <input type="number" th:field="*{seq}" lay-verify="seq" autocomplete="off" placeholder="请输入机构名称" class="layui-input">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item  layui-hide">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="saveBtn" id="saveBtn">保存</button>
+        </div>
+    </div>
+</form>
+
+<script th:replace="common/base::mianJs"></script>
+<script>
+
+    var submitUrl = '[[${#request.servletPath}]]';
+
+    layui.use(['form', 'layedit', 'laydate'], function () {
+        var form = layui.form
+            , $ = layui.jquery;
+
+        //自定义验证规则
+        form.verify({
+            name: function (value) {
+                if (value=='') {
+                    return '必须输入机构名称';
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            let index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            $.post(submitUrl,data.field,function (result) {
+                let r = JSON.parse(result);
+                if(r.code == 200){
+                    parent.layer.close(index); //再执行关闭
+                    parent.location.reload();
+                }
+                parent.layer.msg(r.message);
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+package com.wt.mis.${mainPackage}.repository;
+
+import com.wt.mis.core.repository.BaseRepository;
+import com.wt.mis.${mainPackage}.entity.${codeInfo.poName};
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface ${codeInfo.poName}Repository extends BaseRepository<${codeInfo.poName},Long> {
+}

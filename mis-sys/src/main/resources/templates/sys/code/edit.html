@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title th:replace="common/base::pagetitle"></title>
+    <link th:replace="common/base::static"/>
+</head>
+<body>
+<form class="layui-form" action="" th:object="${model}">
+    <input type="hidden" th:field="*{id}"> <!--此处必须有业务主键的id-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">PO类名</label>
+        <div class="layui-input-block">
+            <input type="text" th:field="*{poName}" lay-verify="required" lay-vali autocomplete="off"
+                   placeholder="请输入表名" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">访问地址</label>
+        <div class="layui-input-block">
+            <input type="text" th:field="*{url}" lay-verify="required" lay-vali autocomplete="off"
+                   placeholder="请输入路径名（/sys/code）" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">Package</label>
+        <div class="layui-input-block">
+            <input type="text" th:field="*{packageName}" lay-verify="required" lay-vali autocomplete="off"
+                   placeholder="请输入路径名（sys.code）" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <table class="layui-table" lay-size="sm">
+            <colgroup>
+                <col width="150">
+                <col width="130">
+                <col width="150">
+                <col>
+                <col width="100">
+                <col width="100">
+                <col width="100">
+                <col width="120">
+            </colgroup>
+            <thead>
+            <tr>
+                <td>po列名称</td>
+                <td>po列属性</td>
+                <td>控件类型</td>
+                <td>列名备注</td>
+                <td>是否必填</td>
+                <td>查询条件</td>
+                <td>列表显示</td>
+                <td align="center">
+                    <button type="button" class="layui-btn layui-btn-xs" id="addRoeBtn">添加</button>
+                </td>
+            </tr>
+            </thead>
+            <each th:each="item,po:*{codeInfoItemList}">
+            <tr>
+                <input type="hidden" autocomplete="off" class="layui-input" name="itemId" th:value="${item.id}">
+                <td><input type="text" name="poColName" th:value="${item.poColName}" lay-verify="required" class="layui-input"></td>
+                <td>
+                    <select class="layui-select" name="poColProperty">
+                        <option value="String" th:selected="${item.poColProperty} == 'String'">String</option>
+                        <option value="Integer" th:selected="${item.poColProperty} == 'Integer'">Integer</option>
+                        <option value="int" th:selected="${item.poColProperty} == 'int'">int</option>
+                        <option value="Float" th:selected="${item.poColProperty} == 'Float'">Float</option>
+                        <option value="float" th:selected="${item.poColProperty} == 'float'">float</option>
+                        <option value="Double" th:selected="${item.poColProperty} == 'Double'">Double</option>
+                        <option value="double" th:selected="${item.poColProperty} == 'double'">double</option>
+                        <option value="Date" th:selected="${item.poColProperty} == 'Date'">Date</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="layui-select" name="inputType">
+                        <option value="input" th:selected="${item.inputType} == 'input'">文本框</option>
+                        <option value="textarea" th:selected="${item.inputType} == 'textarea'">文本域</option>
+                        <option value="date" th:selected="${item.inputType} == 'date'">日期</option>
+                        <option value="select" th:selected="${item.inputType} == 'select'">下拉选择</option>
+                        <option value="file" th:selected="${item.inputType} == 'file'">上传附件</option>
+                    </select>
+                </td>
+                <td><input type="text" name="poColNote" th:value="${item.poColNote}"  lay-verify="required" class="layui-input"></td>
+                <td>
+                    <select class="layui-select" name="required" th:value="${item.required}" >
+                        <option value="否" th:selected="${item.required} == '否'">否</option>
+                        <option value="是" th:selected="${item.required} == '是'">是</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="layui-select" name="conditions">
+                        <option value="否" th:selected="${item.conditions} == '否'">否</option>
+                        <option value="是" th:selected="${item.conditions} == '是'">是</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="layui-select" name="showColName">
+                        <option value="否" th:selected="${item.showColName} == '否'">否</option>
+                        <option value="是" th:selected="${item.showColName} == '是'">是</option>
+                    </select>
+                </td>
+                <td align="center">
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-danger" onclick="delRow(this)">删除
+                    </button>
+                </td>
+            </tr>
+            </each>
+        </table>
+    </div>
+
+    <div class="layui-form-item  layui-hide">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="saveBtn" id="saveBtn">保存</button>
+        </div>
+    </div>
+</form>
+
+<script th:replace="common/base::mianJs"></script>
+<script>
+
+    var submitUrl = '[[${#request.servletPath}]]';
+
+    layui.use(['form', 'layedit', 'laydate'], function () {
+        var form = layui.form
+            , $ = layui.jquery;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            console.log($('.layui-form').serialize());
+            let index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            $.post(submitUrl, $('.layui-form').serialize(), function (result) {
+                let r = JSON.parse(result);
+                if (r.code == 200) {
+                    parent.layer.close(index); //再执行关闭
+                    parent.layui.table.reload('searchListTable');
+                }
+                parent.layer.msg(r.message);
+            });
+            return false;
+        });
+
+        //添加行
+        layui.$('#addRoeBtn').on('click', function () {
+            let html = '            <tr>\n' +
+                '                <input type="hidden" autocomplete="off" class="layui-input" name="itemId">\n' +
+                '                <td><input type="text" name="poColName" lay-verify="required" class="layui-input"></td>\n' +
+                '                <td>\n' +
+                '                    <select class="layui-select" name="poColProperty">\n' +
+                '                        <option value="String">String</option>\n' +
+                '                        <option value="Integer">Integer</option>\n' +
+                '                        <option value="int">int</option>\n' +
+                '                        <option value="Float">Float</option>\n' +
+                '                        <option value="float">float</option>\n' +
+                '                        <option value="Double">Double</option>\n' +
+                '                        <option value="double">double</option>\n' +
+                '                        <option value="Date">Date</option>\n' +
+                '                        <option value="Date">DateTime</option>\n' +
+                '                    </select>\n' +
+                '                </td>\n' +
+                '                <td>\n' +
+                '                    <select class="layui-select" name="inputType">\n' +
+                '                        <option value="input">文本框</option>\n' +
+                '                        <option value="textarea">文本域</option>\n' +
+                '                        <option value="date">日期</option>\n' +
+                '                        <option value="select">下拉选择</option>\n' +
+                '                        <option value="file">上传附件</option>\n' +
+                '                    </select>\n' +
+                '                </td>\n' +
+                '                <td><input type="text" name="poColNote" lay-verify="required" class="layui-input"></td>\n' +
+                '                <td>\n' +
+                '                    <select class="layui-select" name="required">\n' +
+                '                        <option value="否">否</option>\n' +
+                '                        <option value="是">是</option>\n' +
+                '                    </select>\n' +
+                '                </td>\n' +
+                '                <td>\n' +
+                '                    <select class="layui-select" name="conditions">\n' +
+                '                        <option value="否">否</option>\n' +
+                '                        <option value="是">是</option>\n' +
+                '                    </select>\n' +
+                '                </td>\n' +
+                '                <td>\n' +
+                '                    <select class="layui-select" name="showColName">\n' +
+                '                        <option value="否">否</option>\n' +
+                '                        <option value="是">是</option>\n' +
+                '                    </select>\n' +
+                '                </td>\n' +
+                '                <td align="center"><button type="button" class="layui-btn layui-btn-xs layui-btn-danger" onclick="delRow(this)">删除</button></td>\n' +
+                '            </tr>';
+
+            $('.layui-table').append(html);
+            //重新渲染界面
+            form.render();
+        });
+    });
+
+    //删除行
+    function delRow(obj) {
+        $(obj).parent().parent().remove();
+    }
+
+</script>
+</body>
+</html>

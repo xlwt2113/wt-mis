@@ -1,0 +1,182 @@
+#set($left="${")
+#set($right="}")
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title th:replace="common/base::pagetitle"></title>
+    <link th:replace="common/base::static"/>
+</head>
+<body>
+<form class="layui-form" action="" th:object="${model}">
+    <input type="hidden" th:field="*{id}"> <!--此处必须有业务主键的id-->
+
+#foreach($column in $codeInfo.codeInfoItemList)
+
+    #if($column.inputType == 'file')
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <button type="button" class="layui-btn layui-btn-sm" id="${column.poColName}Btn">上传文件</button>
+            </label>
+            <div class="layui-input-block">
+                <div style="padding-top: 15px;padding-left: 20px" id="${column.poColName}Div" th:utext="*{${column.poColName}Html}"></div>
+            </div>
+        </div>
+    #else
+        <div class="layui-form-item">
+            <label class="layui-form-label">$column.poColNote</label>
+            <div class="layui-input-block">
+                #if($column.inputType == 'date')
+                    #if($column.required == '是')
+                        <input type="text" th:field="*{$column.poColName}" th:value="*{#dates.format($column.poColName, 'yyyy-MM-dd HH:mm:ss')}" lay-verify="$column.poColName" autocomplete="off" placeholder="请输入$column.poColNote" class="layui-input">
+                    #else
+                        <input type="text" th:field="*{$column.poColName}" th:value="*{#dates.format($column.poColName, 'yyyy-MM-dd HH:mm:ss')}" autocomplete="off" placeholder="请输入$column.poColNote" class="layui-input">
+                    #end
+                #elseif($column.inputType == 'textarea')
+                    #if($column.required == '是')
+                        <textarea th:field="*{$column.poColName}" lay-verify="$column.poColName" autocomplete="off" class="layui-textarea"></textarea>
+                    #else
+                        <textarea th:field="*{$column.poColName}" autocomplete="off" class="layui-textarea"></textarea>
+                    #end
+                #elseif($column.inputType == 'input')
+                    #if($column.required == '是')
+                        <input type="text" th:field="*{$column.poColName}" lay-verify="$column.poColName" autocomplete="off" placeholder="请输入$column.poColNote" class="layui-input">
+                    #else
+                        <input type="text" th:field="*{$column.poColName}" autocomplete="off" placeholder="请输入$column.poColNote" class="layui-input">
+                    #end
+                #else
+                    #if($column.required == '是')
+                    <select class="layui-select" th:field="*{$column.poColName}" lay-verify="$column.poColName">
+                    #else
+                    <select class="layui-select" th:field="*{$column.poColName}">
+                    #end
+                    <option value="0">男</option>
+                    <option value="1">女</option>
+                </select>
+                #end
+            </div>
+        </div>
+    #end
+
+#end
+
+
+
+    <div class="layui-form-item  layui-hide">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="saveBtn" id="saveBtn">保存</button>
+        </div>
+    </div>
+</form>
+
+<script th:replace="common/base::mianJs"></script>
+<script>
+
+    var submitUrl = '[[${#request.servletPath}]]';
+
+    //用于保存所有的上传文件信息
+    var uploadFileMap = new Map();
+#foreach($column in $codeInfo.codeInfoItemList)
+    #if($column.inputType == 'file')
+    uploadFileMap.set("$column.poColName",[ [[${left}model.${column.poColName}${right}]] ]);
+    #end
+#end
+
+    layui.use(['form', 'laydate', 'upload'], function () {
+        var form = layui.form
+                , laydate = layui.laydate
+                , upload = layui.upload
+                , $ = layui.jquery;
+
+        #foreach($column in $codeInfo.codeInfoItemList)
+            #if($column.inputType == 'date')
+                laydate.render({elem: '#$column.poColName', trigger: 'click'});
+            #end
+        #end
+
+        //自定义验证规则
+        form.verify({
+        #foreach($column in $codeInfo.codeInfoItemList)
+            #if($column.required == '是')
+                $column.poColName:function (value) {
+                    if (value == '') {
+                        return '必须输入$column.poColNote';
+                    }
+                },
+            #end
+        #end
+                "test" :function(){}
+        });
+
+#foreach($column in $codeInfo.codeInfoItemList)
+#if($column.inputType == 'file')
+        //上传$column.poColNote
+        var upload${column.poColName} = upload.render({
+            elem: '#${column.poColName}Btn' //绑定元素
+            , url: '/sys/upload/' //上传接口
+            , multiple: true //多选
+            , accept: 'file' //允许上传的文件类型
+            //,size: 50 //最大允许上传的文件大小
+            , done: function (res) {
+                if (res.code == 200) {
+                    let files = '<div><a href="' + res.data.filePath + res.data.fileName + '">' + res.data.sourceName + '</a> <a onclick="delRow(this,\'${column.poColName}\',\'' + res.data.id + '\')" href="javascript:void(0)"><i class="layui-icon layui-icon-close layui-bg-red"></i></a><hr class="layui-bg-green"></div>';
+                    $('#${column.poColName}Div').append(files);
+
+                    //记录添加的附件ID
+                    let ${column.poColName}Set = new Set();
+                    if(uploadFileMap.get("${column.poColName}")!=undefined){
+                        ${column.poColName}Set = new Set(uploadFileMap.get("${column.poColName}"));
+                    }
+                    ${column.poColName}Set.add(res.data.id);
+                    uploadFileMap.set("${column.poColName}",${column.poColName}Set);
+                }
+                layer.msg(res.message);
+            }
+        });
+#end
+#end
+
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            let index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+
+#foreach($column in $codeInfo.codeInfoItemList)
+#if($column.inputType == 'file')
+            //上传${column.poColNote}文件处理
+            let ${column.poColName} = new Array();
+            uploadFileMap.get('${column.poColName}').forEach(v=>{${column.poColName}.push(v);});
+            data.field.${column.poColName} = ${column.poColName}.toString();
+#end
+#end
+
+            $.post(submitUrl, data.field, function (result) {
+                let r = JSON.parse(result);
+                if (r.code == 200) {
+                    parent.layer.close(index); //再执行关闭
+                    parent.layui.table.reload('searchListTable');
+                }
+                parent.layer.msg(r.message);
+            });
+            return false;
+        });
+    });
+
+    //删除附件
+    function delRow(obj,fileInputId, id) {
+        $(obj).parent().remove();
+        let fileSets = new Set(uploadFileMap.get(fileInputId));
+        fileSets.delete(parseInt(id));
+        uploadFileMap.set(fileInputId,fileSets);
+        if (id != undefined) {
+            $.post('/sys/upload/'+id+'/del', function (result) {console.log(result);});
+        }
+    }
+
+</script>
+</body>
+</html>

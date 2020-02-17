@@ -1,0 +1,58 @@
+package com.wt.mis.${mainPackage}.entity;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.wt.mis.core.entity.BaseEntity;
+import com.wt.mis.core.util.FileUtil;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import java.util.Date;
+
+@Data
+@Entity
+@Table(name = "${codeInfo.tableName}")
+@EqualsAndHashCode(callSuper = true)
+public class ${codeInfo.poName} extends BaseEntity {
+
+#foreach($column in $codeInfo.codeInfoItemList)
+    #if($column.inputType == 'file')
+    /**
+    * $column.poColNote
+    */
+    @Column(columnDefinition = " ${column.dbColProperty}(2000) COMMENT '$column.poColNote'")
+    private $column.poColProperty $column.poColName;
+    /**
+    * 获取附件${column.poColNote}html显示
+    */
+    public String get${column.upperCasePoColName}Html(){
+        return FileUtil.getFilesHtml(this.get${column.upperCasePoColName}(),"${column.poColName}");
+    }
+    #else
+    /**
+    * $column.poColNote
+    */
+        #if($column.poColProperty == 'String')
+    @Column(columnDefinition = " ${column.dbColProperty}(100) COMMENT '$column.poColNote'")
+    private $column.poColProperty $column.poColName;
+        #elseif($column.poColProperty == 'Date')
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Column(columnDefinition = " date COMMENT '$column.poColNote'")
+    private Date $column.poColName;
+        #elseif($column.poColProperty == 'DateTime')
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(columnDefinition = " datetime COMMENT '$column.poColNote'")
+    private Date $column.poColName;
+        #else
+    @Column(columnDefinition = " $column.dbColProperty COMMENT '$column.poColNote'")
+    private $column.poColProperty $column.poColName;
+        #end
+    #end
+#end
+
+}

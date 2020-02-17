@@ -1,0 +1,60 @@
+
+package com.wt.mis.${mainPackage}.controller;
+
+import com.wt.mis.core.controller.BaseController;
+import com.wt.mis.core.repository.BaseRepository;
+import com.wt.mis.core.util.StringUtils;
+import com.wt.mis.${mainPackage}.entity.${codeInfo.poName};
+import com.wt.mis.${mainPackage}.repository.${codeInfo.poName}Repository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.servlet.http.HttpServletRequest;
+
+@Slf4j
+@Controller
+@RequestMapping("${codeInfo.url}")
+public class ${codeInfo.poName}Controller extends BaseController<${codeInfo.poName}> {
+
+    @Autowired
+    ${codeInfo.poName}Repository ${codeInfo.lowerCaseFirstPoName}Repository;
+
+    @Override
+    public BaseRepository<${codeInfo.poName}, Long> repository() {
+        return ${codeInfo.lowerCaseFirstPoName}Repository;
+    }
+
+    @Override
+    protected String getUrlPrefix() {
+        return "${codeInfo.prefixUrl}";
+    }
+
+    @Override
+    protected String generateSearchSql(${codeInfo.poName} ${codeInfo.lowerCaseFirstPoName}, HttpServletRequest request) {
+        StringBuffer sql = new StringBuffer("select t1.* from ${codeInfo.tableName} as t1  where t1.del = 0 ");
+        #foreach($column in $codeInfo.codeInfoItemList)
+            #if($column.conditions == '是')
+                #if($column.poColProperty == 'String')
+        if (StringUtils.isNotEmpty(${codeInfo.lowerCaseFirstPoName}.get${column.upperCasePoColName}())) {
+            sql.append(" and t1.${column.dbColName} like '%" + ${codeInfo.lowerCaseFirstPoName}.get${column.upperCasePoColName}() + "%'");
+        }
+                #elseif($column.poColProperty == 'Date')
+        if (StringUtils.isNotEmpty(request.getParameter("${column.dbColName}B"))) {
+            sql.append(" and t1.${column.dbColName} >= '" + request.getParameter("${column.dbColName}B") + " 00:00:00'");
+        }
+        if (StringUtils.isNotEmpty(request.getParameter("${column.dbColName}E"))) {
+            sql.append(" and t1.${column.dbColName} <= '" + request.getParameter("${column.dbColName}E") + " 23:59:59'");
+        }
+                #else
+        if (${codeInfo.lowerCaseFirstPoName}.get${column.upperCasePoColName}()!=null) {
+            sql.append(" and t1.${column.dbColName} = " + ${codeInfo.lowerCaseFirstPoName}.get${column.upperCasePoColName}() );
+        }
+                #end
+            #end
+        #end
+        return sql.toString();
+    }
+}
+

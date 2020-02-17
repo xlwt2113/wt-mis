@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title th:replace="common/base::pagetitle"></title>
+    <link th:replace="common/base::static"/>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="layui-elem-field layuimini-search">
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" id="searchForm">
+                    <div style="display: none"><input type="text" name="test" value=""></div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <input type="text" name="bookName" autocomplete="off" class="layui-input" placeholder="书名">
+                        </div>
+                        <div class="layui-inline">
+                            <div class="layui-input-inline" style="width: 100px;">
+                                <input type="text" name="beginDateB" id="beginDateB" autocomplete="off" class="layui-input" placeholder="日期开始">
+                            </div>
+                            <div class="layui-form-mid">-</div>
+                            <div class="layui-input-inline" style="width: 100px;">
+                                <input type="text" name="beginDateE" id="beginDateE" autocomplete="off" class="layui-input"  placeholder="日期结束">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>搜索</a>
+                        </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-warm data-reset-btn" lay-button=""><i class="layui-icon">&#xe666;</i>重置</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+        <table class="layui-hide" id="searchListTable" lay-filter="searchListTable"></table>
+
+        <!--顶部工具按钮-->
+        <script type="text/html" id="TopTableBar">
+            <div class="layui-btn-group">
+                <button class="layui-btn data-add-btn layui-btn-sm" lay-event="add"><i class="layui-icon">&#xe654;</i>添加</button>
+                <button class="layui-btn layui-btn-danger data-delete-btn layui-btn-sm" lay-event="deleteAll"><i class="layui-icon">&#xe640;</i>删除
+                </button>
+            </div>
+        </script>
+
+        <!--表格中操作按钮-->
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-bg-orange" lay-event="view">查看</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">删除</a>
+        </script>
+    </div>
+</div>
+
+<script th:replace="common/base::mianJs"></script>
+<script th:inline="none">
+
+
+   // config.initQueryCondition();
+
+    layui.use(['form', 'table','laydate'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            laydate = layui.laydate,
+            table = layui.table;
+
+        // 默认的操作地址
+        var list_url = '/test/book/list';
+        var delete_url = '/test/book/delete';
+        var add_page_url = '/test/book/add';
+        var edit_page_url = '/test/book/edit';
+        var view_page_url = '/test/book/view';
+
+        laydate.render({elem: '#beginDateB'});
+        laydate.render({elem: '#beginDateE'});
+
+        table.render($.extend(config.searchListTable, {
+            url: list_url,
+            //表格列
+            cols: [[
+                {type: "checkbox", width: 50, fixed: "left"},
+                {field: 'book_name', width: 200, title: '书名'},
+                {field: 'begin_date', width: 200, title: '开始日期'},
+                {field: 'end_date', width: 200, title: '结束日期'},
+                {field: 'book_type', width: 200, title: '结束日期'},
+                {field: 'note', title: '备注'},
+                {title: '操作', width: 220, templet: '#currentTableBar', fixed: "right", align: "center"}
+            ]]
+        }));
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            table.reload('searchListTable', {
+                page: {
+                    curr: 1  //重新加载后默认为第一页
+                }
+                , where: {
+                    "bookName": data.field.bookName,
+                    "beginDateB" : data.field.beginDateB,
+                    "beginDateE" : data.field.beginDateE
+                }
+            });
+            return false;
+        });
+
+
+        //重置按钮操作
+        $(".data-reset-btn").on('click', function () {
+            //清空表单
+            $("#searchForm")[0].reset();
+            //重新加载
+            table.reload('searchListTable',{
+                page: {curr: 1},
+                where: {"bookName":"", "beginDateB" : "", "beginDateE" : ""}
+            });
+        });
+
+        //监听表格右侧的操作按钮
+        table.on('tool(searchListTable)', function (obj) {
+            event(obj);
+        });
+
+        //监听表格工具栏操作按钮
+        table.on('toolbar(searchListTable)', function (obj) {
+            event(obj);
+        });
+
+        //各种事件处理
+        function event(obj) {
+            var data = obj.data;
+            switch (obj.event) {
+                //==============勾选后删除按钮事件============================
+                case "deleteAll":
+                    config.deleteAll(table,delete_url);
+                    break;
+                //==============添加按钮点击事件============================
+                case "add":
+                    config.add(add_page_url);
+                    break;
+                //==============查看按钮点击事件============================
+                case "view":
+                    config.view(obj,view_page_url);
+                    break;
+                //==============删除单行按钮事件============================
+                case "delete":
+                    config.delete(obj,delete_url);
+                    break;
+                //==============编辑按钮点击事件============================
+                case "edit":
+                    config.edit(obj,edit_page_url);
+                    break;
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
