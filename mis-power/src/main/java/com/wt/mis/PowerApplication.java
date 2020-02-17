@@ -8,15 +8,15 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 
 @SpringBootApplication
 @ServletComponentScan
-public class MisApplication extends SpringBootServletInitializer {
+public class PowerApplication extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(MisApplication.class);
+        return application.sources(PowerApplication.class);
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(MisApplication.class, args);
+        SpringApplication.run(PowerApplication.class, args);
     }
 
 }
