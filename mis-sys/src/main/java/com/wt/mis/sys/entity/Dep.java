@@ -32,6 +32,9 @@ public class Dep extends BaseEntity {
     @Column(columnDefinition = " int COMMENT '排序号'")
     private int seq;
 
+    @Column(columnDefinition = " varchar(20) COMMENT '机构层级,用于查询，由父id加下划线组成'")
+    private String level;
+
     @JsonIgnore
     public Map<Integer, String> getDepTypeMap() {
         Map<Integer, String> typeMap = new HashMap<>();

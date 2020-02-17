@@ -69,4 +69,9 @@ public class AccountServiceImpl implements AccountService {
             throw new AppException("账号名已经存在！");
         }
     }
+
+    @Override
+    public Account getAccountByName(String loginName) {
+        return accountRepository.findByNameAndDel(loginName,0);
+    }
 }

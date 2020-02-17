@@ -20,4 +20,7 @@ public interface AccountService extends UserDetailsService {
      * @param account
      */
     public void editAccount(Account account) throws AppException;
+
+
+    public Account getAccountByName(String loginName);
 }

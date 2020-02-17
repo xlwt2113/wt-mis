@@ -36,4 +36,4 @@ spring:
 location:
   basedir: ./output
   #模板输出路径
-  templete-out-path : ./mis-sys/src/main
+  templete-out-path : ./mis-power/src/main

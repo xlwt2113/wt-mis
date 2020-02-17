@@ -1,6 +1,7 @@
 package com.wt.mis.core.config;
 
 import com.wt.mis.core.util.ResponseUtils;
+import com.wt.mis.sys.entity.Account;
 import com.wt.mis.sys.service.AccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,7 +98,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse resp, Authentication authentication) throws IOException, ServletException {
                         //登录成功写入session
                         UserDetails userDetails = accountService.loadUserByUsername(authentication.getName());
-                        req.getSession().setAttribute("loginUser", userDetails);
+                        Account loginUser = accountService.getAccountByName(userDetails.getUsername());
+                        req.getSession().setAttribute("loginUser", loginUser);
                         resp.setContentType("application/text;charset=utf-8");
                         PrintWriter out = resp.getWriter();
                         out.write("success");

@@ -2,6 +2,7 @@ package com.wt.mis.sys.controller;
 
 import com.wt.mis.core.controller.BaseController;
 import com.wt.mis.core.repository.BaseRepository;
+import com.wt.mis.core.util.BeanAccessUtil;
 import com.wt.mis.core.util.ResponseUtils;
 import com.wt.mis.sys.entity.Dep;
 import com.wt.mis.sys.repository.DepRespository;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -48,6 +50,35 @@ public class DepController extends BaseController<Dep> {
         } else {
             return ResponseUtils.errorJson("删除失败，根机构不允许删除",id);
         }
+    }
+
+
+    @ApiOperation("提交创建对象")
+    @PostMapping("/add")
+    @ResponseBody
+    @Override
+    protected String add(HttpServletRequest request, Dep dep) {
+        if(dep.getPid()!=0){
+            Dep parent = repository().getOne(dep.getPid());
+            dep.setLevel(parent.getLevel()+"_"+dep.getId());
+        }else{
+            dep.setLevel(dep.getId().toString());
+        }
+        return super.add(request, dep);
+    }
+
+    @ApiOperation("提交修改对象")
+    @PostMapping("/edit")
+    @ResponseBody
+    @Override
+    protected String edit(HttpServletRequest request, Dep dep) {
+        if(dep.getPid()!=0){
+            Dep parent = repository().getOne(dep.getPid());
+            dep.setLevel(parent.getLevel()+"_"+dep.getId());
+        }else{
+            dep.setLevel(dep.getId().toString());
+        }
+        return super.edit(request, dep);
     }
 
     @ApiOperation("显示所有机构")
