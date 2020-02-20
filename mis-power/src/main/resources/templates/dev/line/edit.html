@@ -15,25 +15,28 @@
 
 
         <div class="layui-form-item">
-            <label class="layui-form-label">分支箱名称</label>
+            <label class="layui-form-label">线路名称</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{branchBoxName}" lay-verify="branchBoxName" autocomplete="off" placeholder="请输入分支箱名称" class="layui-input">
+                        <input type="text" th:field="*{lineName}" lay-verify="lineName" autocomplete="off" placeholder="请输入线路名称" class="layui-input">
             </div>
         </div>
 
 
         <div class="layui-form-item">
-            <label class="layui-form-label">安装位置</label>
+            <label class="layui-form-label">线路编号</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{installationLocation}" lay-verify="installationLocation" autocomplete="off" placeholder="请输入设备安装位置" class="layui-input">
+                        <input type="text" th:field="*{lineNum}" lay-verify="lineNum" autocomplete="off" placeholder="请输入线路编号" class="layui-input">
             </div>
         </div>
 
 
         <div class="layui-form-item">
-            <label class="layui-form-label">通信地址</label>
+            <label class="layui-form-label">电压等级</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{protocolAddress}" autocomplete="off" placeholder="请输入协议通信地址" class="layui-input">
+                    <select class="layui-select" th:field="*{voltageLevel}">
+                    <option value="0">男</option>
+                    <option value="1">女</option>
+                </select>
             </div>
         </div>
 
@@ -41,7 +44,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">运维班组</label>
             <div class="layui-input-block">
-                <input type="text" th:field="*{operationsTeam}" lay-verify="operationsTeam" autocomplete="off" placeholder="请选择运维班组" class="layui-input" lay-filter="depTree">
+                        <input type="text" th:field="*{operationsTeam}" lay-verify="operationsTeam" autocomplete="off" placeholder="请输入运维班组" class="layui-input" lay-filter="depTree">
             </div>
         </div>
 
@@ -65,37 +68,39 @@
 
     layui.use(['form', 'laydate', 'upload','treeSelect'], function () {
         var form = layui.form
-            ,treeSelect = layui.treeSelect
+                , laydate = layui.laydate
+                , upload = layui.upload
+                ,treeSelect = layui.treeSelect
                 , $ = layui.jquery;
 
-        treeSelect.render({
-            // 选择器
-            elem: '#operationsTeam',
-            data: '/api/sys/dep_tree_json?open=true&show_self=true',
-            type: 'get',
-            placeholder: '请选择运维班组',
-            search: true,
-            // 加载完成后的回调函数
-            success: function (d) {
-                treeSelect.checkNode('depTree', [[${model.operationsTeam}]]); //默认选中
-            }
-        });
+                treeSelect.render({
+                    // 选择器
+                    elem: '#operationsTeam',
+                    data: '/api/sys/dep_tree_json?open=true',
+                    type: 'get',
+                    placeholder: '请选择运维班组',
+                    search: true,
+                    // 加载完成后的回调函数
+                    success: function (d) {
+                        treeSelect.checkNode('depTree', [[${model.operationsTeam}]]); //默认选中
+                    }
+                });
 
         //自定义验证规则
         form.verify({
-                branchBoxName:function (value) {
+                lineName:function (value) {
                     if (value == '') {
-                        return '必须输入分支箱名称';
+                        return '必须输入线路名称';
                     }
                 },
-                installationLocation:function (value) {
+                lineNum:function (value) {
                     if (value == '') {
-                        return '必须输入设备安装位置';
+                        return '必须输入线路编号';
                     }
                 },
                 operationsTeam:function (value) {
                     if (value == '') {
-                        return '必须选择运维班组';
+                        return '必须输入运维班组';
                     }
                 },
                 "test" :function(){}

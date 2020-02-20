@@ -2,7 +2,9 @@ package com.wt.mis.sys.repository;
 
 import com.wt.mis.core.repository.BaseRepository;
 import com.wt.mis.sys.entity.Menu;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -42,6 +44,36 @@ public interface MenuRepository extends BaseRepository<Menu, Long> {
      * @return
      */
     List<Menu> findAllByParIdAndDel(Long parId, int del);
+
+    /**
+     * 根据路径找到所有对应菜单
+     * @param href
+     * @return
+     */
+    List<Menu> findAllByHref(String href);
+
+    /**
+     * 根据路径查找菜单
+     * @param href
+     * @return
+     */
+    Menu  findByHref(String href);
+
+    /**
+     * 根据路径删除相关菜单
+     * @param href
+     */
+    @Transactional
+    @Modifying
+    void deleteAllByHref(String href);
+
+    /**
+     * 根据父菜单删除所有子菜单
+     * @param parId
+     */
+    @Transactional
+    @Modifying
+    void deleteAllByParId(Long parId);
 
 
 }

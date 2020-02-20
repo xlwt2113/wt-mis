@@ -37,6 +37,22 @@
     </div>
 
     <div class="layui-form-item">
+        <label class="layui-form-label">归属菜单</label>
+        <div class="layui-input-block">
+            <input type="text" th:field="*{menuId}" lay-verify="required" lay-vali autocomplete="off"
+                   placeholder="请输入选择归属菜单" class="layui-input" lay-filter="menuTree">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">菜单名称</label>
+        <div class="layui-input-block">
+            <input type="text" th:field="*{title}" lay-verify="required" lay-vali autocomplete="off"
+                   placeholder="请输入路菜单名称" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
         <table class="layui-table" lay-size="sm">
             <colgroup>
                 <col width="150">
@@ -84,6 +100,7 @@
                         <option value="textarea" th:selected="${item.inputType} == 'textarea'">文本域</option>
                         <option value="date" th:selected="${item.inputType} == 'date'">日期</option>
                         <option value="select" th:selected="${item.inputType} == 'select'">下拉选择</option>
+                        <option value="orgSelect" th:selected="${item.inputType} == 'orgSelect'">机构选择</option>
                         <option value="file" th:selected="${item.inputType} == 'file'">上传附件</option>
                     </select>
                 </td>
@@ -127,9 +144,24 @@
 
     var submitUrl = '[[${#request.servletPath}]]';
 
-    layui.use(['form', 'layedit', 'laydate'], function () {
+    layui.use(['form', 'layedit', 'laydate','treeSelect'], function () {
         var form = layui.form
+            ,treeSelect = layui.treeSelect
             , $ = layui.jquery;
+
+
+        treeSelect.render({
+            // 选择器
+            elem: '#menuId',
+            data: '/api/sys/menu_tree_json?open=true&show_level=1',
+            type: 'get',
+            placeholder: '请选择菜单',
+            search: true,
+            // 加载完成后的回调函数
+            success: function (d) {
+                treeSelect.checkNode('menuTree', [[${model.menuId}]]); //默认选中
+            }
+        });
 
         //监听提交
         form.on('submit(saveBtn)', function (data) {
@@ -170,6 +202,7 @@
                 '                        <option value="textarea">文本域</option>\n' +
                 '                        <option value="date">日期</option>\n' +
                 '                        <option value="select">下拉选择</option>\n' +
+                '                        <option value="orgSelect">机构选择</option>\n' +
                 '                        <option value="file">上传附件</option>\n' +
                 '                    </select>\n' +
                 '                </td>\n' +

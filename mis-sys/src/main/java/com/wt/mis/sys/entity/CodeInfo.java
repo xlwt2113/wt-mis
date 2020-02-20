@@ -31,6 +31,19 @@ public class CodeInfo extends BaseEntity {
     @Column(columnDefinition = " varchar(100) COMMENT '对应po类名'")
     private String poName;
 
+    /**
+     * 归属上级菜单
+     */
+    @Column(columnDefinition = " int COMMENT '上级菜单目录ID'")
+    private Long  menuId;
+
+
+    /**
+     * 菜单名称
+     */
+    @Column(columnDefinition = " varchar(100) COMMENT '菜单名称'")
+    private String  title;
+
 
 
     @OneToMany(mappedBy = "codeInfo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

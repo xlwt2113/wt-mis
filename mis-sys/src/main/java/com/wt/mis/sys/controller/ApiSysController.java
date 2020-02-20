@@ -1,6 +1,8 @@
 package com.wt.mis.sys.controller;
 
 import com.wt.mis.core.repository.BaseRepository;
+import com.wt.mis.core.util.LoginUser;
+import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.sys.entity.Dep;
 import com.wt.mis.sys.entity.Menu;
 import com.wt.mis.sys.repository.DepRespository;
@@ -36,11 +38,23 @@ public class ApiSysController {
     @RequestMapping("/dep_tree_json")
     public List<Dep> depJson(HttpServletRequest request) {
         boolean open = false;
+        boolean show_self = false;
+        //默认的根机构ID
+        long rootId = 1;
+
+        //设置相关的机构树显示属性
+        if("true".equals(request.getParameter("show_self"))){
+            show_self = true;
+        }
+        //是否只显示当前登录人所在机构
+        if(show_self){
+            rootId = LoginUser.getCurrentUser().getDepId();
+        }
         if ("true".equals(request.getParameter("open"))) {
             open = true;
         }
         //获取根机构
-        Dep root = depRespository.findById(new Long(1)).get();
+        Dep root = depRespository.findById(rootId).get();
         //默认根节点为打开状态
         root.setOpen(true);
         //获取所有没有删除的机构
@@ -82,6 +96,11 @@ public class ApiSysController {
     @RequestMapping("/menu_tree_json")
     public List<Menu> menuJson(HttpServletRequest request) {
         boolean open = false;
+        //显示的菜单层级，默认到操作按钮层
+        int showLevle = 3;
+        if(StringUtils.isNotEmpty(request.getParameter("show_level"))){
+            showLevle = Integer.parseInt(request.getParameter("show_level"));
+        }
         if ("true".equals(request.getParameter("open"))) {
             open = true;
         }
@@ -90,7 +109,7 @@ public class ApiSysController {
         //获取所有菜单
         List<Menu> allMenuList = menuRepository.findAllByDel(BaseRepository.DATA_NO_DELETE);
         for (Menu tempMenu : allMenuList) {
-            tempMenu.setChildren(this.getChildMenu(tempMenu, allMenuList,open));
+            tempMenu.setChildren(this.getChildMenu(tempMenu, allMenuList,open,showLevle));
         }
         for(Menu menu:topMenuList){
             menu.setOpen(open);
@@ -112,11 +131,11 @@ public class ApiSysController {
      * @param menuList 所有菜单
      * @return childMenus 所有子菜单
      */
-    private List<Menu> getChildMenu(Menu menu, List<Menu> menuList,boolean openState) {
+    private List<Menu> getChildMenu(Menu menu, List<Menu> menuList,boolean openState,int showLevle) {
         List<Menu> childList = new ArrayList<Menu>();
         for (Menu menuChild : menuList) {
-            if (menuChild.getParId().longValue() == menu.getId().longValue()) {
-                menuChild.setChildren(getChildMenu(menuChild, menuList,openState));
+            if (menuChild.getParId().longValue() == menu.getId().longValue() && menuChild.getMenuType() <= showLevle) {
+                menuChild.setChildren(getChildMenu(menuChild, menuList,openState,showLevle));
                 menuChild.setOpen(openState);
                 menuChild.setSpread(openState);
                 childList.add(menuChild);

@@ -48,6 +48,12 @@
                     #else
                         <input type="text" th:field="*{$column.poColName}" autocomplete="off" placeholder="请输入$column.poColNote" class="layui-input">
                     #end
+                #elseif($column.inputType == 'orgSelect')
+                    #if($column.required == '是')
+                        <input type="text" th:field="*{$column.poColName}" lay-verify="$column.poColName" autocomplete="off" placeholder="请输入$column.poColNote" class="layui-input" lay-filter="depTree">
+                    #else
+                        <input type="text" th:field="*{$column.poColName}" autocomplete="off" placeholder="请输入$column.poColNote" class="layui-input" lay-filter="depTree">
+                    #end
                 #else
                     #if($column.required == '是')
                     <select class="layui-select" th:field="*{$column.poColName}" lay-verify="$column.poColName">
@@ -86,15 +92,29 @@
     #end
 #end
 
-    layui.use(['form', 'laydate', 'upload'], function () {
+    layui.use(['form', 'laydate', 'upload','treeSelect'], function () {
         var form = layui.form
                 , laydate = layui.laydate
                 , upload = layui.upload
+                ,treeSelect = layui.treeSelect
                 , $ = layui.jquery;
 
         #foreach($column in $codeInfo.codeInfoItemList)
             #if($column.inputType == 'date')
                 laydate.render({elem: '#$column.poColName', trigger: 'click'});
+            #elseif($column.inputType == 'orgSelect')
+                treeSelect.render({
+                    // 选择器
+                    elem: '#$column.poColName',
+                    data: '/api/sys/dep_tree_json?open=true',
+                    type: 'get',
+                    placeholder: '请选择运维班组',
+                    search: true,
+                    // 加载完成后的回调函数
+                    success: function (d) {
+                        treeSelect.checkNode('depTree', [[${left}model.${column.poColName}${right}]]); //默认选中
+                    }
+                });
             #end
         #end
 

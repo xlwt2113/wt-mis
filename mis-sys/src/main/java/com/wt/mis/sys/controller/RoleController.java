@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -75,9 +76,14 @@ public class RoleController extends BaseController<Role> {
         List<RoleMenu> roleMenuList = roleMenuRepository.findAllByRoleId(id);
         String ids = "";
         for (RoleMenu roleMenu : roleMenuList) {
-            Menu menu = menuRepository.getOne(roleMenu.getMenuId());
-            if (menu.getMenuType() == 3) {
-                ids = ids + roleMenu.getMenuId() + ",";
+            try {
+                Menu menu = menuRepository.getOne(roleMenu.getMenuId());
+                if (menu.getMenuType() == 3) {
+                    ids = ids + roleMenu.getMenuId() + ",";
+                }
+            } catch (EntityNotFoundException e) {
+                log.error("没有找到对应的菜单对象");
+                roleMenuRepository.delete(roleMenu);
             }
         }
         if (ids.length() > 0) {

@@ -9,9 +9,9 @@ spring:
     time-zone: GMT+8
   #数据库连接
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/power?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://58.87.76.52:3306/power?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
     username: root
-    password: root
+    password: Fly118478
     driver-class-name:  com.mysql.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     druid:

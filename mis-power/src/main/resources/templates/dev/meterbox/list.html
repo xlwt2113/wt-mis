@@ -1,5 +1,3 @@
-#set($left="${")
-#set($right="}")
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -18,29 +16,12 @@
                 <form class="layui-form layui-form-pane" id="searchForm">
                     <div style="display: none"><input type="text" name="test" value=""></div>
                     <div class="layui-form-item">
-#foreach($column in $codeInfo.codeInfoItemList)
-    #if($column.conditions == '是')
-       #if($column.poColProperty == 'Date')
                    <div class="layui-inline">
-                       <div class="layui-input-inline" style="width: 100px;">
-                           <input type="text" name="${column.poColName}B" id="${column.poColName}B" autocomplete="off" class="layui-input" placeholder="${column.poColNote}开始">
-                       </div>
-                       <div class="layui-form-mid">-</div>
-                       <div class="layui-input-inline" style="width: 100px;">
-                           <input type="text" name="${column.poColName}E" id="${column.poColName}E" autocomplete="off" class="layui-input"  placeholder="${column.poColNote}结束">
-                       </div>
+                       <input type="text" name="meterBoxName" autocomplete="off" class="layui-input" placeholder="表箱名称">
                    </div>
-       #elseif($column.inputType == 'orgSelect')
                    <div class="layui-inline">
-                       <input type="text"  th:value="${session.loginUser.getDepId()}" id="${column.poColName}" name="${column.poColName}" autocomplete="off" class="layui-input"  lay-filter="depTree">
+                       <input type="text" name="installationLocation" autocomplete="off" class="layui-input" placeholder="设备安装位置">
                    </div>
-       #else
-                   <div class="layui-inline">
-                       <input type="text" name="${column.poColName}" autocomplete="off" class="layui-input" placeholder="${column.poColNote}">
-                   </div>
-       #end
-    #end
-#end
                         <div class="layui-inline">
                             <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>搜索</a>
                         </div>
@@ -85,44 +66,22 @@
                 table = layui.table;
 
         // 默认的操作地址
-        var list_url = '${codeInfo.url}/list';
-        var delete_url = '${codeInfo.url}/delete';
-        var add_page_url = '${codeInfo.url}/add';
-        var edit_page_url = '${codeInfo.url}/edit';
-        var view_page_url = '${codeInfo.url}/view';
+        var list_url = '/dev/meterbox/list';
+        var delete_url = '/dev/meterbox/delete';
+        var add_page_url = '/dev/meterbox/add';
+        var edit_page_url = '/dev/meterbox/edit';
+        var view_page_url = '/dev/meterbox/view';
 
-#foreach($column in $codeInfo.codeInfoItemList)
-#if($column.conditions == '是')
-#if($column.poColProperty == 'Date')
-        laydate.render({elem: '#${column.poColName}B'});
-        laydate.render({elem: '#${column.poColName}E'});
-#elseif($column.inputType == 'orgSelect')
-        treeSelect.render({
-            // 选择器
-            elem: '#$column.poColName',
-            data: '/api/sys/dep_tree_json?open=true',
-            type: 'get',
-            placeholder: '请选择运维班组',
-            search: true,
-            // 加载完成后的回调函数
-            success: function (d) {
-                treeSelect.checkNode('depTree', $('#${column.poColName}').val()); //默认选中
-            }
-        });
-#end
-#end
-#end
 
         table.render($.extend(config.searchListTable, {
             url: list_url,
             //表格列
             cols: [[
                 {type: "checkbox", width: 50, fixed: "left"},
-#foreach($column in $codeInfo.codeInfoItemList)
-#if($column.showColName == '是')
-                {field: '${column.dbColName}', width: 200, title: '${column.poColNote}'},
-#end
-#end
+                {field: 'meter_box_name', width: 200, title: '表箱名称'},
+                {field: 'installation_location', width: 200, title: '设备安装位置'},
+                {field: 'protocol_address', width: 200, title: '协议通讯地址'},
+                {field: 'operations_team', width: 200, title: '运维班组'},
                 {title: '操作', width: 220, templet: '#currentTableBar', fixed: "right", align: "center"}
             ]]
         }));
@@ -135,16 +94,8 @@
                     curr: 1  //重新加载后默认为第一页
                 }
                 , where: {
-#foreach($column in $codeInfo.codeInfoItemList)
-#if($column.conditions == '是')
-#if($column.poColProperty == 'Date')
-                "${column.poColName}B" : data.field.${column.poColName}B,
-                "${column.poColName}E" : data.field.${column.poColName}E,
-#else
-                "${column.poColName}": data.field.${column.poColName},
-#end
-#end
-#end
+                "meterBoxName": data.field.meterBoxName,
+                "installationLocation": data.field.installationLocation,
                  "test" : ""  //为了js不出错而加，
                 }
             });
@@ -160,16 +111,8 @@
             table.reload('searchListTable',{
                 page: {curr: 1},
                 where: {
-                    #foreach($column in $codeInfo.codeInfoItemList)
-                        #if($column.conditions == '是')
-                            #if($column.poColProperty == 'Date')
-                        "${column.poColName}B" : "",
-                        "${column.poColName}E" : "",
-                            #else
-                        "${column.poColName}": "",
-                            #end
-                        #end
-                    #end
+                        "meterBoxName": "",
+                        "installationLocation": "",
                         "test" : ""
                 }
             });

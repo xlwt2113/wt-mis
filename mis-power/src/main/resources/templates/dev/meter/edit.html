@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title th:replace="common/base::pagetitle"></title>
+    <link th:replace="common/base::static"/>
+</head>
+<body>
+<form class="layui-form" action="" th:object="${model}">
+    <input type="hidden" th:field="*{id}"> <!--此处必须有业务主键的id-->
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属用户</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{ownerName}" lay-verify="ownerName" autocomplete="off" placeholder="请输入所属用户" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">设备安装位置</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{installationLocation}" lay-verify="installationLocation" autocomplete="off" placeholder="请输入设备安装位置" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">资产编号</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{meterBarcode}" lay-verify="meterBarcode" autocomplete="off" placeholder="请输入资产编号" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">出厂编号</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{serialNumber}" lay-verify="serialNumber" autocomplete="off" placeholder="请输入出厂编号" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">参比电压</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{referenceVoltage}" autocomplete="off" placeholder="请输入参比电压" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">参比电流</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{referenceCurrent}" autocomplete="off" placeholder="请输入参比电流" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">协议通讯地址</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{protocolAddress}" autocomplete="off" placeholder="请输入协议通讯地址" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">电报常数</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{meterConstant}" autocomplete="off" placeholder="请输入电报常数" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">电表准确度</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{meterAccuracy}" autocomplete="off" placeholder="请输入电表准确度" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">运维班组</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{operationsTeam}" lay-verify="operationsTeam" autocomplete="off" placeholder="请输入运维班组" class="layui-input" lay-filter="depTree">
+            </div>
+        </div>
+
+
+
+
+    <div class="layui-form-item  layui-hide">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="saveBtn" id="saveBtn">保存</button>
+        </div>
+    </div>
+</form>
+
+<script th:replace="common/base::mianJs"></script>
+<script>
+
+    var submitUrl = '[[${#request.servletPath}]]';
+
+    //用于保存所有的上传文件信息
+    var uploadFileMap = new Map();
+
+    layui.use(['form', 'laydate', 'upload','treeSelect'], function () {
+        var form = layui.form
+                , laydate = layui.laydate
+                , upload = layui.upload
+                ,treeSelect = layui.treeSelect
+                , $ = layui.jquery;
+
+                treeSelect.render({
+                    // 选择器
+                    elem: '#operationsTeam',
+                    data: '/api/sys/dep_tree_json?open=true',
+                    type: 'get',
+                    placeholder: '请选择运维班组',
+                    search: true,
+                    // 加载完成后的回调函数
+                    success: function (d) {
+                        treeSelect.checkNode('depTree', [[${model.operationsTeam}]]); //默认选中
+                    }
+                });
+
+        //自定义验证规则
+        form.verify({
+                ownerName:function (value) {
+                    if (value == '') {
+                        return '必须输入所属用户';
+                    }
+                },
+                installationLocation:function (value) {
+                    if (value == '') {
+                        return '必须输入设备安装位置';
+                    }
+                },
+                meterBarcode:function (value) {
+                    if (value == '') {
+                        return '必须输入资产编号';
+                    }
+                },
+                serialNumber:function (value) {
+                    if (value == '') {
+                        return '必须输入出厂编号';
+                    }
+                },
+                operationsTeam:function (value) {
+                    if (value == '') {
+                        return '必须输入运维班组';
+                    }
+                },
+                "test" :function(){}
+        });
+
+
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            let index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+
+
+            $.post(submitUrl, data.field, function (result) {
+                let r = JSON.parse(result);
+                if (r.code == 200) {
+                    parent.layer.close(index); //再执行关闭
+                    parent.layui.table.reload('searchListTable');
+                }
+                parent.layer.msg(r.message);
+            });
+            return false;
+        });
+    });
+
+    //删除附件
+    function delRow(obj,fileInputId, id) {
+        $(obj).parent().remove();
+        let fileSets = new Set(uploadFileMap.get(fileInputId));
+        fileSets.delete(parseInt(id));
+        uploadFileMap.set(fileInputId,fileSets);
+        if (id != undefined) {
+            $.post('/sys/upload/'+id+'/del', function (result) {console.log(result);});
+        }
+    }
+
+</script>
+</body>
+</html>

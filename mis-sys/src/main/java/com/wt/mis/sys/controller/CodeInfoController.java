@@ -8,7 +8,9 @@ import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.core.util.VelocityKit;
 import com.wt.mis.sys.entity.CodeInfo;
 import com.wt.mis.sys.entity.CodeInfoItem;
+import com.wt.mis.sys.entity.Menu;
 import com.wt.mis.sys.repository.CodeInfoRepository;
+import com.wt.mis.sys.repository.MenuRepository;
 import io.swagger.annotations.ApiOperation;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,9 @@ public class CodeInfoController extends BaseController<CodeInfo> {
 
     @Autowired
     CodeInfoRepository codeInfoRepository;
+
+    @Autowired
+    MenuRepository menuRepository;
 
     @Override
     public BaseRepository<CodeInfo, Long> repository() {
@@ -83,9 +88,69 @@ public class CodeInfoController extends BaseController<CodeInfo> {
     @ResponseBody
     public String generateCode(@RequestParam("id") @NonNull Long id){
         CodeInfo codeInfo = codeInfoRepository.getOne(id);
+        //生成菜单
+        generateMenu(codeInfo);
+        //生成模板
         VelocityKit.allToFile(codeInfo,templeteOutPath);
         return ResponseUtils.okJson("生成成功！",null);
     }
+
+    /**
+     * 根据配置生成菜单项目
+     * @param codeInfo
+     */
+    private void generateMenu(CodeInfo codeInfo){
+        //先删除已经存在的菜单信息
+        List<Menu> menuList = menuRepository.findAllByHref(codeInfo.getUrl()+"/list");
+        for(Menu menu : menuList){
+            menuRepository.deleteAllByParId(menu.getId());
+            menuRepository.delete(menu);
+        }
+        //新增菜单信息
+        Menu menu = new Menu();
+        menu.setTitle(codeInfo.getTitle());
+        menu.setIcon("fa-th-large");
+        menu.setMenuType(2);
+        menu.setParId(codeInfo.getMenuId());
+        menu.setHref(codeInfo.getUrl()+"/list");
+        menu.setTarget("_self");
+        menu.setSeq(0);
+        menuRepository.save(menu);
+
+        //增加操作信息
+        Menu  listOpt = new Menu();
+        listOpt.setHref("list");
+        listOpt.setTitle("查询");
+        listOpt.setMenuType(3);
+        listOpt.setParId(menu.getId());
+        listOpt.setSeq(0);
+        menuRepository.save(listOpt);
+
+        Menu  addOpt = new Menu();
+        addOpt.setHref("add");
+        addOpt.setTitle("添加");
+        addOpt.setMenuType(3);
+        addOpt.setParId(menu.getId());
+        addOpt.setSeq(1);
+        menuRepository.save(addOpt);
+
+        Menu  editOpt = new Menu();
+        editOpt.setHref("edit");
+        editOpt.setTitle("修改");
+        editOpt.setMenuType(3);
+        editOpt.setParId(menu.getId());
+        editOpt.setSeq(2);
+        menuRepository.save(editOpt);
+
+        Menu  deleteOpt = new Menu();
+        deleteOpt.setHref("delete");
+        deleteOpt.setTitle("删除");
+        deleteOpt.setMenuType(3);
+        deleteOpt.setParId(menu.getId());
+        deleteOpt.setSeq(3);
+        menuRepository.save(deleteOpt);
+    }
+
 
     //处理子表数据
     private void dealItem(HttpServletRequest request,CodeInfo codeInfo){

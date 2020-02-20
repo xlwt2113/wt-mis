@@ -79,4 +79,8 @@ public class Menu extends BaseEntity {
         }
     }
 
+    public String getName(){
+        return this.getTitle();
+    }
+
 }
