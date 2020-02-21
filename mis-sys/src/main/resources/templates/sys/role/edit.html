@@ -64,6 +64,7 @@
         //监听提交
         form.on('submit(saveBtn)', function (data) {
             let index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            let loadIndex = parent.layer.load();
             $.post(submitUrl,data.field,function (result) {
                 let r = JSON.parse(result);
                 if(r.code == 200){
@@ -71,6 +72,7 @@
                     parent.layui.table.reload('searchListTable');
                 }
                 parent.layer.msg(r.message);
+                parent.layer.close(loadIndex);
             });
             return false;
         });

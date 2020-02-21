@@ -63,12 +63,14 @@
             });
 
             let index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            let loadIndex = parent.layer.load();
             $.post(submitUrl,$.extend(data.field, {ids: arr_box.toString()}),function (result) {
                 let r = JSON.parse(result);
                 if(r.code == 200){
                     parent.layer.close(index); //再执行关闭
                     parent.layui.table.reload('searchListTable');
                 }
+                parent.layer.close(loadIndex);
                 parent.layer.msg(r.message);
             });
             return false;

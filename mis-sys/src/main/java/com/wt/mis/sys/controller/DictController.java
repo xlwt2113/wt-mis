@@ -65,6 +65,7 @@ public class DictController extends BaseController<Dict> {
         if (StringUtils.isNotEmpty(dict.getDictName())) {
             sql.append(" and dict_name like '%" + dict.getDictName() + "%' ");
         }
+        sql.append(" order by dict_name");
         return sql.toString();
     }
 

@@ -40,6 +40,7 @@ public class RegisterController extends BaseController<Register> {
         if (StringUtils.isNotEmpty(register.getItemValue())) {
             sql.append(" and t1.item_value like '%" + register.getItemValue() + "%'");
         }
+        sql.append(" order by t1.item_name");
         return sql.toString();
     }
 }
