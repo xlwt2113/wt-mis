@@ -54,6 +54,21 @@
                     #else
                         <input type="text" th:field="*{$column.poColName}" autocomplete="off" placeholder="请输入$column.poColNote" class="layui-input" lay-filter="depTree">
                     #end
+                #elseif($column.inputType == 'select')
+                    #if($column.required == '是')
+                        <select class="layui-select" th:field="*{$column.poColName}" lay-verify="$column.poColName">
+                            <each th:each="item:$leftT(com.wt.mis.sys.util.DictUtils).getDictItems('$column.poColNote')$right">
+                                <option th:value="${item.itemValue}" th:text="${item.itemKey}"></option>
+                            </each>
+                        </select>
+                    #else
+                        <select class="layui-select" th:field="*{$column.poColName}">
+                            <each th:each="item:$leftT(com.wt.mis.sys.util.DictUtils).getDictItems('$column.poColNote')$right">
+                                <option th:value="${item.itemValue}" th:text="${item.itemKey}"></option>
+                            </each>
+                        </select>
+                    #end
+                #else
                 #else
                     #if($column.required == '是')
                     <select class="layui-select" th:field="*{$column.poColName}" lay-verify="$column.poColName">

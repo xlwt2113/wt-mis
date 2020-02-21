@@ -81,11 +81,9 @@ public abstract class BaseController<T extends BaseEntity> {
 
     /**
      * 对获取到的lsit数据进行加工，一般用于对字典项目的显示处理，需要处理时重写该方法即可
-     * @param list
+     * @param searchResultlist
      */
-    protected void dealSearchList(List list){
-
-    }
+    protected void dealSearchList(List searchResultlist){}
 
     /**
      * 生成查询列表的sql语句

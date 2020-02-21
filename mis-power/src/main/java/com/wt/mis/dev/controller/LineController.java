@@ -62,9 +62,14 @@ public class LineController extends BaseController<Line> {
         return sql.toString();
     }
 
+    /**
+     * 处理列表页面中要显示的数据内容
+     * @param searchResultlist
+     */
     @Override
-    protected void dealSearchList(List list) {
-        for(Object obj:list){
+    protected void dealSearchList(List searchResultlist) {
+        //将字典项中的值替换成显示名称
+        for(Object obj:searchResultlist){
             HashMap<String,String> map = (HashMap) obj;
             String key = DictUtils.getDictItemKey("电压等级",map.get("voltage_level"));
             map.replace("voltage_level",key);
