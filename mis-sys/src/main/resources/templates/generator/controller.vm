@@ -68,16 +68,16 @@ public class ${codeInfo.poName}Controller extends BaseController<${codeInfo.poNa
         //将字典项中的值替换成显示名称
         for(Object obj:searchResultlist){
             HashMap<String,String> map = (HashMap) obj;
+            String key = "";
             #foreach($column in $codeInfo.codeInfoItemList)
             #if($column.inputType == 'select')
-            String key = DictUtils.getDictItemKey("${column.poColNote}",map.get("${column.dbColName}"));
+            key = DictUtils.getDictItemKey("${column.poColNote}",map.get("${column.dbColName}"));
             map.replace("${column.dbColName}",key);
             #end
             #end
         }
     }
+}
 #stop
 #end
 #end
-}
-
