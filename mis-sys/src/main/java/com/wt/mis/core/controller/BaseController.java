@@ -75,7 +75,16 @@ public abstract class BaseController<T extends BaseEntity> {
                                   @RequestParam(value = "pageSort", required = false, defaultValue = "id") String pageSort,
                                   @RequestParam(value = "pageDirection", required = false, defaultValue = "DESC") String pageDirection) {
         PageResult page = searchService.findBySql(this.generateSearchSql(t, request), pageNumber, pageSize);
+        dealSearchList(page.getContent());
         return ResponseUtils.ok("", page);
+    }
+
+    /**
+     * 对获取到的lsit数据进行加工，一般用于对字典项目的显示处理，需要处理时重写该方法即可
+     * @param list
+     */
+    protected void dealSearchList(List list){
+
     }
 
     /**

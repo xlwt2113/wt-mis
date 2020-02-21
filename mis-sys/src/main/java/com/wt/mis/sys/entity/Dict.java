@@ -21,7 +21,7 @@ public class Dict extends BaseEntity {
     @Column(columnDefinition = " varchar(200) COMMENT '字典编码'")
     private String dictCode;
 
-    @OneToMany(mappedBy = "dict", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "dict", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<DictItem> dictItemList;
 
     public List<DictItem> getDictItemList() {

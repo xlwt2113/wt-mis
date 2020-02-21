@@ -1,7 +1,11 @@
 package com.wt.mis.sys.service.impl;
 
+import com.wt.mis.sys.entity.Dict;
+import com.wt.mis.sys.entity.DictItem;
 import com.wt.mis.sys.entity.Register;
 import com.wt.mis.sys.entity.UploadFiles;
+import com.wt.mis.sys.repository.DictItemRepository;
+import com.wt.mis.sys.repository.DictRepository;
 import com.wt.mis.sys.repository.RegisterRepository;
 import com.wt.mis.sys.repository.UploadFilesRepository;
 import com.wt.mis.sys.service.SysService;
@@ -21,6 +25,12 @@ public class SysServiceImpl implements SysService {
     @Autowired
     RegisterRepository registerRepository;
 
+    @Autowired
+    DictItemRepository dictItemRepository;
+
+    @Autowired
+    DictRepository dictRepository;
+
     @Override
     public List<UploadFiles> getUploadFilesByIds(List<Long> ids){
         return uploadFilesRepository.findAllByIds(ids);
@@ -34,5 +44,17 @@ public class SysServiceImpl implements SysService {
          }else{
              return "";
          }
+    }
+
+    @Override
+    public List<DictItem> getDictItems(String dictName) {
+        Dict dict = dictRepository.getFirstByDictNameAndDel(dictName,0);
+        List<DictItem> dictItemList = dictItemRepository.getAllByDictAndDel(dict,0);
+        return dictItemList;
+    }
+
+    @Override
+    public List<Dict> getAllDict() {
+        return dictRepository.findAllByDel(0);
     }
 }

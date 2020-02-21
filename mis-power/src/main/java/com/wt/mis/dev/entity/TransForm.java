@@ -1,4 +1,4 @@
-package com.wt.mis.sys.entity;
+package com.wt.mis.dev.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wt.mis.core.entity.BaseEntity;
@@ -14,7 +14,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "sys_trans_form")
+@Table(name = "dev_trans_form")
 @EqualsAndHashCode(callSuper = true)
 public class TransForm extends BaseEntity {
 
@@ -56,8 +56,10 @@ public class TransForm extends BaseEntity {
     /**
     * 出厂日期
     */
-    @Column(columnDefinition = " varchar(100) COMMENT '出厂日期'")
-    private String manufacturingDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Column(columnDefinition = " date COMMENT '出厂日期'")
+    private Date manufacturingDate;
     /**
     * 运维班组
     */

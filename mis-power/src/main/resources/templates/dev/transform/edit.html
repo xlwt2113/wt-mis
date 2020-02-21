@@ -31,7 +31,7 @@
 
 
         <div class="layui-form-item">
-            <label class="layui-form-label">设备安装位置</label>
+            <label class="layui-form-label">安装位置</label>
             <div class="layui-input-block">
                         <input type="text" th:field="*{installationLocation}" lay-verify="installationLocation" autocomplete="off" placeholder="请输入设备安装位置" class="layui-input">
             </div>
@@ -39,7 +39,7 @@
 
 
         <div class="layui-form-item">
-            <label class="layui-form-label">汇集单元地址</label>
+            <label class="layui-form-label">汇集单元</label>
             <div class="layui-input-block">
                         <input type="text" th:field="*{devAddress}" lay-verify="devAddress" autocomplete="off" placeholder="请输入汇集单元地址" class="layui-input">
             </div>
@@ -47,7 +47,7 @@
 
 
         <div class="layui-form-item">
-            <label class="layui-form-label">协议通讯地址</label>
+            <label class="layui-form-label">通讯地址</label>
             <div class="layui-input-block">
                         <input type="text" th:field="*{protocolAddress}" autocomplete="off" placeholder="请输入协议通讯地址" class="layui-input">
             </div>
@@ -55,7 +55,7 @@
 
 
         <div class="layui-form-item">
-            <label class="layui-form-label">变压器制造商</label>
+            <label class="layui-form-label">制造商</label>
             <div class="layui-input-block">
                         <input type="text" th:field="*{transformFactory}" autocomplete="off" placeholder="请输入变压器制造商" class="layui-input">
             </div>
@@ -73,7 +73,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">出厂日期</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{manufacturingDate}" autocomplete="off" placeholder="请输入出厂日期" class="layui-input">
+                        <input type="text" th:field="*{manufacturingDate}" th:value="*{#dates.format(manufacturingDate, 'yyyy-MM-dd HH:mm:ss')}" autocomplete="off" placeholder="请输入出厂日期" class="layui-input">
             </div>
         </div>
 
@@ -81,7 +81,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">运维班组</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{operationsTeam}" lay-verify="operationsTeam" autocomplete="off" placeholder="请输入运维班组" class="layui-input">
+                        <input type="text" th:field="*{operationsTeam}" lay-verify="operationsTeam" autocomplete="off" placeholder="请输入运维班组" class="layui-input" lay-filter="depTree">
             </div>
         </div>
 
@@ -110,6 +110,19 @@
                 ,treeSelect = layui.treeSelect
                 , $ = layui.jquery;
 
+                laydate.render({elem: '#manufacturingDate', trigger: 'click'});
+                treeSelect.render({
+                    // 选择器
+                    elem: '#operationsTeam',
+                    data: '/api/sys/dep_tree_json?open=true&show_self=true',
+                    type: 'get',
+                    placeholder: '请选择运维班组',
+                    search: true,
+                    // 加载完成后的回调函数
+                    success: function (d) {
+                        treeSelect.checkNode('depTree', [[${model.operationsTeam}]]); //默认选中
+                    }
+                });
 
         //自定义验证规则
         form.verify({

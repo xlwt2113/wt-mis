@@ -23,7 +23,7 @@
 
 
         <div class="layui-form-item">
-            <label class="layui-form-label">设备安装位置</label>
+            <label class="layui-form-label">安装位置</label>
             <div class="layui-input-block">
                         <input type="text" th:field="*{installationLocation}" lay-verify="installationLocation" autocomplete="off" placeholder="请输入设备安装位置" class="layui-input">
             </div>
@@ -63,7 +63,7 @@
 
 
         <div class="layui-form-item">
-            <label class="layui-form-label">协议通讯地址</label>
+            <label class="layui-form-label">通讯地址</label>
             <div class="layui-input-block">
                         <input type="text" th:field="*{protocolAddress}" autocomplete="off" placeholder="请输入协议通讯地址" class="layui-input">
             </div>
@@ -121,7 +121,7 @@
                 treeSelect.render({
                     // 选择器
                     elem: '#operationsTeam',
-                    data: '/api/sys/dep_tree_json?open=true',
+                    data: '/api/sys/dep_tree_json?open=true&show_self=true',
                     type: 'get',
                     placeholder: '请选择运维班组',
                     search: true,

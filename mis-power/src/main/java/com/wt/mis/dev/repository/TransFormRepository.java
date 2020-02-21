@@ -1,7 +1,7 @@
-package com.wt.mis.sys.repository;
+package com.wt.mis.dev.repository;
 
 import com.wt.mis.core.repository.BaseRepository;
-import com.wt.mis.sys.entity.TransForm;
+import com.wt.mis.dev.entity.TransForm;
 import org.springframework.stereotype.Repository;
 
 @Repository

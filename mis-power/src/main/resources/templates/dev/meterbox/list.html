@@ -22,6 +22,9 @@
                    <div class="layui-inline">
                        <input type="text" name="installationLocation" autocomplete="off" class="layui-input" placeholder="设备安装位置">
                    </div>
+                   <div class="layui-inline">
+                       <input type="text"  th:value="${session.loginUser.getDepId()}" id="operationsTeam" name="operationsTeam" autocomplete="off" class="layui-input"  lay-filter="depTree">
+                   </div>
                         <div class="layui-inline">
                             <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>搜索</a>
                         </div>
@@ -46,7 +49,7 @@
         <!--表格中操作按钮-->
         <script type="text/html" id="currentTableBar">
             <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-            <a class="layui-btn layui-btn-xs layui-bg-orange" lay-event="view">查看</a>
+            <!--<a class="layui-btn layui-btn-xs layui-bg-orange" lay-event="view">查看</a>-->
             <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">删除</a>
         </script>
     </div>
@@ -72,6 +75,18 @@
         var edit_page_url = '/dev/meterbox/edit';
         var view_page_url = '/dev/meterbox/view';
 
+        treeSelect.render({
+            // 选择器
+            elem: '#operationsTeam',
+            data: '/api/sys/dep_tree_json?open=true&show_self=true',
+            type: 'get',
+            placeholder: '请选择运维班组',
+            search: true,
+            // 加载完成后的回调函数
+            success: function (d) {
+                treeSelect.checkNode('depTree', $('#operationsTeam').val()); //默认选中
+            }
+        });
 
         table.render($.extend(config.searchListTable, {
             url: list_url,
@@ -81,7 +96,7 @@
                 {field: 'meter_box_name', width: 200, title: '表箱名称'},
                 {field: 'installation_location', width: 200, title: '设备安装位置'},
                 {field: 'protocol_address', width: 200, title: '协议通讯地址'},
-                {field: 'operations_team', width: 200, title: '运维班组'},
+                {field: 'operations_team_name', width: 200, title: '运维班组'},
                 {title: '操作', width: 220, templet: '#currentTableBar', fixed: "right", align: "center"}
             ]]
         }));
@@ -96,6 +111,7 @@
                 , where: {
                 "meterBoxName": data.field.meterBoxName,
                 "installationLocation": data.field.installationLocation,
+                "operationsTeam": data.field.operationsTeam,
                  "test" : ""  //为了js不出错而加，
                 }
             });
@@ -113,6 +129,7 @@
                 where: {
                         "meterBoxName": "",
                         "installationLocation": "",
+                        "operationsTeam": "",
                         "test" : ""
                 }
             });
