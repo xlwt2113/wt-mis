@@ -67,6 +67,6 @@ public class Meter extends BaseEntity {
     * 运维班组
     */
     @Column(columnDefinition = " varchar(100) COMMENT '运维班组'")
-    private String operationsTeam;
+    private Integer operationsTeam;
 
 }

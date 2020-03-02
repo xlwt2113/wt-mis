@@ -77,7 +77,8 @@ public class ${codeInfo.poName}Controller extends BaseController<${codeInfo.poNa
             #end
         }
     }
-}
 #stop
 #end
 #end
+
+}

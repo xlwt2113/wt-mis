@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title th:replace="common/base::pagetitle"></title>
+    <link th:replace="common/base::static"/>
+</head>
+<body>
+<form class="layui-form" action="" th:object="${model}">
+    <input type="hidden" th:field="*{id}"> <!--此处必须有业务主键的id-->
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">台区（变压器）ID</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{transformId}" autocomplete="off" placeholder="请输入台区（变压器）ID" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">设备ID</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{devId}" autocomplete="off" placeholder="请输入设备ID" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">设备类型</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{devType}" autocomplete="off" placeholder="请输入设备类型" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">设备显示名称</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{devName}" autocomplete="off" placeholder="请输入设备显示名称" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">设备通信地址</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{devAddress}" autocomplete="off" placeholder="请输入设备通信地址" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">设备在线状态</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{devOnline}" autocomplete="off" placeholder="请输入设备在线状态" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">设备在汇聚单元中序号</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{devNum}" autocomplete="off" placeholder="请输入设备在汇聚单元中序号" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">设备测量点号</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{devMeasureNum}" autocomplete="off" placeholder="请输入设备测量点号" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">设备相位</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{devPhase}" autocomplete="off" placeholder="请输入设备相位" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">父节点设备ID</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{devParentId}" autocomplete="off" placeholder="请输入父节点设备ID" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">父节点设备类型</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{devParentType}" autocomplete="off" placeholder="请输入父节点设备类型" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">父节点设备显示名称</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{devParentName}" autocomplete="off" placeholder="请输入父节点设备显示名称" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">父节点设备通信地址</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{devParentAddress}" autocomplete="off" placeholder="请输入父节点设备通信地址" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">设备是否存在</label>
+            <div class="layui-input-block">
+                        <input type="text" th:field="*{devExist}" autocomplete="off" placeholder="请输入设备是否存在" class="layui-input">
+            </div>
+        </div>
+
+
+
+
+    <div class="layui-form-item  layui-hide">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="saveBtn" id="saveBtn">保存</button>
+        </div>
+    </div>
+</form>
+
+<script th:replace="common/base::mianJs"></script>
+<script>
+
+    var submitUrl = '[[${#request.servletPath}]]';
+
+    //用于保存所有的上传文件信息
+    var uploadFileMap = new Map();
+
+    layui.use(['form', 'laydate', 'upload','treeSelect'], function () {
+        var form = layui.form
+                , laydate = layui.laydate
+                , upload = layui.upload
+                ,treeSelect = layui.treeSelect
+                , $ = layui.jquery;
+
+
+        //自定义验证规则
+        form.verify({
+                "test" :function(){}
+        });
+
+
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            let index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            let loadIndex = parent.layer.load();
+
+
+            $.post(submitUrl, data.field, function (result) {
+                let r = JSON.parse(result);
+                if (r.code == 200) {
+                    parent.layer.close(index); //再执行关闭
+                    parent.layui.table.reload('searchListTable');
+                }
+                parent.layer.close(loadIndex);
+                parent.layer.msg(r.message);
+            });
+            return false;
+        });
+    });
+
+    //删除附件
+    function delRow(obj,fileInputId, id) {
+        $(obj).parent().remove();
+        let fileSets = new Set(uploadFileMap.get(fileInputId));
+        fileSets.delete(parseInt(id));
+        uploadFileMap.set(fileInputId,fileSets);
+        if (id != undefined) {
+            $.post('/sys/upload/'+id+'/del', function (result) {console.log(result);});
+        }
+    }
+
+</script>
+</body>
+</html>

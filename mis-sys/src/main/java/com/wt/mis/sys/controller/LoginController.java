@@ -28,6 +28,15 @@ public class LoginController {
     SysService  sysService;
 
 
+    @GetMapping("/")
+    public ModelAndView index(){
+        ModelAndView view = new ModelAndView();
+        view.addObject("SYSTEM_TITLE",sysService.getRegisterValue("SYSTEM_TITLE"));
+        view.setViewName("index");
+        return view;
+    }
+
+
     @ApiOperation("进入后台主界面")
     @GetMapping("/main")
     public ModelAndView main(HttpServletRequest request) {
