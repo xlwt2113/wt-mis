@@ -153,5 +153,15 @@ public class AccountController extends BaseController<Account> {
         return ResponseUtils.okJson("修改成功", account);
     }
 
+    @ApiOperation("重置密码")
+    @PostMapping("/reset_pwd")
+    @ResponseBody
+    public String resetPwd(@RequestParam("id") Long userId){
+        Account account = accountRepository.findById(userId).get();
+        account.setPassword(new BCryptPasswordEncoder().encode("888888"));
+        accountRepository.save(account);
+        return ResponseUtils.okJson("密码初始化成功,初始密码为888888",userId);
+    }
+
 
 }

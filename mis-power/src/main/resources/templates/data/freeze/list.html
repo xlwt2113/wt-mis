@@ -16,11 +16,21 @@
                 <form class="layui-form layui-form-pane" id="searchForm">
                     <div style="display: none"><input type="text" name="test" value=""></div>
                     <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <select class="layui-select" name="devType" id="devType" lay-filter="devType" lay-search>
+                                <option value="">请选择设备类型</option>
+                                <each th:each="item:${T(com.wt.mis.sys.util.DictUtils).getDictItems('设备类型')}">
+                                    <option th:value="${item.itemValue}" th:text="${item.itemKey}"></option>
+                                </each>
+                            </select>
+                        </div>
+                        <div class="layui-inline">
+                            <select class="layui-select" name="devId" id="devId" lay-search >
+                                <option value="">请选择设备名称</option>
+                            </select>
+                        </div>
                    <div class="layui-inline">
-                       <input type="text" name="devType" autocomplete="off" class="layui-input" placeholder="设备类型">
-                   </div>
-                   <div class="layui-inline">
-                       <input type="text" name="callTime" autocomplete="off" class="layui-input" placeholder="召测时间">
+                       <input type="text" name="freezeTime" id="freezeTime" autocomplete="off" class="layui-input" placeholder="冻结时间">
                    </div>
                         <div class="layui-inline">
                             <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>搜索</a>
@@ -37,9 +47,7 @@
         <!--顶部工具按钮-->
         <script type="text/html" id="TopTableBar">
             <div class="layui-btn-group">
-                <button class="layui-btn data-add-btn layui-btn-sm" lay-event="add"><i class="layui-icon">&#xe654;</i>添加</button>
-                <button class="layui-btn layui-btn-danger data-delete-btn layui-btn-sm" lay-event="deleteAll"><i class="layui-icon">&#xe640;</i>删除
-                </button>
+
             </div>
         </script>
 
@@ -55,9 +63,6 @@
 <script th:replace="common/base::mianJs"></script>
 <script th:inline="none">
 
-
-    // config.initQueryCondition();
-
     layui.use(['form', 'table','laydate','treeSelect'], function () {
         var $ = layui.jquery,
                 form = layui.form,
@@ -72,36 +77,63 @@
         var edit_page_url = '/data/freeze/edit';
         var view_page_url = '/data/freeze/view';
 
-
-        table.render($.extend(config.searchListTable, {
+        laydate.render({elem: '#freezeTime'});
+        table.render({
             url: list_url,
             //表格列
             cols: [[
-                {type: "checkbox", width: 50, fixed: "left"},
-                {field: 'dev_id', width: 200, title: '设备ID'},
-                {field: 'dev_type', width: 200, title: '设备类型'},
-                {field: 'data_type', width: 200, title: '冻结数据类型'},
-                {field: 'call_time', width: 200, title: '召测时间'},
-                {field: 'freeze_time', width: 200, title: '冻结时间'},
-                {field: 'freeze_data', width: 200, title: '冻结数据'},
-                {title: '操作', width: 220, templet: '#currentTableBar', fixed: "right", align: "center"}
-            ]]
-        }));
+                {field: 'devName', width: 200, title: '设备名称'},
+                {field: 'devType', width: 120, title: '设备类型'},
+                {field: 'freezeTime', width: 200, title: '冻结时间'},
+                {field: 'freezeDataA', width: 100, title: 'A相电压'},
+                {field: 'freezeDataB', width: 100, title: 'B相电压'},
+                {field: 'freezeDataC', width: 100, title: 'C相电压'},
+                {field: 'devParentName', width: 200, title: '上级设备名称'},
+                {field: 'devParentType', width: 120, title: '上级设备类型'},
+                {field: 'transformName', width: 200, title: '所属台区'},
+                {field: 'operationsTeamName', width: 300, title: '所属班组'},
+            ]],
+            method:'post', //设置提交方式为post
+            elem: '#searchListTable',  //默认的查询列表页面中table的ID
+            toolbar: '#TopTableBar',  //顶部工具栏的默认ID
+            height: 'full-140',       //表格高度微调，适应页面
+            //将返回的列表数据格式化成layui的格式
+            parseData: function (res) { //res 即为原始返回的数据
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.message, //解析提示文本
+                    "data": res.data //解析数据列表
+                };
+            },
+            response: {
+                statusCode: 200 //规定成功的状态码，原框架默认：0
+            },
+            page: false
+        });
 
         // 监听搜索操作
         form.on('submit(data-search-btn)', function (data) {
             //执行搜索重载
             table.reload('searchListTable', {
-                page: {
-                    curr: 1  //重新加载后默认为第一页
-                }
-                , where: {
-                "devType": data.field.devType,
-                "callTime": data.field.callTime,
-                 "test" : ""  //为了js不出错而加，
+                where: {
+                    "devType": data.field.devType,
+                    "freezeTime": data.field.freezeTime,
+                    "devId": data.field.devId
                 }
             });
             return false;
+        });
+
+        //监听下拉框选择
+        form.on('select(devType)',function (data) {
+            console.log(data.value);
+            $('#devId').empty();
+            if(data.value == 1){
+                $('#devId').append("<option value='1111'>111111</option>");
+            }else if(data.value == 2){
+                $('#devId').append("<option value='222'>222</option>");
+            }
+            form.render('select');
         });
 
 
@@ -114,8 +146,8 @@
                 page: {curr: 1},
                 where: {
                         "devType": "",
-                        "callTime": "",
-                        "test" : ""
+                        "devId": "",
+                        "freezeTime": ""
                 }
             });
         });

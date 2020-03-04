@@ -2,7 +2,6 @@ package com.wt.mis.dev.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wt.mis.core.entity.BaseEntity;
-import com.wt.mis.core.util.FileUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,7 +13,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "dev_trans_form")
+@Table(name = "dev_transform")
 @EqualsAndHashCode(callSuper = true)
 public class TransForm extends BaseEntity {
 
@@ -63,7 +62,7 @@ public class TransForm extends BaseEntity {
     /**
     * 运维班组
     */
-    @Column(columnDefinition = " varchar(100) COMMENT '运维班组'")
+    @Column(columnDefinition = " int(11) COMMENT '运维班组编号'")
     private Integer operationsTeam;
 
 }

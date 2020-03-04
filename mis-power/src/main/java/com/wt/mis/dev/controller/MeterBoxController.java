@@ -9,12 +9,15 @@ import com.wt.mis.dev.entity.MeterBox;
 import com.wt.mis.dev.repository.MeterBoxRepository;
 import com.wt.mis.sys.entity.Dep;
 import com.wt.mis.sys.repository.DepRespository;
+import com.wt.mis.sys.util.DictUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -52,8 +55,22 @@ public class MeterBoxController extends BaseController<MeterBox> {
         if (StringUtils.isNotEmpty(meterBox.getInstallationLocation())) {
             sql.append(" and t1.installation_location like '%" + meterBox.getInstallationLocation() + "%'");
         }
-        sql.append(" and t2.level like '" + dep.getLevel() + "%' or t1.operations_team is null"  );
+        sql.append(" and (t2.level like '" + dep.getLevel() + "%' or t1.operations_team is null )" );
         return sql.toString();
+    }
+
+    /**
+     * 处理列表页面中要显示的数据内容
+     * @param searchResultlist
+     */
+    @Override
+    protected void dealSearchList(List searchResultlist) {
+        //将字典项中的值替换成显示名称
+        for(Object obj:searchResultlist){
+            HashMap<String,String> map = (HashMap) obj;
+            String key = DictUtils.getDictItemKey("单/三相",String.valueOf(map.get("three_phase")));
+            map.replace("three_phase",key);
+        }
     }
 }
 

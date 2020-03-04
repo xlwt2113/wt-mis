@@ -46,7 +46,7 @@
             <label class="layui-form-label">数据类型</label>
             <div class="layui-input-block">
                         <select class="layui-select" th:field="*{dataType}">
-                            <each th:each="item:${T(com.wt.mis.sys.util.DictUtils).getDictItems('实时数据类型')}">
+                            <each th:each="item:${T(com.wt.mis.sys.util.DictUtils).getDictItems('数据类型')}">
                                 <option th:value="${item.itemValue}" th:text="${item.itemKey}"></option>
                             </each>
                         </select>

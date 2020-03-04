@@ -17,7 +17,7 @@
                     <div style="display: none"><input type="text" name="test" value=""></div>
                     <div class="layui-form-item">
                    <div class="layui-inline">
-                       <input type="text" name="devId" autocomplete="off" class="layui-input" placeholder="设备名称">
+                       <input type="text" name="devId" autocomplete="off" class="layui-input" placeholder="设备ID">
                    </div>
                    <div class="layui-inline">
                        <input type="text" name="devType" autocomplete="off" class="layui-input" placeholder="设备类型">
@@ -66,11 +66,11 @@
                 table = layui.table;
 
         // 默认的操作地址
-        var list_url = '/data/poweroutage/list';
-        var delete_url = '/data/poweroutage/delete';
-        var add_page_url = '/data/poweroutage/add';
-        var edit_page_url = '/data/poweroutage/edit';
-        var view_page_url = '/data/poweroutage/view';
+        var list_url = '/event/poweroutage/list';
+        var delete_url = '/event/poweroutage/delete';
+        var add_page_url = '/event/poweroutage/add';
+        var edit_page_url = '/event/poweroutage/edit';
+        var view_page_url = '/event/poweroutage/view';
 
 
         table.render($.extend(config.searchListTable, {
@@ -78,14 +78,14 @@
             //表格列
             cols: [[
                 {type: "checkbox", width: 50, fixed: "left"},
-                {field: 'dev_name', width: 120, title: '设备名称'},
-                {field: 'dev_type', width: 100, title: '设备类型'},
-                {field: 'occur_time', width: 150, title: '事件发生时间'},
-                {field: 'power_status', width: 150, title: '停电状态'},
-                {field: 'phase_status', width: 150, title: '相序状态'},
-                {field: 'voltage_status_a', width: 150, title: 'A相电压状态'},
-                {field: 'voltage_status_b', width: 150, title: 'B相电压状态'},
-                {field: 'voltage_status_c', width: 150, title: 'C相电压状态'},
+                {field: 'dev_id', width: 200, title: '设备ID'},
+                {field: 'dev_type', width: 200, title: '设备类型'},
+                {field: 'occur_time', width: 200, title: '事件发生时间'},
+                {field: 'power_status', width: 200, title: '停电状态'},
+                {field: 'phase_status', width: 200, title: '相序状态'},
+                {field: 'voltage_statusa', width: 200, title: 'A相电压状态'},
+                {field: 'voltage_statusb', width: 200, title: 'B相电压状态'},
+                {field: 'voltage_statusc', width: 200, title: 'C相电压状态'},
                 {title: '操作', width: 220, templet: '#currentTableBar', fixed: "right", align: "center"}
             ]]
         }));

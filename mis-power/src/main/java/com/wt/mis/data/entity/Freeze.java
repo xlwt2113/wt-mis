@@ -2,7 +2,6 @@ package com.wt.mis.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wt.mis.core.entity.BaseEntity;
-import com.wt.mis.core.util.FileUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -51,6 +50,6 @@ public class Freeze extends BaseEntity {
     * 冻结数据
     */
     @Column(columnDefinition = " double COMMENT '冻结数据'")
-    private double freeze_data;
+    private double freezeData;
 
 }

@@ -1,16 +1,12 @@
 package com.wt.mis.dev.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wt.mis.core.entity.BaseEntity;
-import com.wt.mis.core.util.FileUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.util.Date;
 
 @Data
 @Entity
@@ -66,7 +62,13 @@ public class Meter extends BaseEntity {
     /**
     * 运维班组
     */
-    @Column(columnDefinition = " varchar(100) COMMENT '运维班组'")
+    @Column(columnDefinition = " int(11) COMMENT '运维班组'")
     private Integer operationsTeam;
+
+    /**
+     * 单/三相:单相：1 三相 2
+     */
+    @Column(columnDefinition = " int COMMENT '单/三相'")
+    private Integer threePhase;
 
 }

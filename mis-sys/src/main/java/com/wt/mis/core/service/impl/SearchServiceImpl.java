@@ -7,6 +7,8 @@ import com.wt.mis.core.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class SearchServiceImpl implements SearchService {
 
@@ -21,5 +23,10 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public PageResult findBySql(String sql, int pageNumber, int pageSize) {
         return searchDao.findBySql(sql, pageNumber, pageSize);
+    }
+
+    @Override
+    public List findAllBySql(String sql) {
+        return searchDao.findAllBySql(sql).getContent();
     }
 }

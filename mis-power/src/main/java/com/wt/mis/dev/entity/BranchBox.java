@@ -1,16 +1,12 @@
 package com.wt.mis.dev.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wt.mis.core.entity.BaseEntity;
-import com.wt.mis.core.util.FileUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.util.Date;
 
 @Data
 @Entity
@@ -36,7 +32,7 @@ public class BranchBox extends BaseEntity {
     /**
     * 运维班组编号
     */
-    @Column(columnDefinition = " int COMMENT '运维班组编号'")
+    @Column(columnDefinition = " int(11) COMMENT '运维班组编号'")
     private Integer operationsTeam;
 
 }

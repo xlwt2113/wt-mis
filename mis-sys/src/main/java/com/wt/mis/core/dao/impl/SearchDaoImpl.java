@@ -73,4 +73,22 @@ public class SearchDaoImpl implements SearchDao {
         }
         return p;
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public PageResult findAllBySql(String sql) {
+        PageResult p = new PageResult();
+        try {
+            Query query = entityManager.createNativeQuery(sql);
+            query.unwrap(NativeQueryImpl.class)
+                    .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+            p.setContent(query.getResultList());
+            sql = "select count(*) as cnt from (" + sql + ") as temp";
+            query = entityManager.createNativeQuery(sql);
+            p.setTotalElements(Integer.valueOf(query.getResultList().get(0).toString()));
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return p;
+    }
 }

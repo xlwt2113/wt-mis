@@ -30,6 +30,18 @@
         </div>
 
 
+    <div class="layui-form-item">
+        <label class="layui-form-label">单/三相</label>
+        <div class="layui-input-block">
+            <select class="layui-select" th:field="*{threePhase}">
+                <each th:each="item:${T(com.wt.mis.sys.util.DictUtils).getDictItems('单/三相')}">
+                    <option th:value="${item.itemValue}" th:text="${item.itemKey}"></option>
+                </each>
+            </select>
+        </div>
+    </div>
+
+
         <div class="layui-form-item">
             <label class="layui-form-label">通讯地址</label>
             <div class="layui-input-block">

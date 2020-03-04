@@ -33,4 +33,12 @@ public interface SearchDao {
     PageResult findBySql(String sql, int pageNumber, int pageSize);
 
 
+    /**
+     * 根据sql获取数据对象，list对象为obj
+     * @param sql
+     * @return
+     */
+    PageResult findAllBySql(String sql);
+
+
 }

@@ -1,4 +1,4 @@
-package com.wt.mis.data.entity;
+package com.wt.mis.event.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wt.mis.core.entity.BaseEntity;
@@ -10,12 +10,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "data_power_outage")
+@Table(name = "event_power_outage")
 @EqualsAndHashCode(callSuper = true)
 public class PowerOutage extends BaseEntity {
 
@@ -32,8 +31,8 @@ public class PowerOutage extends BaseEntity {
     /**
     * 事件发生时间
     */
-    @Column(columnDefinition = " datetime COMMENT '事件发生时间'")
-    private LocalDateTime occurTime;
+    @Column(columnDefinition = " varchar(100) COMMENT '事件发生时间'")
+    private String occurTime;
     /**
     * 停电状态
     */
@@ -47,17 +46,17 @@ public class PowerOutage extends BaseEntity {
     /**
     * A相电压状态
     */
-    @Column(columnDefinition = " int COMMENT 'A相电压状态'")
+    @Column(name = "voltage_status_a", columnDefinition = " int COMMENT 'A相电压状态'")
     private Integer voltageStatusA;
     /**
     * B相电压状态
     */
-    @Column(columnDefinition = " int COMMENT 'B相电压状态'")
+    @Column(name = "voltage_status_b",columnDefinition = " int COMMENT 'B相电压状态'")
     private Integer voltageStatusB;
     /**
     * C相电压状态
     */
-    @Column(columnDefinition = " int COMMENT 'C相电压状态'")
+    @Column(name = "voltage_status_c",columnDefinition = " int COMMENT 'C相电压状态'")
     private Integer voltageStatusC;
 
 }

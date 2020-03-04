@@ -45,14 +45,14 @@ public class TransFormController extends BaseController<TransForm> {
         }else{
             dep = depRespository.getOne(Long.valueOf(transForm.getOperationsTeam()));
         }
-        StringBuffer sql = new StringBuffer("select t1.*,t2.name as operations_team_name from dev_trans_form as t1  left join  sys_dep t2 on t1.operations_team = t2.id  where t1.del = 0 ");
+        StringBuffer sql = new StringBuffer("select t1.*,t2.name as operations_team_name from dev_transform as t1  left join  sys_dep t2 on t1.operations_team = t2.id  where t1.del = 0 ");
         if (StringUtils.isNotEmpty(transForm.getTransformName())) {
             sql.append(" and t1.transform_name like '%" + transForm.getTransformName() + "%'");
         }
         if (StringUtils.isNotEmpty(transForm.getTransformNum())) {
             sql.append(" and t1.transform_num like '%" + transForm.getTransformNum() + "%'");
         }
-        sql.append(" and t2.level like '" + dep.getLevel() + "%' or t1.operations_team is null"  );
+        sql.append(" and (t2.level like '" + dep.getLevel() + "%' or t1.operations_team is null )" );
         return sql.toString();
     }
 }

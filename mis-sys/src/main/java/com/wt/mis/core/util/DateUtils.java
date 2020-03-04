@@ -3,6 +3,7 @@ package com.wt.mis.core.util;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,7 +21,9 @@ import java.util.stream.Stream;
 @Slf4j
 public class DateUtils {
 
-    private static final DateTimeFormatter defaultDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final DateTimeFormatter defaultDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter defaultDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter defaultTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     private static final DateTimeFormatter datePathFormatter = DateTimeFormatter.ofPattern("yyyyMM/dd");
     private static final HashMap<DayOfWeek, List<String>> weekMap = new HashMap<>();
 
@@ -66,6 +69,24 @@ public class DateUtils {
 
     public static String parseToChinese(DayOfWeek dayOfWeek, TextStyle style) {
         return dayOfWeek.getDisplayName(style, Locale.CHINESE);
+    }
+
+    public static String dateFormat(Date date){
+        return dateFormat(date,"yyyy-MM-dd");
+    }
+
+    public static String dateTimeFormat(Date date){
+        return dateFormat(date,"yyyy-MM-dd HH:mm:ss");
+    }
+
+    public static String timeFormat(Date date){
+        return dateFormat(date,"HH:mm:ss");
+    }
+
+    public static String dateFormat(Date date,String strFormat){
+        SimpleDateFormat sf = new SimpleDateFormat(strFormat);
+        String str = sf.format(date);
+        return str;
     }
 
     public static String parseToChinese(DayOfWeek dayOfWeek) {

@@ -45,6 +45,7 @@
         <!--表格中操作按钮-->
         <script type="text/html" id="currentTableBar">
             <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="reset">重置密码</a>
             <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="role">分配角色</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">删除</a>
         </script>
@@ -65,6 +66,7 @@
         var add_page_url = '/sys/account/add';
         var edit_page_url = '/sys/account/edit';
         var role_page_url = '/sys/account/role';
+        var reset_pwd_page_url = '/sys/account/reset_pwd';
 
 
         table.render($.extend(config.searchListTable, {
@@ -80,7 +82,7 @@
                 {field: 'statis', width: 120, title: '账号状态', templet:function (d) {
                     return d.status == 0 ? "<span class=\"layui-badge layui-bg-green\">正常</span>" : "<span class=\"layui-badge layui-bg-danger\">禁用</span>";
                     }},
-                {title: '操作', width: 240, templet: '#currentTableBar', fixed: "right", align: "center"}
+                {title: '操作', width: 300, templet: '#currentTableBar', fixed: "right", align: "center"}
             ]]
         }));
 
@@ -145,6 +147,15 @@
                 //==============编辑按钮点击事件============================
                 case "edit":
                     config.edit(obj,edit_page_url);
+                    break;
+                //==============重置密码按钮事件============================
+                case "reset":
+                    layer.confirm('真的要初始化该账号的密码吗？',{icon:3}, function (index) {
+                        $.post(reset_pwd_page_url, { id: obj.data.id},function (data) {
+                            let r = JSON.parse(data);
+                            layer.msg(r.message);
+                        });
+                    });
                     break;
             }
         }

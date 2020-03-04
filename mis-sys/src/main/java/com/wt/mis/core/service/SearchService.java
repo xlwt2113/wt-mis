@@ -3,6 +3,8 @@ package com.wt.mis.core.service;
 import com.wt.mis.core.dao.PageResult;
 import com.wt.mis.core.entity.BaseEntity;
 
+import java.util.List;
+
 public interface SearchService {
 
 
@@ -26,4 +28,12 @@ public interface SearchService {
      * @return
      */
     PageResult findBySql(String sql, int pageNumber, int pageSize);
+
+    /**
+     * 根据sql获取对象
+     * @param sql
+     * @return
+     */
+    List findAllBySql(String sql);
+
 }

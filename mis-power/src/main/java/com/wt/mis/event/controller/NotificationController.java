@@ -3,7 +3,6 @@ package com.wt.mis.event.controller;
 
 import com.wt.mis.core.controller.BaseController;
 import com.wt.mis.core.repository.BaseRepository;
-import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.event.entity.Notification;
 import com.wt.mis.event.repository.NotificationRepository;
 import com.wt.mis.sys.util.DictUtils;
@@ -51,13 +50,13 @@ public class NotificationController extends BaseController<Notification> {
         for (Object obj : searchResultlist) {
             HashMap<String, String> map = (HashMap) obj;
             String key = "";
-            key = DictUtils.getDictItemKey("设备类型", map.get("dev_type"));
+            key = DictUtils.getDictItemKey("设备类型", String.valueOf(map.get("dev_type")));
             map.replace("dev_type", key);
-            key = DictUtils.getDictItemKey("事件类型", map.get("event_type"));
+            key = DictUtils.getDictItemKey("事件类型", String.valueOf(map.get("event_type")));
             map.replace("event_type", key);
-            key = DictUtils.getDictItemKey("事件状态", map.get("event_status"));
+            key = DictUtils.getDictItemKey("事件状态", String.valueOf(map.get("event_status")));
             map.replace("event_status", key);
-            key = DictUtils.getDictItemKey("事件接收处理方", map.get("event_receiver"));
+            key = DictUtils.getDictItemKey("事件接收处理方", String.valueOf(map.get("event_receiver")));
             map.replace("event_receiver", key);
         }
     }

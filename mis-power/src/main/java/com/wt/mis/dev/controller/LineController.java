@@ -8,9 +8,7 @@ import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.dev.entity.Line;
 import com.wt.mis.dev.repository.LineRepository;
 import com.wt.mis.sys.entity.Dep;
-import com.wt.mis.sys.entity.DictItem;
 import com.wt.mis.sys.repository.DepRespository;
-import com.wt.mis.sys.service.SysService;
 import com.wt.mis.sys.util.DictUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +56,7 @@ public class LineController extends BaseController<Line> {
         if (StringUtils.isNotEmpty(line.getLineNum())) {
             sql.append(" and t1.line_num like '%" + line.getLineNum() + "%'");
         }
-        sql.append(" and t2.level like '" + dep.getLevel() + "%' or t1.operations_team is null"  );
+        sql.append(" and (t2.level like '" + dep.getLevel() + "%' or t1.operations_team is null )" );
         return sql.toString();
     }
 

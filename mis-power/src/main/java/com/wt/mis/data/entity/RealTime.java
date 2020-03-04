@@ -14,9 +14,9 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "data_rea_time")
+@Table(name = "data_real_time")
 @EqualsAndHashCode(callSuper = true)
-public class ReaTime extends BaseEntity {
+public class RealTime extends BaseEntity {
 
     /**
     * 设备ID
