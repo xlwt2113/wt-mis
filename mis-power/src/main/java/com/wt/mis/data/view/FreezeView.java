@@ -9,6 +9,7 @@ public class FreezeView {
 
     private Date callTime;
     private Date freezeTime;
+    private String freezeTimeStr;
     private String devType;
     private String devName;
     private String devParentType;

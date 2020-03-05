@@ -25,7 +25,7 @@
                             </select>
                         </div>
                         <div class="layui-inline">
-                            <select class="layui-select" name="devId" id="devId" lay-search >
+                            <select class="layui-select" name="devId" id="devId" lay-filter="devId" lay-search >
                                 <option value="">请选择设备名称</option>
                             </select>
                         </div>
@@ -36,7 +36,10 @@
                             <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>搜索</a>
                         </div>
                         <div class="layui-inline">
-                            <a class="layui-btn layui-btn-warm data-reset-btn" lay-button=""><i class="layui-icon">&#xe666;</i>重置</a>
+                            <a class="layui-btn layui-btn-warm data-reset-btn" lay-button="" id="restBtn"><i class="layui-icon">&#xe666;</i>重置</a>
+                        </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-normal" lay-button="" id="showEcharBtn"><i class="layui-icon">&#xe62c;</i>图表</a>
                         </div>
                     </div>
                 </form>
@@ -63,6 +66,12 @@
 <script th:replace="common/base::mianJs"></script>
 <script th:inline="none">
 
+    //统计图的数据
+    var chartTimes = [] ;
+    var chartLineA = [] ;
+    var chartLineB = [] ;
+    var chartLineC = [] ;
+
     layui.use(['form', 'table','laydate','treeSelect'], function () {
         var $ = layui.jquery,
                 form = layui.form,
@@ -75,7 +84,7 @@
         var delete_url = '/data/freeze/delete';
         var add_page_url = '/data/freeze/add';
         var edit_page_url = '/data/freeze/edit';
-        var view_page_url = '/data/freeze/view';
+        var chart_page_url = '/data/freeze/chart';
 
         laydate.render({elem: '#freezeTime'});
         table.render({
@@ -108,7 +117,22 @@
             response: {
                 statusCode: 200 //规定成功的状态码，原框架默认：0
             },
-            page: false
+            page: false,
+            done: function(res, curr, count){
+                chartTimes = [] ;
+                chartLineA = [] ;
+                chartLineB = [] ;
+                chartLineC = [] ;
+                if(res.data != null){
+                    console.log(res.data.length);
+                    for(let i = 0 ;i<res.data.length;i++){
+                        chartTimes[i] = res.data[i].freezeTimeStr;
+                        chartLineA[i] = res.data[i].freezeDataA;
+                        chartLineB[i] = res.data[i].freezeDataB;
+                        chartLineC[i] = res.data[i].freezeDataC;
+                    }
+                }
+            }
         });
 
         // 监听搜索操作
@@ -126,19 +150,21 @@
 
         //监听下拉框选择
         form.on('select(devType)',function (data) {
-            console.log(data.value);
             $('#devId').empty();
-            if(data.value == 1){
-                $('#devId').append("<option value='1111'>111111</option>");
-            }else if(data.value == 2){
-                $('#devId').append("<option value='222'>222</option>");
-            }
-            form.render('select');
+            $.getJSON("/dev/api/dev_list?devType="+data.value,function (json) {
+                let html = "<option value=''>请选择设备名称</option>";
+                for(var i=0;i<json.length;i++){
+                    console.log(json[i].name);
+                    html = html + "<option value='"+json[i].value+"'>"+json[i].name+"</option>";
+                }
+                $('#devId').append(html);
+                form.render();
+            });
         });
 
 
         //重置按钮操作
-        $(".data-reset-btn").on('click', function () {
+        $("#restBtn").on('click', function () {
             //清空表单
             $("#searchForm")[0].reset();
             //重新加载
@@ -151,6 +177,24 @@
                 }
             });
         });
+
+        //查看统计图
+        $("#showEcharBtn").on('click',function () {
+            layer.open({
+                type: 2 //iframe载入
+                ,content:chart_page_url
+                , anim: 2 //载入方式
+                ,area:['100%','100%']
+                , title: '冻结数据统计表' //窗口标题
+                , btn: ['关闭']
+                , btnAlign: 'r' //按钮靠右
+                , yes: function (index, layerObj) {
+                    layer.close(index);
+                }
+            });
+        });
+
+
 
         //监听表格右侧的操作按钮
         table.on('tool(searchListTable)', function (obj) {

@@ -87,6 +87,7 @@ public class FreezeController{
             FreezeView view = new FreezeView();
             String freezeTimeStr = DateUtils.dateTimeFormat((Date)map.get("freeze_time"));
             view.setFreezeTime((Date)map.get("freeze_time"));
+            view.setFreezeTimeStr(DateUtils.timeFormat(view.getFreezeTime()));
             if(rowMap.get(freezeTimeStr)!=null){
                 view = rowMap.get(freezeTimeStr);
             }
@@ -128,5 +129,11 @@ public class FreezeController{
             }
         });
         return result;
+    }
+
+    @GetMapping("/chart")
+    public ModelAndView openChartPage(){
+        ModelAndView mv = new ModelAndView(this.getUrlPrefix() + "/view");
+        return mv;
     }
 }
