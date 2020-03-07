@@ -63,7 +63,7 @@ public class FreezeController{
             sql.append(" LEFT JOIN dev_transform t3 on t3.id = t2.transform_id where t1.del = 0");
             sql.append(" and t1.dev_type = "+request.getParameter("devType")+" and t1.dev_id = " + request.getParameter("devId"));
             sql.append(" and DATE_FORMAT(t1.freeze_time,'%Y-%m-%d') = '"+ request.getParameter("freezeTime") +"'");
-            sql.append(" order by  t1.call_time asc ");
+            sql.append(" order by  t1.freeze_time asc ");
             List list = searchService.findAllBySql(sql.toString());
             DevModel dev = devService.getDevModel(Long.parseLong(devId),Integer.parseInt(devType));
             list = this.dealSearchList(list,dev);
@@ -91,13 +91,13 @@ public class FreezeController{
             if(rowMap.get(freezeTimeStr)!=null){
                 view = rowMap.get(freezeTimeStr);
             }
-            if("1".equals(String.valueOf(map.get("dev_type")))){
+            if("1".equals(String.valueOf(map.get("data_type")))){
                 view.setFreezeDataA(Double.parseDouble(String.valueOf(map.get("freeze_data"))));
             }
-            if("2".equals(String.valueOf(map.get("dev_type")))){
+            if("2".equals(String.valueOf(map.get("data_type")))){
                 view.setFreezeDataB(Double.parseDouble(String.valueOf(map.get("freeze_data"))));
             }
-            if("3".equals(String.valueOf(map.get("dev_type")))){
+            if("3".equals(String.valueOf(map.get("data_type")))){
                 view.setFreezeDataC(Double.parseDouble(String.valueOf(map.get("freeze_data"))));
             }
             view.setCallTime((Date)map.get("call_time"));

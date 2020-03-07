@@ -82,33 +82,23 @@ public class DevServiceImpl implements DevService{
     }
 
     @Override
-    public List<SelectOption> getDevListForSelect(int devType, Long depId) {
-        String sql = "";
-        if(devType == 1){
-            sql = "select t1.id,t1.line_name as name from dev_line as t1  left join  sys_dep t2 on t1.operations_team = t2.id  where t1.del = 0";
-        }else if(devType == 2){
-            sql = "select t1.id,t1.transform_name as name  from dev_transform as t1  left join  sys_dep t2 on t1.operations_team = t2.id  where t1.del = 0 ";
-        }else if(devType == 3){
-            sql = "select t1.id,t1.branch_box_name as name  from dev_branch_box as t1 left join  sys_dep t2 on t1.operations_team = t2.id  where t1.del = 0 ";
-        }else if(devType == 4){
-            sql = "select t1.id,t1.meter_box_name as name  from dev_meter_box as t1 left join  sys_dep t2 on t1.operations_team = t2.id  where t1.del = 0  and t1.three_phase = 1";
-        }else if(devType == 5){
-            sql = "select t1.id,t1.meter_box_name as name  from dev_meter_box as t1 left join  sys_dep t2 on t1.operations_team = t2.id  where t1.del = 0 and t1.three_phase = 2";
-        }else if(devType == 6){
-            sql = "select t1.id,t1.meter_barcode as name  from dev_meter as t1  left join  sys_dep t2 on t1.operations_team = t2.id  where t1.del = 0 and t1.three_phase = 1";
-        }else if(devType == 7){
-            sql = "select t1.id,t1.meter_barcode as name  from dev_meter as t1  left join  sys_dep t2 on t1.operations_team = t2.id  where t1.del = 0 and t1.three_phase = 2";
+    public List<SelectOption> getDevListForSelect(int devType,Long transFormId, String depLevel) {
+        String sql = "SELECT t1.* FROM dev_topology t1 LEFT JOIN dev_line t2 ON t1.dev_id = t2.id left join sys_dep t3 on t2.operations_team = t3.id WHERE t1.del = 0 ";
+        sql = sql + " and t1.dev_type = "+devType ;
+
+        if(StringUtils.isNotEmpty(depLevel)){
+            sql = sql + " and t3.level like '" + depLevel + "%'";
         }
-        if(depId != null){
-            sql = sql + " and (t2.level like '" + depId + "%' or t1.operations_team is null )";
+        if(transFormId != null){
+            sql = sql + " and t1.transform_id = "+transFormId;
         }
         List list = searchDao.findAllBySql(sql).getContent();
         List<SelectOption> result = new ArrayList<SelectOption>();
         for(Object obj:list){
             HashMap<String, Object> map = (HashMap) obj;
             SelectOption so = new SelectOption();
-            so.setName(String.valueOf(map.get("name")));
-            so.setValue(String.valueOf(map.get("id")));
+            so.setName(String.valueOf(map.get("dev_name")));
+            so.setValue(String.valueOf(map.get("dev_id")));
             result.add(so);
         }
         return result;

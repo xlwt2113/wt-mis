@@ -1,74 +1,157 @@
 
 package com.wt.mis.event.controller;
 
-import com.wt.mis.core.controller.BaseController;
-import com.wt.mis.core.repository.BaseRepository;
+import com.wt.mis.core.service.SearchService;
+import com.wt.mis.core.util.DateUtils;
+import com.wt.mis.core.util.ResponseUtils;
 import com.wt.mis.core.util.StringUtils;
-import com.wt.mis.event.entity.PowerOutage;
+import com.wt.mis.data.entity.Freeze;
+import com.wt.mis.dev.service.DevService;
 import com.wt.mis.event.repository.PowerOutageRepository;
+import com.wt.mis.event.view.PowerOutageSumView;
+import com.wt.mis.event.view.PowerOutageView;
 import com.wt.mis.sys.util.DictUtils;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Controller
 @RequestMapping("/event/poweroutage")
-public class PowerOutageController extends BaseController<PowerOutage> {
+public class PowerOutageController{
 
     @Autowired
     PowerOutageRepository powerOutageRepository;
 
-    @Override
-    public BaseRepository<PowerOutage, Long> repository() {
-        return powerOutageRepository;
-    }
+    @Autowired
+    SearchService searchService;
 
-    @Override
+    @Autowired
+    DevService devService;
+
     protected String getUrlPrefix() {
         return "event/poweroutage";
     }
 
-    @Override
-    protected String generateSearchSql(PowerOutage powerOutage, HttpServletRequest request) {
-        StringBuffer sql = new StringBuffer("select t1.* from event_power_outage as t1  where t1.del = 0 ");
-        if (StringUtils.isNotEmpty(powerOutage.getDevId())) {
-            sql.append(" and t1.dev_id like '%" + powerOutage.getDevId() + "%'");
-        }
-        if (StringUtils.isNotEmpty(powerOutage.getDevType())) {
-            sql.append(" and t1.dev_type like '%" + powerOutage.getDevType() + "%'");
-        }
-        return sql.toString();
+    @GetMapping("/list")
+    protected ModelAndView listPage(Freeze freeze) {
+        ModelAndView mv = new ModelAndView(this.getUrlPrefix() + "/list");
+        freeze.setFreezeTime(new Date());
+        mv.addObject("search", freeze);
+        return mv;
     }
 
+    @ApiOperation("根据对象的属性查询所有对象")
+    @PostMapping("/list")
+    @ResponseBody
+    public ResponseEntity list(HttpServletRequest request) {
+        String devType = request.getParameter("devType");
+        String devId = request.getParameter("devId");
+        String occurTimeBegin = request.getParameter("occurTimeBegin");
+        String occurTimeEnd = request.getParameter("occurTimeEnd");
+        String transFormId = request.getParameter("transFormId");
+        if(StringUtils.isEmpty(devType)||StringUtils.isEmpty(transFormId)){
+            Map<String,List> resultMap = new HashMap<>();
+            resultMap.put("logList",null);
+            resultMap.put("sumList",null);
+            //设置map，避免前台页面js错误
+            return ResponseUtils.ok("没有参数，不查询数据",resultMap);
+        }else{
+            StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from event_power_outage t1  ");
+            sql.append(" LEFT JOIN dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
+            sql.append(" LEFT JOIN dev_transform t3 on t3.id = t2.transform_id where t1.del = 0 ");
+            sql.append(" and t1.dev_type = " + devType);
+            sql.append(" and t2.transform_id = " + transFormId);
+            if(StringUtils.isNotEmpty(devId)){
+                sql.append(" and t1.dev_id = " + devId);
+            }
+            if(StringUtils.isNotEmpty(occurTimeBegin)){
+                sql.append(" and DATE_FORMAT(t1.occur_time,'%Y-%m-%d') >= '"+ occurTimeBegin +"'");
+            }
+            if(StringUtils.isNotEmpty(occurTimeEnd)){
+                sql.append(" and DATE_FORMAT(t1.occur_time,'%Y-%m-%d') <= '"+ occurTimeEnd +"'");
+            }
+            sql.append(" order by  t1.occur_time asc ");
+            List list = searchService.findAllBySql(sql.toString());
+            Map<String,List> resultMap = this.dealSearchList(list);
+            return ResponseUtils.ok("获取到数据", resultMap);
+        }
+    }
+
+    @ApiOperation("根据当前正在停电的设备")
+    @PostMapping("/current_power_list")
+    @ResponseBody
+    public ResponseEntity current_power_list(HttpServletRequest request) {
+        StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from event_power_outage t1  ");
+        sql.append(" LEFT JOIN dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
+        sql.append(" LEFT JOIN dev_transform t3 on t3.id = t2.transform_id where t1.del = 0 and t1.power_status = 1 and t1.history = 0");
+        sql.append(" order by  t1.occur_time asc ");
+        List list = searchService.findAllBySql(sql.toString());
+        Map<String,List> resultMap = this.dealSearchList(list);
+        return ResponseUtils.ok("获取到数据", resultMap.get("logList"));
+    }
+
+
     /**
-     * 处理列表页面中要显示的数据内容
+     * 处理列表页面中要显示的数据内容,将行转列显示
      *
      * @param searchResultlist
      */
-    @Override
-    protected void dealSearchList(List searchResultlist) {
+    private Map<String,List> dealSearchList(List searchResultlist) {
+        Map<String,List> resultMap = new HashMap<>();
+        Map<String,PowerOutageSumView> sumMap = new HashMap<>();
+        List result = new ArrayList();
+        List resultSum = new ArrayList();
         //将字典项中的值替换成显示名称
         for (Object obj : searchResultlist) {
-            HashMap<String, String> map = (HashMap) obj;
-            String key = "";
-            key = DictUtils.getDictItemKey("设备类型", String.valueOf(map.get("dev_type")));
-            map.replace("dev_type", key);
-            key = DictUtils.getDictItemKey("停电状态", String.valueOf(map.get("power_status")));
-            map.replace("power_status", key);
-            key = DictUtils.getDictItemKey("相序状态", String.valueOf(map.get("phase_status")));
-            map.replace("phase_status", key);
-            key = DictUtils.getDictItemKey("A相电压状态", String.valueOf(map.get("voltage_status_a")));
-            map.replace("voltage_status_a", key);
-            key = DictUtils.getDictItemKey("B相电压状态", String.valueOf(map.get("voltage_status_b")));
-            map.replace("voltage_status_b", key);
-            key = DictUtils.getDictItemKey("C相电压状态", String.valueOf(map.get("voltage_status_c")));
-            map.replace("voltage_status_c", key);
+            HashMap<String, Object> map = (HashMap) obj;
+            PowerOutageView view = new PowerOutageView();
+            view.setOccurTime((Date) map.get("occur_time"));
+            view.setOccurTimeStr(DateUtils.timeFormat(view.getOccurTime()));
+            view.setDevType(DictUtils.getDictItemKey("设备类型", String.valueOf(map.get("dev_type"))));
+            view.setDevParentType(DictUtils.getDictItemKey("设备类型", String.valueOf(map.get("dev_parent_type"))));
+            view.setPowerStatus(DictUtils.getDictItemKey("停电/相序状态", String.valueOf(map.get("power_status"))));
+            view.setPhaseStatus(DictUtils.getDictItemKey("停电/相序状态", String.valueOf(map.get("phase_status"))));
+            view.setVoltageStatusA(DictUtils.getDictItemKey("电压状态", String.valueOf(map.get("voltage_status_a"))));
+            view.setVoltageStatusB(DictUtils.getDictItemKey("电压状态", String.valueOf(map.get("voltage_status_b"))));
+            view.setVoltageStatusC(DictUtils.getDictItemKey("电压状态", String.valueOf(map.get("voltage_status_c"))));
+            view.setDevName(String.valueOf(map.get("dev_name")));
+            view.setDevParentName(String.valueOf(map.get("dev_parent_name")));
+            view.setTransformName(String.valueOf(map.get("transform_name")));
+            result.add(view);
+
+            PowerOutageSumView sumView = new PowerOutageSumView();
+            if(sumMap.containsKey(String.valueOf(map.get("dev_id")))){
+                sumView = (PowerOutageSumView)sumMap.get(String.valueOf(map.get("dev_id")));
+                sumView.setCnt(sumView.getCnt()+1);
+            }else{
+                sumView.setDevName(view.getDevName());
+                sumView.setDevType(view.getDevType());
+                sumView.setCnt(1);
+            }
+            sumMap.put(String.valueOf(map.get("dev_id")),sumView);
         }
+
+        Iterator it = sumMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry entry = (Map.Entry) it.next();
+            resultSum.add(entry.getValue());
+        }
+
+        resultMap.put("logList",result);
+        resultMap.put("sumList",resultSum);
+
+        return resultMap;
     }
+
 }

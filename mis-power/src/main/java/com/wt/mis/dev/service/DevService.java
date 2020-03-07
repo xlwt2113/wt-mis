@@ -17,10 +17,11 @@ public interface DevService {
 
     /**
      * 根据设备类型获取该类型下的所有设备,根据设备类型，list中为相应的类型的设备对象
-     * @param devType
-     * @param depId
+     * @param devType 设备类型
+     * @param transFormId 台区Id
+     * @param depLevel 归属部门层级
      * @return
      */
-    List<SelectOption> getDevListForSelect(int devType, Long depId);
+    List<SelectOption> getDevListForSelect(int devType,Long transFormId, String depLevel);
 
 }

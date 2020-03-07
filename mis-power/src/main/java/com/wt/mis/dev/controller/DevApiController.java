@@ -1,7 +1,11 @@
 package com.wt.mis.dev.controller;
 
+import com.wt.mis.core.util.LoginUser;
+import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.dev.service.DevService;
 import com.wt.mis.dev.view.SelectOption;
+import com.wt.mis.sys.entity.Dep;
+import com.wt.mis.sys.repository.DepRespository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,12 +24,20 @@ public class DevApiController {
     @Autowired
     DevService devService;
 
+    @Autowired
+    DepRespository depRespository;
+
+
     @ResponseBody
     @GetMapping("dev_list")
     public List<SelectOption> getDevList(HttpServletRequest request){
         int devType = Integer.parseInt(request.getParameter("devType").trim());
-        //后期如果需要按照人员结构过滤显示设备的话，增加参数
-        List<SelectOption> list  = devService.getDevListForSelect(devType,null);
+        Long transFormId = null;
+        if(StringUtils.isNotEmpty(request.getParameter("transFormId"))){
+            transFormId = Long.parseLong(request.getParameter("transFormId"));
+        }
+        Dep dep = depRespository.getOne(LoginUser.getCurrentUser().getDepId());
+        List<SelectOption> list  = devService.getDevListForSelect(devType,transFormId, dep.getLevel());
         return list;
     }
 

@@ -17,6 +17,9 @@
                     <div style="display: none"><input type="text" name="test" value=""></div>
                     <div class="layui-form-item">
                         <div class="layui-inline">
+                            <select class="layui-select" name="transFormId" id="transFormId" lay-filter="transFormId" lay-search></select>
+                        </div>
+                        <div class="layui-inline">
                             <select class="layui-select" name="devType" id="devType" lay-filter="devType" lay-search>
                                 <option value="">请选择设备类型</option>
                                 <each th:each="item:${T(com.wt.mis.sys.util.DictUtils).getDictItems('设备类型')}">
@@ -33,13 +36,13 @@
                        <input type="text" name="freezeTime" id="freezeTime" autocomplete="off" class="layui-input" placeholder="冻结时间">
                    </div>
                         <div class="layui-inline">
-                            <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>搜索</a>
+                            <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>查询</a>
                         </div>
                         <div class="layui-inline">
                             <a class="layui-btn layui-btn-warm data-reset-btn" lay-button="" id="restBtn"><i class="layui-icon">&#xe666;</i>重置</a>
                         </div>
                         <div class="layui-inline">
-                            <a class="layui-btn layui-btn-normal" lay-button="" id="showEcharBtn"><i class="layui-icon">&#xe62c;</i>图表</a>
+                            <a class="layui-btn layui-btn-normal" lay-button="" id="showEcharBtn"><i class="layui-icon">&#xe62c;</i>冻结数据统计表</a>
                         </div>
                     </div>
                 </form>
@@ -87,25 +90,21 @@
         var chart_page_url = '/data/freeze/chart';
 
         laydate.render({elem: '#freezeTime'});
-        table.render({
+        table.render($.extend(config.searchListTable, {
             url: list_url,
             //表格列
             cols: [[
                 {field: 'devName', width: 200, title: '设备名称'},
                 {field: 'devType', width: 120, title: '设备类型'},
-                {field: 'freezeTime', width: 200, title: '冻结时间'},
+                {field: 'freezeTime', width: 200, title: '冻结时间',sort:true},
                 {field: 'freezeDataA', width: 100, title: 'A相电压'},
                 {field: 'freezeDataB', width: 100, title: 'B相电压'},
                 {field: 'freezeDataC', width: 100, title: 'C相电压'},
                 {field: 'devParentName', width: 200, title: '上级设备名称'},
                 {field: 'devParentType', width: 120, title: '上级设备类型'},
                 {field: 'transformName', width: 200, title: '所属台区'},
-                {field: 'operationsTeamName', width: 300, title: '所属班组'},
+                {field: 'operationsTeamName', width: 300, title: '所属班组'}
             ]],
-            method:'post', //设置提交方式为post
-            elem: '#searchListTable',  //默认的查询列表页面中table的ID
-            toolbar: '#TopTableBar',  //顶部工具栏的默认ID
-            height: 'full-140',       //表格高度微调，适应页面
             //将返回的列表数据格式化成layui的格式
             parseData: function (res) { //res 即为原始返回的数据
                 return {
@@ -114,11 +113,9 @@
                     "data": res.data //解析数据列表
                 };
             },
-            response: {
-                statusCode: 200 //规定成功的状态码，原框架默认：0
-            },
             page: false,
             done: function(res, curr, count){
+                //组合用于统计图展示的数据
                 chartTimes = [] ;
                 chartLineA = [] ;
                 chartLineB = [] ;
@@ -133,33 +130,44 @@
                     }
                 }
             }
-        });
+        }));
 
         // 监听搜索操作
         form.on('submit(data-search-btn)', function (data) {
-            //执行搜索重载
-            table.reload('searchListTable', {
-                where: {
-                    "devType": data.field.devType,
-                    "freezeTime": data.field.freezeTime,
-                    "devId": data.field.devId
-                }
-            });
-            return false;
+            if(data.field.devType==''||data.field.devId==''||data.field.freezeTime == ''){
+                layer.alert("请选择所有查询条件后再点击查询！",{icon: 2});
+                return false;
+            }else{
+                //执行搜索重载
+                table.reload('searchListTable', {
+                    where: {
+                        "devType": data.field.devType,
+                        "freezeTime": data.field.freezeTime,
+                        "devId": data.field.devId
+                    }
+                });
+                return false;
+            }
         });
 
-        //监听下拉框选择
+        //监听设备类型下拉框选择
         form.on('select(devType)',function (data) {
-            $('#devId').empty();
-            $.getJSON("/dev/api/dev_list?devType="+data.value,function (json) {
-                let html = "<option value=''>请选择设备名称</option>";
-                for(var i=0;i<json.length;i++){
-                    console.log(json[i].name);
-                    html = html + "<option value='"+json[i].value+"'>"+json[i].name+"</option>";
-                }
-                $('#devId').append(html);
-                form.render();
-            });
+            let devType = data.value;
+            let transFormId = $('#transFormId').val();
+            console.log(devType + "====" + transFormId);
+            if(devType!="" && transFormId !=""){
+                getDevListForSelect(devType,transFormId);
+            }
+        });
+
+        //监听台区类型下拉框选择
+        form.on('select(transFormId)',function (data) {
+            let devType = $('#devType').val();
+            let transFormId = data.value;
+            console.log(devType + "====" + transFormId);
+            if(devType!="" && transFormId !=""){
+                getDevListForSelect(devType,transFormId);
+            }
         });
 
 
@@ -169,7 +177,7 @@
             $("#searchForm")[0].reset();
             //重新加载
             table.reload('searchListTable',{
-                page: {curr: 1},
+                page: false,
                 where: {
                         "devType": "",
                         "devId": "",
@@ -184,7 +192,7 @@
                 type: 2 //iframe载入
                 ,content:chart_page_url
                 , anim: 2 //载入方式
-                ,area:['100%','100%']
+                , area:['100%','100%']
                 , title: '冻结数据统计表' //窗口标题
                 , btn: ['关闭']
                 , btnAlign: 'r' //按钮靠右
@@ -194,43 +202,29 @@
             });
         });
 
-
-
-        //监听表格右侧的操作按钮
-        table.on('tool(searchListTable)', function (obj) {
-            event(obj);
-        });
-
-        //监听表格工具栏操作按钮
-        table.on('toolbar(searchListTable)', function (obj) {
-            event(obj);
-        });
-
-        //各种事件处理
-        function event(obj) {
-            var data = obj.data;
-            switch (obj.event) {
-                    //==============勾选后删除按钮事件============================
-                case "deleteAll":
-                    config.deleteAll(table,delete_url);
-                    break;
-                    //==============添加按钮点击事件============================
-                case "add":
-                    config.add(add_page_url);
-                    break;
-                    //==============查看按钮点击事件============================
-                case "view":
-                    config.view(obj,view_page_url);
-                    break;
-                    //==============删除单行按钮事件============================
-                case "delete":
-                    config.delete(obj,delete_url);
-                    break;
-                    //==============编辑按钮点击事件============================
-                case "edit":
-                    config.edit(obj,edit_page_url);
-                    break;
+        $.getJSON("/dev/api/dev_list?devType=2",function (json) {
+            let html = '<option value="">请选择台区</option>';
+            for(var i=0;i<json.length;i++){
+                html = html + "<option value='"+json[i].value+"'>"+json[i].name+"</option>";
             }
+            $('#transFormId').append(html);
+            form.render();
+        });
+
+
+
+
+        function getDevListForSelect(devType,transFormId) {
+            $('#devId').empty();
+            $.getJSON("/dev/api/dev_list?transFormId="+transFormId+"&devType="+devType,function (json) {
+                let html = "<option value=''>请选择设备名称</option>";
+                for(var i=0;i<json.length;i++){
+                    // console.log(json[i].name);
+                    html = html + "<option value='"+json[i].value+"'>"+json[i].name+"</option>";
+                }
+                $('#devId').append(html);
+                form.render();
+            });
         }
     });
 </script>

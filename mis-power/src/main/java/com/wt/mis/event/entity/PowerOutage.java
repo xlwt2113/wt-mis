@@ -1,16 +1,12 @@
 package com.wt.mis.event.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wt.mis.core.entity.BaseEntity;
-import com.wt.mis.core.util.FileUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.util.Date;
 
 @Data
 @Entity
@@ -58,5 +54,10 @@ public class PowerOutage extends BaseEntity {
     */
     @Column(name = "voltage_status_c",columnDefinition = " int COMMENT 'C相电压状态'")
     private Integer voltageStatusC;
+    /**
+     * 是否是历史记录
+     */
+    @Column(columnDefinition = " int COMMENT '是否是历史记录，0为最新记录，1为历史记录'")
+    private int history;
 
 }

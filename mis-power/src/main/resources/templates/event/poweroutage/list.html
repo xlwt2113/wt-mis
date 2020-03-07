@@ -16,14 +16,37 @@
                 <form class="layui-form layui-form-pane" id="searchForm">
                     <div style="display: none"><input type="text" name="test" value=""></div>
                     <div class="layui-form-item">
-                   <div class="layui-inline">
-                       <input type="text" name="devId" autocomplete="off" class="layui-input" placeholder="设备ID">
-                   </div>
-                   <div class="layui-inline">
-                       <input type="text" name="devType" autocomplete="off" class="layui-input" placeholder="设备类型">
-                   </div>
                         <div class="layui-inline">
-                            <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>搜索</a>
+                            <select class="layui-select" name="transFormId" id="transFormId" lay-filter="transFormId" lay-search></select>
+                        </div>
+                        <div class="layui-inline">
+                            <select class="layui-select" name="devType" id="devType" lay-filter="devType" lay-search>
+                                <option value="">请选择设备类型</option>
+                                <each th:each="item:${T(com.wt.mis.sys.util.DictUtils).getDictItems('设备类型')}">
+                                    <option th:value="${item.itemValue}" th:text="${item.itemKey}"></option>
+                                </each>
+                            </select>
+                        </div>
+                        <div class="layui-inline">
+                            <select class="layui-select" name="devId" id="devId" lay-filter="devId" lay-search >
+                                <option value="">请选择设备名称</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline">
+                            <div class="layui-input-inline" style="width: 110px;">
+                            <input type="text" name="occurTimeBegin" id="occurTimeBegin" autocomplete="off" class="layui-input"
+                                   placeholder="报警日期开始">
+                            </div>
+                            <div class="layui-form-mid">-</div>
+                            <div class="layui-input-inline" style="width: 110px;">
+                                    <input type="text" name="occurTimeEnd" id="occurTimeEnd" autocomplete="off" class="layui-input"
+                                           placeholder="报警日期结束">
+                            </div>
+                        </div>
+
+
+                        <div class="layui-inline">
+                            <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>查询</a>
                         </div>
                         <div class="layui-inline">
                             <a class="layui-btn layui-btn-warm data-reset-btn" lay-button=""><i class="layui-icon">&#xe666;</i>重置</a>
@@ -32,23 +55,40 @@
                 </form>
             </div>
         </fieldset>
-        <table class="layui-hide" id="searchListTable" lay-filter="searchListTable"></table>
 
-        <!--顶部工具按钮-->
-        <script type="text/html" id="TopTableBar">
-            <div class="layui-btn-group">
-                <button class="layui-btn data-add-btn layui-btn-sm" lay-event="add"><i class="layui-icon">&#xe654;</i>添加</button>
-                <button class="layui-btn layui-btn-danger data-delete-btn layui-btn-sm" lay-event="deleteAll"><i class="layui-icon">&#xe640;</i>删除
-                </button>
+        <div style="padding: 20px; background-color: #F2F2F2;">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md9">
+                    <div class="layui-card">
+                        <div class="layui-card-header"><i class="fa fa-table icon"></i> 报警历史记录</div>
+                        <div class="layui-card-body">
+                            <table class="layui-hide" id="searchListTable" lay-filter="searchListTable"></table>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <div class="layui-card">
+                        <div class="layui-card-header"><i class="fa fa-table icon"></i> 设备报警次数排名</div>
+                        <div class="layui-card-body">
+                            <table class="layui-hide" id="searchListTable3" lay-filter="searchListTable3"></table>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header"><i class="fa fa-table icon"></i> 当前停电设备</div>
+                        <div class="layui-card-body">
+                            <table class="layui-hide" id="searchListTable2" lay-filter="searchListTable2"></table>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </script>
+        </div>
+    </div>
 
-        <!--表格中操作按钮-->
-        <script type="text/html" id="currentTableBar">
-            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-            <a class="layui-btn layui-btn-xs layui-bg-orange" lay-event="view">查看</a>
-            <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">删除</a>
-        </script>
+
+
+
     </div>
 </div>
 
@@ -58,52 +98,139 @@
 
     // config.initQueryCondition();
 
-    layui.use(['form', 'table','laydate','treeSelect'], function () {
+    layui.use(['form', 'table','laydate'], function () {
         var $ = layui.jquery,
                 form = layui.form,
                 laydate = layui.laydate,
-                treeSelect = layui.treeSelect,
                 table = layui.table;
 
         // 默认的操作地址
         var list_url = '/event/poweroutage/list';
-        var delete_url = '/event/poweroutage/delete';
-        var add_page_url = '/event/poweroutage/add';
-        var edit_page_url = '/event/poweroutage/edit';
-        var view_page_url = '/event/poweroutage/view';
+        var list_current_power_url = '/event/poweroutage/current_power_list';
+
+        laydate.render({elem: '#occurTimeBegin'});
+        laydate.render({elem: '#occurTimeEnd'});
 
 
+        //报警历史记录表格
         table.render($.extend(config.searchListTable, {
             url: list_url,
+            height: 350, //固定值
+            toolbar: null,  //顶部工具栏的默认ID
+            page: false,
             //表格列
             cols: [[
-                {type: "checkbox", width: 50, fixed: "left"},
-                {field: 'dev_id', width: 200, title: '设备ID'},
-                {field: 'dev_type', width: 200, title: '设备类型'},
-                {field: 'occur_time', width: 200, title: '事件发生时间'},
-                {field: 'power_status', width: 200, title: '停电状态'},
-                {field: 'phase_status', width: 200, title: '相序状态'},
-                {field: 'voltage_statusa', width: 200, title: 'A相电压状态'},
-                {field: 'voltage_statusb', width: 200, title: 'B相电压状态'},
-                {field: 'voltage_statusc', width: 200, title: 'C相电压状态'},
-                {title: '操作', width: 220, templet: '#currentTableBar', fixed: "right", align: "center"}
-            ]]
+                {field: 'devName', width: 200, title: '设备名称'},
+                {field: 'devType', width: 120, title: '设备类型'},
+                {field: 'powerStatus', width: 120, title: '停电状态'},
+                {field: 'phaseStatus', width: 120, title: '相序状态'},
+                {field: 'occurTime', width: 200, title: '发生时间',sort:true},
+                {field: 'voltageStatusA', width: 100, title: 'A相电压'},
+                {field: 'voltageStatusB', width: 100, title: 'B相电压'},
+                {field: 'voltageStatusC', width: 100, title: 'C相电压'},
+                {field: 'devParentName', width: 200, title: '上级设备名称'},
+                {field: 'devParentType', width: 120, title: '上级设备类型'},
+                {field: 'transformName', width: 200, title: '所属台区'}
+            ]],
+            //将返回的列表数据格式化成layui的格式
+            parseData: function (res) { //res 即为原始返回的数据
+                if(res.data.sumList!=null){
+                    //报警次数排名表格
+                    table.render({
+                        height: 350, //固定值
+                        page: false,
+                        elem: '#searchListTable3',  //默认的查询列表页面中table的ID
+                        data: res.data.sumList,
+                        cols: [[
+                            {field: 'devName', width: 220, title: '设备名称'},
+                            {field: 'cnt', width: 130, title: '报警次数',sort:true}
+                        ]],
+                    });
+                }
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.message, //解析提示文本
+                    "data": res.data.logList //解析数据列表
+                };
+            }
         }));
+
+
+        //当前停电设备列表
+        table.render({
+            height: 350, //固定值
+            page: false,
+            method:'post', //设置提交方式为post
+            elem: '#searchListTable2',  //默认的查询列表页面中table的ID
+            url: list_current_power_url,
+            cols: [[
+                {field: 'devName', width: 200, title: '设备名称'},
+                {field: 'devType', width: 120, title: '设备类型'},
+                {field: 'powerStatus', width: 120, title: '停电状态'},
+                {field: 'phaseStatus', width: 120, title: '相序状态'},
+                {field: 'occurTime', width: 200, title: '发生时间',sort:true},
+                {field: 'voltageStatusA', width: 100, title: 'A相电压'},
+                {field: 'voltageStatusB', width: 100, title: 'B相电压'},
+                {field: 'voltageStatusC', width: 100, title: 'C相电压'},
+                {field: 'devParentName', width: 200, title: '上级设备名称'},
+                {field: 'devParentType', width: 120, title: '上级设备类型'},
+                {field: 'transformName', width: 200, title: '所属台区'}
+            ]],
+            response: {
+                statusCode: 200 //规定成功的状态码，原框架默认：0
+            },
+            //将返回的列表数据格式化成layui的格式
+            parseData: function (res) { //res 即为原始返回的数据
+                console.log(res);
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.message, //解析提示文本
+                    "data": res.data //解析数据列表
+                };
+            }
+        });
+
+
+
+        //监听设备类型下拉框选择
+        form.on('select(devType)',function (data) {
+            let devType = data.value;
+            let transFormId = $('#transFormId').val();
+            console.log(devType + "====" + transFormId);
+            if(devType!="" && transFormId !=""){
+                getDevListForSelect(devType,transFormId);
+            }
+        });
+
+        //监听台区类型下拉框选择
+        form.on('select(transFormId)',function (data) {
+            let devType = $('#devType').val();
+            let transFormId = data.value;
+            console.log(devType + "====" + transFormId);
+            if(devType!="" && transFormId !=""){
+                getDevListForSelect(devType,transFormId);
+            }
+        });
 
         // 监听搜索操作
         form.on('submit(data-search-btn)', function (data) {
-            //执行搜索重载
-            table.reload('searchListTable', {
-                page: {
-                    curr: 1  //重新加载后默认为第一页
-                }
-                , where: {
-                "devId": data.field.devId,
-                "devType": data.field.devType,
-                 "test" : ""  //为了js不出错而加，
-                }
-            });
-            return false;
+            if(data.field.devType==''||data.field.transFormId==''){
+                layer.alert("请选择台区及设备类型后在进行查询！",{icon: 2});
+                return false;
+            }else{
+                //执行搜索重载
+                table.reload('searchListTable', {
+                    page: false
+                    , where: {
+                        "devType": data.field.devType,
+                        "devId": data.field.devId,
+                        "occurTimeBegin": data.field.occurTimeBegin,
+                        "occurTimeEnd": data.field.occurTimeEnd,
+                        "transFormId" : data.field.transFormId
+                    }
+                });
+                return false;
+            }
         });
 
 
@@ -113,51 +240,42 @@
             $("#searchForm")[0].reset();
             //重新加载
             table.reload('searchListTable',{
-                page: {curr: 1},
+                page: false,
                 where: {
                         "devId": "",
                         "devType": "",
-                        "test" : ""
+                        "occurTimeBegin" : "",
+                        "occurTimeEnd" : "",
+                        "transFormId" : ""
                 }
             });
         });
 
-        //监听表格右侧的操作按钮
-        table.on('tool(searchListTable)', function (obj) {
-            event(obj);
-        });
-
-        //监听表格工具栏操作按钮
-        table.on('toolbar(searchListTable)', function (obj) {
-            event(obj);
-        });
-
-        //各种事件处理
-        function event(obj) {
-            var data = obj.data;
-            switch (obj.event) {
-                    //==============勾选后删除按钮事件============================
-                case "deleteAll":
-                    config.deleteAll(table,delete_url);
-                    break;
-                    //==============添加按钮点击事件============================
-                case "add":
-                    config.add(add_page_url);
-                    break;
-                    //==============查看按钮点击事件============================
-                case "view":
-                    config.view(obj,view_page_url);
-                    break;
-                    //==============删除单行按钮事件============================
-                case "delete":
-                    config.delete(obj,delete_url);
-                    break;
-                    //==============编辑按钮点击事件============================
-                case "edit":
-                    config.edit(obj,edit_page_url);
-                    break;
+        //加载台区
+        $.getJSON("/dev/api/dev_list?devType=2",function (json) {
+            let html = '<option value="">请选择台区</option>';
+            for(var i=0;i<json.length;i++){
+                console.log(json[i].name);
+                html = html + "<option value='"+json[i].value+"'>"+json[i].name+"</option>";
             }
+            $('#transFormId').append(html);
+            form.render();
+        });
+
+        //获取设备下拉列表
+        function getDevListForSelect(devType,transFormId) {
+            $('#devId').empty();
+            $.getJSON("/dev/api/dev_list?transFormId="+transFormId+"&devType="+devType,function (json) {
+                let html = "<option value=''>请选择设备名称</option>";
+                for(var i=0;i<json.length;i++){
+                    // console.log(json[i].name);
+                    html = html + "<option value='"+json[i].value+"'>"+json[i].name+"</option>";
+                }
+                $('#devId').append(html);
+                form.render();
+            });
         }
+
     });
 </script>
 
