@@ -7,27 +7,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title th:replace="common/base::pagetitle"></title>
     <link th:replace="common/base::static"/>
-    <script th:src="@{/lib/jquery-3.4.1/jquery-3.4.1.min.js}" charset="utf-8"></script>
+    <script th:replace="common/base::mianJs"></script>
     <script th:src="@{/js/jtopo-0.4.8-min.js}" charset="utf-8"></script>
+    <script th:src="@{/js/toolbar.js}" charset="utf-8"></script>
 </head>
 <body style="background-color: #9F9F9F">
+
+
+<div style="margin: 10px 10px 10px 10px">
+    <form class="layui-form layui-form-pane" id="searchForm">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <input type="checkbox" id="zoomCheckbox" title="鼠标缩放" checked lay-filter="zoomCheckbox">
+            </div>
+            <div class="layui-inline">
+                <input type="text" name="findText" id="findText" autocomplete="off" class="layui-input" placeholder="输入节点设备名称">
+            </div>
+            <div class="layui-inline">
+                <a class="layui-btn" id="findButton"><i class="layui-icon">&#xe615;</i>查询</a>
+            </div>
+        </div>
+    </form>
+</div>
+<div>
 <canvas  id="canvas"></canvas>
+</div>
 </body>
 </html>
 <script th:inline="javascript">
-        $(document).ready(function(){
+        // $(document).ready(function(){
+
+        layui.use(['layer','form'], function () {
+            var form = layui.form;
+            form.render();
 
             var canvas = document.getElementById('canvas');
             var stage = new JTopo.Stage(canvas);
             var scene = new JTopo.Scene(stage);
+            stage.wheelZoom = 1.2; // 设置鼠标缩放比例
             $('#canvas').attr("height",$(window).height()-40);
             $('#canvas').attr("width",$(window).width()-40);
+            showJTopoToobar(stage);
 
-            //
-            // var line = [{devName:'郑州线路1',devId:1,devType:1},{devName:'郑州线路2',devId:2,devType:1},{devName:'郑州线路3',devId:3,devType:1}];
-            // var transform = [{devName: '台区1',devId:1,devType:2,devParentId:1,devParentType:1},{devName: '台区2',devId:2,devType:2,devParentId:1,devParentType:1}];
-            //
-            // addLine(line,transform);
+            form.on('checkbox(zoomCheckbox)',function (data) {
+                console.log(data.elem.checked); //是否被选中，true或者false
+                if(data.elem.checked){
+                    stage.wheelZoom = 1.2; // 设置鼠标缩放比例
+                }else{
+                    stage.wheelZoom = null; // 取消鼠标缩放比例
+                }
+            });
 
             $.getJSON("/dev/topology/line_view_data",function (data) {
                 var lineList = data.lineList;
@@ -75,6 +104,7 @@
                 var node = new JTopo.Node(nodeInfo.devName);
                 node.setLocation(x, y);
                 node.setSize(w, h);
+                node.setImage('/images/'+nodeInfo.devType+'_'+nodeInfo.devOnline+'.png', true);
                 node.textOffsetY = 10; // 文本偏移量（向下3个像素）
                 node.info = nodeInfo;
                 node.dragable = false;
@@ -82,6 +112,11 @@
                     console.log(this.info.devId);
                     console.log(this.info.devName);
                     window.location.href = "/dev/topology/view_transform/"+this.info.devId;
+                });
+                node.mouseover(function(event){
+                    console.log(this.info.devId);
+                    console.log(this.info.devName);
+
                 });
                 scene.add(node);
                 return node;
@@ -100,4 +135,9 @@
                 return link;
             }
         });
+
+        function zoomCheck() {
+            console.log("点击率");
+            console.log($(this).attr(checked));
+        }
 </script>

@@ -7,6 +7,7 @@ import com.wt.mis.dev.entity.TransForm;
 import com.wt.mis.dev.repository.LineRepository;
 import com.wt.mis.dev.repository.TopologyRepository;
 import com.wt.mis.dev.repository.TransFormRepository;
+import com.wt.mis.event.repository.PowerOutageRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,6 +35,9 @@ public class TopologyController {
 
     @Autowired
     TransFormRepository transFormRepository;
+
+    @Autowired
+    PowerOutageRepository powerOutageRepository;
 
     private String getUrlPrefix() {
         return "dev/topology";
@@ -82,12 +86,30 @@ public class TopologyController {
         return mv;
     }
 
+    /**
+     * 获取台区下面的拓扑信息
+     * @param id
+     * @return
+     */
     @GetMapping("/transform_view_data/{id}")
     @ResponseBody
-    public List<Topology> getTransformViewData(@PathVariable Long id){
+    public Map<String,Object> getTransformViewData(@PathVariable Long id){
+        Map<String,Object> resultMap = new HashMap();
+        List<Topology> transFormList = topologyRepository.findAllByDelAndDevIdAndDevType(0,id,2);
         List<Topology> topologyList = topologyRepository.findAllByDelAndTransformId(0,id);
+        resultMap.put("topologyList",topologyList);
+        resultMap.put("transForm",transFormList.get(0));
+        return resultMap;
+    }
 
-        return topologyList;
+    /**
+     * 获取当前停电的设备信息
+     * @return
+     */
+    @GetMapping("/current_poweroutage_data")
+    @ResponseBody
+    public List getPowerOutageInfo(){
+        return powerOutageRepository.getAllByDelAndHistoryAndPowerStatus(0,0,1);
     }
 
 

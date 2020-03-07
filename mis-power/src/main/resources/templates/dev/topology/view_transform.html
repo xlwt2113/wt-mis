@@ -7,50 +7,110 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title th:replace="common/base::pagetitle"></title>
     <link th:replace="common/base::static"/>
-    <script th:src="@{/lib/jquery-3.4.1/jquery-3.4.1.min.js}" charset="utf-8"></script>
+    <script th:replace="common/base::mianJs"></script>
     <script th:src="@{/js/jtopo-0.4.8-min.js}" charset="utf-8"></script>
+    <script th:src="@{/js/toolbar.js}" charset="utf-8"></script>
 </head>
 <body style="background-color: #9F9F9F">
-<a class="layui-btn" id="backBtn"><i class="fa fa-arrow-circle-left icon"></i> 返回上层</a>
+
+
+<div style="margin: 10px 10px 10px 10px">
+    <form class="layui-form layui-form-pane" id="searchForm">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <input type="checkbox" id="zoomCheckbox" title="鼠标缩放" checked lay-filter="zoomCheckbox">
+            </div>
+            <div class="layui-inline">
+                <input type="text" name="findText" id="findText" autocomplete="off" class="layui-input" placeholder="输入节点设备名称">
+            </div>
+            <div class="layui-inline">
+                <a class="layui-btn" id="findButton"><i class="layui-icon">&#xe615;</i>查询</a>
+                <a class="layui-btn" id="backBtn"><i class="fa fa-arrow-circle-left icon"></i> 返回上层</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+
 <canvas  id="canvas"></canvas>
 </body>
 </html>
 <script th:inline="javascript">
-        $(document).ready(function(){
+    layui.use(['layer','form'], function () {
+        var form = layui.form;
+        form.render();
 
             var canvas = document.getElementById('canvas');
             var stage = new JTopo.Stage(canvas);
             var scene = new JTopo.Scene(stage);
+            stage.wheelZoom = 1.2; // 设置鼠标缩放比例
             $('#canvas').attr("height",$(window).height()-40);
             $('#canvas').attr("width",$(window).width()-40);
             $('#backBtn').click(function () {
                 window.location.href = "/dev/topology/view";
             });
+            showJTopoToobar(stage);
+
+            form.on('checkbox(zoomCheckbox)',function (data) {
+                console.log(data.elem.checked); //是否被选中，true或者false
+                if(data.elem.checked){
+                    stage.wheelZoom = 1.2; // 设置鼠标缩放比例
+                }else{
+                    stage.wheelZoom = null; // 取消鼠标缩放比例
+                }
+            });
 
             //台区Id
             var transformId = [[${id}]];
-            var transformName = [[${name}]];
 
-            //
-            var rootNodeInfo = {devName: transformName,devId:transformId,devType:2,devParentId:0,devParentType:0}
-            var rootNode = addNode(rootNodeInfo);
+            //根节点信息（台区信息）
+            var rootNodeInfo;
+            //拓扑数据
+            var topologyList;
+            //画布上的所有节点
+            var allNodes;
+            //报警定时
+            var alarm;
 
+            //页面打开后初始化所有数据
             $.getJSON("/dev/topology/transform_view_data/"+transformId,function (data) {
-                for(let i=0; i<data.length;i++){
-                    if(data[i].devParentId == rootNodeInfo.devId && data[i].devParentType == rootNodeInfo.devType){
-                        let tempNode = addNode(data[i]);
+                rootNodeInfo = data.transForm;
+                topologyList = data.topologyList;
+                let rootNode = addNode(rootNodeInfo);
+                for(let i=0; i<topologyList.length;i++){
+                    if(topologyList[i].devParentId == rootNodeInfo.devId && topologyList[i].devParentType == rootNodeInfo.devType){
+                        let tempNode = addNode(topologyList[i]);
                         addLink(rootNode,tempNode);
-                        addChildNodes(tempNode,data);
+                        addChildNodes(tempNode,topologyList);
                     }
                 }
 
                 // 树形布局
                 scene.doLayout(JTopo.layout.TreeLayout('down', 180, 120));
+                //获取所有节点
+                allNodes = scene.getDisplayedNodes();
+                //获取停电报警数据
+                $.getJSON("/dev/topology/current_poweroutage_data",function (data) {
+                    alarm = setInterval(function(){
+                        for(let i=0;i<allNodes.length;i++){
+                            for(let j=0;j<data.length;j++){
+                                if(allNodes[i].info.devId ==data[j].devId && allNodes[i].info.devType == data[j].devType){
+                                    console.log("报警！！！");
+                                    allNodes[i].alarmColor = '255,0,0';
+                                    allNodes[i].alarm == '停电报警'? allNodes[i].alarm = null : allNodes[i].alarm = '停电报警';
+                                }
+                            }
+                        }
+                    },600);
+                });
             });
 
 
+            //定时扫描停电报警表及设备状态表，更新设备信息
 
 
+
+            //递归实现添加设备子节点并连线
             function addChildNodes(currentNode,data) {
                 for(let i=0; i<data.length;i++){
                     if(data[i].devParentId == currentNode.info.devId && data[i].devParentType == currentNode.info.devType){
@@ -69,7 +129,8 @@
                 var node = new JTopo.Node(nodeInfo.devName);
                 node.textOffsetY = 10; // 文本偏移量（向下3个像素）
                 node.info = nodeInfo;
-                // node.dragable = false;
+                node.setImage('/images/'+nodeInfo.devType+'_'+nodeInfo.devOnline+'.png', true);
+                node.alarm = null;
                 node.click(function(event){
                     console.log(this.info.devId);
                     console.log(this.info.devName);
