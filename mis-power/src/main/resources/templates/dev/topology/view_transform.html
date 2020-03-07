@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title th:replace="common/base::pagetitle"></title>
+    <link th:replace="common/base::static"/>
+    <script th:src="@{/lib/jquery-3.4.1/jquery-3.4.1.min.js}" charset="utf-8"></script>
+    <script th:src="@{/js/jtopo-0.4.8-min.js}" charset="utf-8"></script>
+</head>
+<body style="background-color: #9F9F9F">
+<a class="layui-btn" id="backBtn"><i class="fa fa-arrow-circle-left icon"></i> 返回上层</a>
+<canvas  id="canvas"></canvas>
+</body>
+</html>
+<script th:inline="javascript">
+        $(document).ready(function(){
+
+            var canvas = document.getElementById('canvas');
+            var stage = new JTopo.Stage(canvas);
+            var scene = new JTopo.Scene(stage);
+            $('#canvas').attr("height",$(window).height()-40);
+            $('#canvas').attr("width",$(window).width()-40);
+            $('#backBtn').click(function () {
+                window.location.href = "/dev/topology/view";
+            });
+
+            //台区Id
+            var transformId = [[${id}]];
+            var transformName = [[${name}]];
+
+            //
+            var rootNodeInfo = {devName: transformName,devId:transformId,devType:2,devParentId:0,devParentType:0}
+            var rootNode = addNode(rootNodeInfo);
+
+            $.getJSON("/dev/topology/transform_view_data/"+transformId,function (data) {
+                for(let i=0; i<data.length;i++){
+                    if(data[i].devParentId == rootNodeInfo.devId && data[i].devParentType == rootNodeInfo.devType){
+                        let tempNode = addNode(data[i]);
+                        addLink(rootNode,tempNode);
+                        addChildNodes(tempNode,data);
+                    }
+                }
+
+                // 树形布局
+                scene.doLayout(JTopo.layout.TreeLayout('down', 180, 120));
+            });
+
+
+
+
+            function addChildNodes(currentNode,data) {
+                for(let i=0; i<data.length;i++){
+                    if(data[i].devParentId == currentNode.info.devId && data[i].devParentType == currentNode.info.devType){
+                        let tempNode = addNode(data[i]);
+                        addLink(currentNode,tempNode);
+                        addChildNodes(tempNode,data);
+                    }
+                }
+            }
+
+
+
+
+            //添加节点
+            function addNode(nodeInfo){
+                var node = new JTopo.Node(nodeInfo.devName);
+                node.textOffsetY = 10; // 文本偏移量（向下3个像素）
+                node.info = nodeInfo;
+                // node.dragable = false;
+                node.click(function(event){
+                    console.log(this.info.devId);
+                    console.log(this.info.devName);
+                });
+                scene.add(node);
+                return node;
+            }
+
+            //添加连接线
+            function addLink(nodeA, nodeZ){
+                var link = new JTopo.FlexionalLink(nodeA, nodeZ);
+                link.strokeColor = '204,204,204';
+                link.lineWidth = 1;
+                scene.add(link);
+                return link;
+            }
+
+        });
+</script>
