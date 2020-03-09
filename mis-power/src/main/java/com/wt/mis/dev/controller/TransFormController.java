@@ -9,10 +9,15 @@ import com.wt.mis.dev.entity.TransForm;
 import com.wt.mis.dev.repository.TransFormRepository;
 import com.wt.mis.sys.entity.Dep;
 import com.wt.mis.sys.repository.DepRespository;
+import io.swagger.annotations.ApiOperation;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -54,6 +59,16 @@ public class TransFormController extends BaseController<TransForm> {
         }
         sql.append(" and (t2.level like '" + dep.getLevel() + "%' or t1.operations_team is null )" );
         return sql.toString();
+    }
+
+    @ApiOperation("打开查看页面")
+    @GetMapping("/view")
+    @Override
+    protected ModelAndView openViewPage(@RequestParam("id") @NonNull Long id) {
+        ModelAndView mv = super.openViewPage(id);
+        TransForm dev = transFormRepository.getOne(id);
+        mv.addObject("operationsTeam",depRespository.getOne(dev.getOperationsTeam()).getName());
+        return mv;
     }
 }
 

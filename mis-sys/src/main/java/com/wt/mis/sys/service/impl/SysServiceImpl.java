@@ -38,12 +38,17 @@ public class SysServiceImpl implements SysService {
 
     @Override
     public String getRegisterValue(String itemName) {
-         Register register =  registerRepository.getRegisterByItemName(itemName);
-         if(register!=null){
-             return register.getItemValue();
-         }else{
-             return "";
-         }
+         return this.getRegisterValue(itemName,null);
+    }
+
+    @Override
+    public String getRegisterValue(String itemName,String defaultVal) {
+        Register register =  registerRepository.getRegisterByItemName(itemName);
+        if(register!=null){
+            return register.getItemValue();
+        }else{
+            return defaultVal;
+        }
     }
 
     @Override

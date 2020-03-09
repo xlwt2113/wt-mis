@@ -11,4 +11,6 @@ public interface PowerOutageRepository extends BaseRepository<PowerOutage,Long> 
 
     List<PowerOutage> getAllByDelAndHistoryAndPowerStatus(int del,int history,int powerStatus);
 
+    int countAllByDelAndHistoryAndPowerStatus(int del,int history,int powerStatus);
+
 }

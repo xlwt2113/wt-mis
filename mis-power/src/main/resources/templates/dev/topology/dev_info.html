@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title th:replace="common/base::pagetitle"></title>
+    <link th:replace="common/base::static"/>
+</head>
+<body>
+<form class="layui-form" action="" >
+    <input type="hidden" id="devType" th:value="${devType}">
+    <input type="hidden" id="devId" th:value="${devId}">
+    <input type="hidden" id="currentTime" th:value="${currentTime}">
+
+    <div style="padding: 20px; background-color: #F2F2F2;">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md3">
+                <div class="layui-card">
+                    <div class="layui-card-header"><i class="fa fa-table icon"></i> 设备信息</div>
+                    <div class="layui-card-body" id="devInfo" style="height:450px">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md9">
+                <div class="layui-card">
+                    <div class="layui-card-header"><i class="fa fa-table icon"></i> 当日设备实时数据</div>
+                    <div class="layui-card-body">
+                        <table class="layui-hide" id="realListTable" lay-filter="realListTable"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md3">
+                <div class="layui-card">
+                    <div class="layui-card-header"><i class="fa fa-table icon"></i> 设备操作</div>
+                    <div class="layui-card-body" style="text-align: center;height: 370px">
+                        <div class="layui-btn-container">
+                            <button type="button" class="layui-btn layui-btn-lg ">实时数据</button>
+                            <button type="button" class="layui-btn layui-btn-lg ">冻结数据</button>
+                            <button type="button" class="layui-btn layui-btn-lg layui-btn-normal">设备复位</button>
+                            <button type="button" class="layui-btn layui-btn-lg layui-btn-normal">设备对时</button>
+                            <button type="button" class="layui-btn layui-btn-lg layui-btn-warm">刷新拓扑</button>
+                            <button type="button" class="layui-btn layui-btn-lg layui-btn-warm">刷新相位</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md9">
+                <div class="layui-card">
+                    <div class="layui-card-header"><i class="fa fa-table icon"></i> 当日设备冻结数据</div>
+                    <div class="layui-card-body">
+                        <table class="layui-hide" id="freezeListTable" lay-filter="freezeListTable"></table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header"><i class="fa fa-table icon"></i> 当日设备报警记录</div>
+                    <div class="layui-card-body">
+                        <table class="layui-hide" id="alarmListTable" lay-filter="alarmListTable"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</form>
+
+<script th:replace="common/base::mianJs"></script>
+<script th:inline="none">
+
+    var free_list_url = '/data/freeze/list';
+    var real_list_url = '/data/realtime/list';
+    var power_log_list_url = '/event/poweroutage/power_log_list';
+    //设备id及设备类型
+    var devId = $('#devId').val();
+    var devType = $('#devType').val();
+    var currentTime = $('#currentTime').val();
+
+    layui.use(['form', 'laydate', 'table'], function () {
+        var form = layui.form
+                , laydate = layui.laydate
+                , table = layui.table
+                , $ = layui.jquery;
+
+        if(devType==2){
+            $('#devInfo').load('/dev/transform/view?id='+devId);
+        }else if(devType == 3){
+            $('#devInfo').load('/dev/branchbox/view?id='+devId);
+        }else if(devType == 4 || devType == 5){
+            $('#devInfo').load('/dev/meterbox/view?id='+devId);
+        }else if(devType == 6 || devType == 7){
+            $('#devInfo').load('/dev/meter/view?id='+devId);
+        }
+
+
+
+        //冻结数据列表
+        table.render($.extend(config.searchListTable, {
+            url: free_list_url+"?freezeTime="+currentTime+"&devType="+devType+"&devId="+devId,
+            elem: '#freezeListTable',  //默认的查询列表页面中table的ID
+            height: 350,
+            page: false,
+            toolbar: null,  //顶部工具栏的默认ID
+            //表格列
+            cols: [[
+                {field: 'devName', width: 200, title: '设备名称'},
+                {field: 'devType', width: 120, title: '设备类型'},
+                {field: 'freezeTime', width: 200, title: '冻结时间',sort:true},
+                {field: 'freezeDataA', width: 100, title: 'A相电压'},
+                {field: 'freezeDataB', width: 100, title: 'B相电压'},
+                {field: 'freezeDataC', width: 100, title: 'C相电压'},
+                {field: 'devParentName', width: 200, title: '上级设备名称'},
+                {field: 'devParentType', width: 120, title: '上级设备类型'},
+                {field: 'transformName', width: 200, title: '所属台区'},
+                {field: 'operationsTeamName', width: 300, title: '所属班组'}
+            ]],
+            //将返回的列表数据格式化成layui的格式
+            parseData: function (res) { //res 即为原始返回的数据
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.message, //解析提示文本
+                    "data": res.data //解析数据列表
+                };
+            }
+        }));
+
+        //实时数据列表
+        table.render($.extend(config.searchListTable, {
+            url: real_list_url+"?callTime="+currentTime+"&devType="+devType+"&devId="+devId,
+            elem: '#realListTable',  //默认的查询列表页面中table的ID
+            height: 430,
+            page: false,
+            toolbar: null,  //顶部工具栏的默认ID
+            //表格列
+            cols: [[
+                {field: 'devName', width: 200, title: '设备名称'},
+                {field: 'devType', width: 120, title: '设备类型'},
+                {field: 'callTime', width: 200, title: '冻结时间',sort:true},
+                {field: 'realDyDataA', width: 100, title: 'A相电压'},
+                {field: 'realDyDataB', width: 100, title: 'B相电压'},
+                {field: 'realDyDataC', width: 100, title: 'C相电压'},
+                {field: 'realDlDataA', width: 100, title: 'A相电流'},
+                {field: 'realDlDataB', width: 100, title: 'B相电流'},
+                {field: 'realDlDataC', width: 100, title: 'C相电流'},
+                {field: 'devParentName', width: 200, title: '上级设备名称'},
+                {field: 'devParentType', width: 120, title: '上级设备类型'},
+                {field: 'transformName', width: 200, title: '所属台区'},
+                {field: 'operationsTeamName', width: 300, title: '所属班组'}
+            ]],
+            //将返回的列表数据格式化成layui的格式
+            parseData: function (res) { //res 即为原始返回的数据
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.message, //解析提示文本
+                    "data": res.data //解析数据列表
+                };
+            }
+        }));
+
+
+        //当日报警设备信息
+        table.render({
+            height: 350, //固定值
+            page: false,
+            method:'post', //设置提交方式为post
+            elem: '#alarmListTable',  //默认的查询列表页面中table的ID
+            url: power_log_list_url+"/"+devId+"/"+devType+"/"+currentTime,
+            toolbar: null,  //顶部工具栏的默认ID
+            cols: [[
+                {field: 'devName', width: 200, title: '设备名称'},
+                {field: 'devType', width: 120, title: '设备类型'},
+                {field: 'powerStatus', width: 120, title: '停电状态'},
+                {field: 'phaseStatus', width: 120, title: '相序状态'},
+                {field: 'occurTime', width: 200, title: '发生时间',sort:true},
+                {field: 'voltageStatusA', width: 100, title: 'A相电压'},
+                {field: 'voltageStatusB', width: 100, title: 'B相电压'},
+                {field: 'voltageStatusC', width: 100, title: 'C相电压'},
+                {field: 'devParentName', width: 200, title: '上级设备名称'},
+                {field: 'devParentType', width: 120, title: '上级设备类型'},
+                {field: 'transformName', width: 200, title: '所属台区'}
+            ]],
+            response: {
+                statusCode: 200 //规定成功的状态码，原框架默认：0
+            },
+            //将返回的列表数据格式化成layui的格式
+            parseData: function (res) { //res 即为原始返回的数据
+                console.log(res);
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.message, //解析提示文本
+                    "data": res.data //解析数据列表
+                };
+            }
+        });
+    });
+
+
+
+</script>
+</body>
+</html>

@@ -63,6 +63,7 @@ public class LoginController {
         homeInfo.put("title", "首页");
         homeInfo.put("icon", "fa fa-home");
         homeInfo.put("href", "page/welcome-1.html?mpi=m-p-i-0");
+        homeInfo.put("href", sysService.getRegisterValue("HOME_PAGE","page/welcome-1.html?mpi=m-p-i-0"));
         initJson.put("homeInfo", homeInfo);
         //网站logo配置
         logoInfo.put("title", sysService.getRegisterValue("SYSTEM_TITLE"));

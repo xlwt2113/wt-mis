@@ -13,12 +13,12 @@
 </head>
 <body style="background-color: #9F9F9F">
 
-
+<!--工具栏-->
 <div style="margin: 10px 10px 10px 10px">
     <form class="layui-form layui-form-pane" id="searchForm">
         <div class="layui-form-item">
             <div class="layui-inline">
-                <input type="checkbox" id="zoomCheckbox" title="鼠标缩放" checked lay-filter="zoomCheckbox">
+                <input type="checkbox" id="zoomCheckbox" title="鼠标缩放" lay-filter="zoomCheckbox">
             </div>
             <div class="layui-inline">
                 <input type="text" name="findText" id="findText" autocomplete="off" class="layui-input" placeholder="输入节点设备名称">
@@ -29,9 +29,8 @@
         </div>
     </form>
 </div>
-<div>
+<!--拓扑图显示-->
 <canvas  id="canvas"></canvas>
-</div>
 </body>
 </html>
 <script th:inline="javascript">
@@ -44,15 +43,13 @@
             var canvas = document.getElementById('canvas');
             var stage = new JTopo.Stage(canvas);
             var scene = new JTopo.Scene(stage);
-            stage.wheelZoom = 1.2; // 设置鼠标缩放比例
-            $('#canvas').attr("height",$(window).height()-40);
+            $('#canvas').attr("height",$(window).height()-100);
             $('#canvas').attr("width",$(window).width()-40);
             showJTopoToobar(stage);
 
             form.on('checkbox(zoomCheckbox)',function (data) {
-                console.log(data.elem.checked); //是否被选中，true或者false
                 if(data.elem.checked){
-                    stage.wheelZoom = 1.2; // 设置鼠标缩放比例
+                    stage.wheelZoom = 1.02; // 设置鼠标缩放比例
                 }else{
                     stage.wheelZoom = null; // 取消鼠标缩放比例
                 }
@@ -66,7 +63,7 @@
 
             //绘制线路及台区
             function addLine(line,transform){
-                var baseX = 100,tempX = 100;
+                var baseX = 400,tempX = 400;
                 var baseY = 120,tempY = 180;
                 for(let i=0;i<line.length;i++){
                     let lineHead = newCircleNode(tempX,baseY,2,{devName:""});
@@ -77,7 +74,7 @@
                     tempX = tempX + 200;
                     let lineEnd = newCircleNode(tempX,baseY,2,{devName:""});
                     // console.log(line[i]);
-                    newLink(lineHead, lineEnd, line[i].devName);
+                    newLink(lineHead, lineEnd, line[i]);
                     //重新计算第二行的起始位置
                     baseY = baseY + tempY;
                     tempX = baseX;
@@ -109,35 +106,43 @@
                 node.info = nodeInfo;
                 node.dragable = false;
                 node.click(function(event){
-                    console.log(this.info.devId);
-                    console.log(this.info.devName);
+                    // console.log(this.info.devId);
+                    // console.log(this.info.devName);
                     window.location.href = "/dev/topology/view_transform/"+this.info.devId;
-                });
-                node.mouseover(function(event){
-                    console.log(this.info.devId);
-                    console.log(this.info.devName);
-
                 });
                 scene.add(node);
                 return node;
             }
 
             // 简单连线
-            function newLink(nodeA, nodeZ, text, dashedPattern){
-                var link = new JTopo.Link(nodeA, nodeZ, text);
+            function newLink(nodeA, nodeZ, lineInfo){
+                var link = new JTopo.Link(nodeA, nodeZ, lineInfo.devName);
                 link.lineWidth = 3; // 线宽
-                link.dashedPattern = dashedPattern; // 虚线
                 link.bundleOffset = 60; // 折线拐角处的长度
                 link.bundleGap = 20; // 线条之间的间隔
-                link.textOffsetY = 75; // 文本偏移量（向下3个像素）
-                link.strokeColor = '0,200,255';
+                link.textOffsetY = -25; // 文本偏移量（向下3个像素）
+                link.textOffsetX = -200; // 文本偏移量（向下3个像素）
+                link.strokeColor = '255,255,0';
+                link.fontColor = '255,255,0';
+                link.font = "16px Consolas";
+                link.info = lineInfo;
+                link.click(function (event) {
+                    layer.open({
+                        type: 2,
+                        content: '/dev/line/view?id='+lineInfo.devId
+                        , anim: 2 //载入方式
+                        , area: ['500px', '300px'] //设置窗口宽高
+                        , title: '线路详情' //窗口标题
+                        , maxmin: true //允许最大化
+                        , btn: ['关闭']
+                        , btnAlign: 'r' //按钮靠右
+                        , yes: function (index, layerObj) {
+                            layer.close(index);
+                        }
+                    });
+                });
                 scene.add(link);
                 return link;
             }
         });
-
-        function zoomCheck() {
-            console.log("点击率");
-            console.log($(this).attr(checked));
-        }
 </script>

@@ -1,6 +1,7 @@
 
 package com.wt.mis.dev.controller;
 
+import com.wt.mis.core.util.DateUtils;
 import com.wt.mis.dev.entity.Line;
 import com.wt.mis.dev.entity.Topology;
 import com.wt.mis.dev.entity.TransForm;
@@ -17,10 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -112,5 +110,14 @@ public class TopologyController {
         return powerOutageRepository.getAllByDelAndHistoryAndPowerStatus(0,0,1);
     }
 
+
+    @GetMapping("/dev_info/{devId}/{devType}")
+    public ModelAndView view(@PathVariable Long devId,@PathVariable int devType){
+        ModelAndView mv = new ModelAndView(this.getUrlPrefix() + "/dev_info");
+        mv.addObject("devId",devId);
+        mv.addObject("devType",devType);
+        mv.addObject("currentTime", DateUtils.dateFormat(new Date()));
+        return mv;
+    }
 
 }

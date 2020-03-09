@@ -33,6 +33,6 @@ public class Line extends BaseEntity {
     * 运维班组
     */
     @Column(columnDefinition = " int(11) COMMENT '运维班组编号'")
-    private Integer operationsTeam;
+    private Long operationsTeam;
 
 }

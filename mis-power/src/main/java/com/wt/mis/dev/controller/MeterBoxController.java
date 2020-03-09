@@ -10,10 +10,15 @@ import com.wt.mis.dev.repository.MeterBoxRepository;
 import com.wt.mis.sys.entity.Dep;
 import com.wt.mis.sys.repository.DepRespository;
 import com.wt.mis.sys.util.DictUtils;
+import io.swagger.annotations.ApiOperation;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -71,6 +76,17 @@ public class MeterBoxController extends BaseController<MeterBox> {
             String key = DictUtils.getDictItemKey("单/三相",String.valueOf(map.get("three_phase")));
             map.replace("three_phase",key);
         }
+    }
+
+    @ApiOperation("打开查看页面")
+    @GetMapping("/view")
+    @Override
+    protected ModelAndView openViewPage(@RequestParam("id") @NonNull Long id) {
+        ModelAndView mv = super.openViewPage(id);
+        MeterBox meterBox = meterBoxRepository.getOne(id);
+        mv.addObject("threePhase",DictUtils.getDictItemKey("单/三相",String.valueOf(meterBox.getThreePhase())));
+        mv.addObject("operationsTeam",depRespository.getOne(meterBox.getOperationsTeam()).getName());
+        return mv;
     }
 }
 

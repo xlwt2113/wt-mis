@@ -10,10 +10,15 @@ import com.wt.mis.dev.repository.LineRepository;
 import com.wt.mis.sys.entity.Dep;
 import com.wt.mis.sys.repository.DepRespository;
 import com.wt.mis.sys.util.DictUtils;
+import io.swagger.annotations.ApiOperation;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -72,6 +77,17 @@ public class LineController extends BaseController<Line> {
             String key = DictUtils.getDictItemKey("电压等级",map.get("voltage_level"));
             map.replace("voltage_level",key);
         }
+    }
+
+    @ApiOperation("打开查看页面")
+    @GetMapping("/view")
+    @Override
+    protected ModelAndView openViewPage(@RequestParam("id") @NonNull Long id) {
+        ModelAndView mv = super.openViewPage(id);
+        Line line = lineRepository.getOne(id);
+        mv.addObject("voltageLevel",DictUtils.getDictItemKey("电压等级",line.getVoltageLevel()));
+        mv.addObject("operationsTeam",depRespository.getOne(line.getOperationsTeam()).getName());
+        return mv;
     }
 }
 

@@ -33,7 +33,7 @@ public class MeterBox extends BaseEntity {
     * 运维班组
     */
     @Column(columnDefinition = " int(11) COMMENT '运维班组编号'")
-    private Integer operationsTeam;
+    private Long operationsTeam;
 
     /**
      * 单/三相:单相：1 三相 2

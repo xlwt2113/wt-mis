@@ -16,10 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -91,10 +88,35 @@ public class PowerOutageController{
     @ApiOperation("根据当前正在停电的设备")
     @PostMapping("/current_power_list")
     @ResponseBody
-    public ResponseEntity current_power_list(HttpServletRequest request) {
+    public ResponseEntity current_power_list() {
         StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from event_power_outage t1  ");
         sql.append(" LEFT JOIN dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
         sql.append(" LEFT JOIN dev_transform t3 on t3.id = t2.transform_id where t1.del = 0 and t1.power_status = 1 and t1.history = 0");
+        sql.append(" order by  t1.occur_time asc ");
+        List list = searchService.findAllBySql(sql.toString());
+        Map<String,List> resultMap = this.dealSearchList(list);
+        return ResponseUtils.ok("获取到数据", resultMap.get("logList"));
+    }
+
+    @ApiOperation("根据当前正在停电的设备数量")
+    @GetMapping("/current_power_cnt")
+    @ResponseBody
+    public int current_power_cnt() {
+        int cnt  = powerOutageRepository.countAllByDelAndHistoryAndPowerStatus(0,0,1);
+        return cnt;
+    }
+
+
+    @ApiOperation("获取个设备某天的停电报警记录")
+    @PostMapping("/power_log_list/{devId}/{devType}/{occurTime}")
+    @ResponseBody
+    public ResponseEntity power_list(@PathVariable long devId,@PathVariable int devType,@PathVariable String  occurTime) {
+        StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from event_power_outage t1  ");
+        sql.append(" LEFT JOIN dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
+        sql.append(" LEFT JOIN dev_transform t3 on t3.id = t2.transform_id where t1.del = 0 ");
+        sql.append(" and t1.dev_id = " + devId);
+        sql.append(" and t1.dev_type = " + devType);
+        sql.append(" and DATE_FORMAT(t1.occur_time,'%Y-%m-%d') = '"+occurTime+"'");
         sql.append(" order by  t1.occur_time asc ");
         List list = searchService.findAllBySql(sql.toString());
         Map<String,List> resultMap = this.dealSearchList(list);

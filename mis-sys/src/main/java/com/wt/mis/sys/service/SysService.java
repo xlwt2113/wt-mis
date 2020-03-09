@@ -20,6 +20,14 @@ public interface SysService {
     public List<DictItem>  getDictItems(String dictName);
 
     /**
+     * 获取注册项，如果没有注册项的话试用默认值
+     * @param itemName
+     * @param defaultVal
+     * @return
+     */
+    public String getRegisterValue(String itemName,String defaultVal);
+
+    /**
      * 获取所有在用字典项
      * @return
      */

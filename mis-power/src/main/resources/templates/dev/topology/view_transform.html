@@ -13,12 +13,12 @@
 </head>
 <body style="background-color: #9F9F9F">
 
-
+<!--工具栏-->
 <div style="margin: 10px 10px 10px 10px">
     <form class="layui-form layui-form-pane" id="searchForm">
         <div class="layui-form-item">
             <div class="layui-inline">
-                <input type="checkbox" id="zoomCheckbox" title="鼠标缩放" checked lay-filter="zoomCheckbox">
+                <input type="checkbox" id="zoomCheckbox" title="鼠标缩放" lay-filter="zoomCheckbox">
             </div>
             <div class="layui-inline">
                 <input type="text" name="findText" id="findText" autocomplete="off" class="layui-input" placeholder="输入节点设备名称">
@@ -30,9 +30,9 @@
         </div>
     </form>
 </div>
-
-
+<!--拓扑图显示-->
 <canvas  id="canvas"></canvas>
+
 </body>
 </html>
 <script th:inline="javascript">
@@ -43,18 +43,16 @@
             var canvas = document.getElementById('canvas');
             var stage = new JTopo.Stage(canvas);
             var scene = new JTopo.Scene(stage);
-            stage.wheelZoom = 1.2; // 设置鼠标缩放比例
-            $('#canvas').attr("height",$(window).height()-40);
-            $('#canvas').attr("width",$(window).width()-40);
+            $('#canvas').attr("height",$(window).height()-100);
+            $('#canvas').attr("width",$(window).width()-10);
             $('#backBtn').click(function () {
                 window.location.href = "/dev/topology/view";
             });
             showJTopoToobar(stage);
 
             form.on('checkbox(zoomCheckbox)',function (data) {
-                console.log(data.elem.checked); //是否被选中，true或者false
                 if(data.elem.checked){
-                    stage.wheelZoom = 1.2; // 设置鼠标缩放比例
+                    stage.wheelZoom = 1.02; // 设置鼠标缩放比例
                 }else{
                     stage.wheelZoom = null; // 取消鼠标缩放比例
                 }
@@ -62,7 +60,6 @@
 
             //台区Id
             var transformId = [[${id}]];
-
             //根节点信息（台区信息）
             var rootNodeInfo;
             //拓扑数据
@@ -86,7 +83,7 @@
                 }
 
                 // 树形布局
-                scene.doLayout(JTopo.layout.TreeLayout('down', 180, 120));
+                scene.doLayout(JTopo.layout.TreeLayout('down', 180, 120)); //180为图表间隔
                 //获取所有节点
                 allNodes = scene.getDisplayedNodes();
                 //获取停电报警数据
@@ -122,8 +119,6 @@
             }
 
 
-
-
             //添加节点
             function addNode(nodeInfo){
                 var node = new JTopo.Node(nodeInfo.devName);
@@ -134,6 +129,19 @@
                 node.click(function(event){
                     console.log(this.info.devId);
                     console.log(this.info.devName);
+                    layer.open({
+                        type: 2,
+                        content: '/dev/topology/dev_info/'+node.info.devId+'/'+node.info.devType
+                        , anim: 2 //载入方式
+                        , area: ['100%', '100%'] //设置窗口宽高
+                        , title: '设备详情' //窗口标题
+                        , maxmin: true //允许最大化
+                        , btn: ['关闭']
+                        , btnAlign: 'r' //按钮靠右
+                        , yes: function (index, layerObj) {
+                            layer.close(index);
+                        }
+                    });
                 });
                 scene.add(node);
                 return node;
