@@ -40,12 +40,12 @@
                     <div class="layui-card-header"><i class="fa fa-table icon"></i> 设备操作</div>
                     <div class="layui-card-body" style="text-align: center;height: 370px">
                         <div class="layui-btn-container">
-                            <button type="button" class="layui-btn layui-btn-lg ">实时数据</button>
-                            <button type="button" class="layui-btn layui-btn-lg ">冻结数据</button>
-                            <button type="button" class="layui-btn layui-btn-lg layui-btn-normal">设备复位</button>
-                            <button type="button" class="layui-btn layui-btn-lg layui-btn-normal">设备对时</button>
-                            <button type="button" class="layui-btn layui-btn-lg layui-btn-warm">刷新拓扑</button>
-                            <button type="button" class="layui-btn layui-btn-lg layui-btn-warm">刷新相位</button>
+                            <button type="button" class="layui-btn layui-btn-lg" id="event3">实时数据</button>
+                            <button type="button" class="layui-btn layui-btn-lg" id="event4">冻结数据</button>
+                            <button type="button" class="layui-btn layui-btn-lg layui-btn-normal" id="event5">设备复位</button>
+                            <button type="button" class="layui-btn layui-btn-lg layui-btn-normal" id="event6">设备对时</button>
+                            <button type="button" class="layui-btn layui-btn-lg layui-btn-warm" id="event7">刷新拓扑</button>
+                            <button type="button" class="layui-btn layui-btn-lg layui-btn-warm" id="event8">刷新相位</button>
                         </div>
                     </div>
                 </div>
@@ -69,9 +69,6 @@
             </div>
         </div>
     </div>
-
-
-
 
 </form>
 
@@ -201,6 +198,43 @@
                     "data": res.data //解析数据列表
                 };
             }
+        });
+
+        //召测实时数据
+        $('#event3').click(function (data) {
+            $.getJSON("/event/notification/send_event/3", {devId:devId,devType:devType}, function (data) {
+                layer.msg(data.message);
+            });
+        });
+        //召测冻结数据
+        $('#event4').click(function (data) {
+            $.getJSON("/event/notification/send_event/4", {devId:devId,devType:devType}, function (data) {
+                layer.msg(data.message);
+            });
+        });
+        //设备复位
+        $('#event5').click(function (data) {
+            $.getJSON("/event/notification/send_event/5", {devId:devId,devType:devType}, function (data) {
+                layer.msg(data.message);
+            });
+        });
+        //设备对时
+        $('#event6').click(function (data) {
+            $.getJSON("/event/notification/send_event/6", {devId:devId,devType:devType}, function (data) {
+                layer.msg(data.message);
+            });
+        });
+        //刷新拓扑
+        $('#event7').click(function (data) {
+            $.getJSON("/event/notification/send_event/7", {devId:devId,devType:devType}, function (data) {
+                layer.msg(data.message);
+            });
+        });
+        //刷新相位
+        $('#event8').click(function (data) {
+            $.getJSON("/event/notification/send_event/8", {devId:devId,devType:devType}, function (data) {
+                layer.msg(data.message);
+            });
         });
     });
 

@@ -1,16 +1,12 @@
 package com.wt.mis.event.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wt.mis.core.entity.BaseEntity;
-import com.wt.mis.core.util.FileUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.util.Date;
 
 @Data
 @Entity
@@ -22,7 +18,7 @@ public class Notification extends BaseEntity {
     * 设备ID
     */
     @Column(columnDefinition = " int COMMENT '设备ID'")
-    private Integer devId;
+    private Long devId;
     /**
     * 设备类型
     */
