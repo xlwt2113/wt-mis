@@ -111,7 +111,7 @@
         //定时获取报警设备数量
         setInterval(function () {
             $.get('/event/poweroutage/current_power_cnt',function (data) {
-                notice.error("目前有个"+data+"设备停电！");
+                notice.error("目前有"+data+"个设备报警！");
             })
         },15000);
 

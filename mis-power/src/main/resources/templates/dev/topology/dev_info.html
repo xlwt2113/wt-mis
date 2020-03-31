@@ -42,10 +42,16 @@
                         <div class="layui-btn-container">
                             <button type="button" class="layui-btn layui-btn-lg" id="event3">实时数据</button>
                             <button type="button" class="layui-btn layui-btn-lg" id="event4">冻结数据</button>
-                            <button type="button" class="layui-btn layui-btn-lg layui-btn-normal" id="event5">设备复位</button>
-                            <button type="button" class="layui-btn layui-btn-lg layui-btn-normal" id="event6">设备对时</button>
+                            <if th:if="${devType == 2}">
+                                <button type="button" class="layui-btn layui-btn-lg layui-btn-normal" id="event6">设备对时</button>
+                            </if>
+                            <if th:if="${devType < 6 }">
+                                <button type="button" class="layui-btn layui-btn-lg layui-btn-normal" id="event5">设备复位</button>
+                            </if>
+                            <!--
                             <button type="button" class="layui-btn layui-btn-lg layui-btn-warm" id="event7">刷新拓扑</button>
                             <button type="button" class="layui-btn layui-btn-lg layui-btn-warm" id="event8">刷新相位</button>
+                            -->
                         </div>
                     </div>
                 </div>

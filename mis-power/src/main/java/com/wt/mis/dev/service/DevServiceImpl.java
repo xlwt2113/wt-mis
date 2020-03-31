@@ -83,7 +83,13 @@ public class DevServiceImpl implements DevService{
 
     @Override
     public List<SelectOption> getDevListForSelect(int devType,Long transFormId, String depLevel) {
-        String sql = "SELECT t1.* FROM dev_topology t1 LEFT JOIN dev_line t2 ON t1.dev_id = t2.id left join sys_dep t3 on t2.operations_team = t3.id WHERE t1.del = 0 ";
+        String  devTableName = "dev_line";
+        if(devType==2){devTableName = "dev_transform";}
+        if(devType==3){devTableName = "dev_branch_box";}
+        if(devType==4 || devType==5){devTableName = "dev_meter_box";}
+        if(devType==6 || devType ==7){devTableName = "dev_meter";}
+
+        String sql = "SELECT t1.* FROM dev_topology t1 LEFT JOIN "+devTableName+" t2 ON t1.dev_id = t2.id left join sys_dep t3 on t2.operations_team = t3.id WHERE t1.del = 0 ";
         sql = sql + " and t1.dev_type = "+devType ;
 
         if(StringUtils.isNotEmpty(depLevel)){

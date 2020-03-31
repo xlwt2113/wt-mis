@@ -9,7 +9,6 @@ import java.util.List;
 @Repository
 public interface TopologyRepository extends BaseRepository<Topology,Long> {
 
-    List<Topology> findAllByDel(int del);
 
     List<Topology> findAllByDelAndDevType(int del,int devType);
 
@@ -18,4 +17,9 @@ public interface TopologyRepository extends BaseRepository<Topology,Long> {
     List<Topology> findAllByDelAndTransformId(int del,long transformId);
 
     List<Topology> findAllByDelAndDevIdAndDevType(int del,long devId,int devType);
+
+    List<Topology> findAllByDelAndDevTypeAndTransformId(int del,int devType,long transformId);
+
+    List<Topology> findAllByDelAndDevOnlineAndTransformId(int del,int onLine,long transformId);
+
 }
