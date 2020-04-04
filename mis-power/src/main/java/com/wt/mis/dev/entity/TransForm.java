@@ -65,4 +65,10 @@ public class TransForm extends BaseEntity {
     @Column(columnDefinition = " int(11) COMMENT '运维班组编号'")
     private Long operationsTeam;
 
+    /**
+     * 运维班组
+     */
+    @Column(columnDefinition = " int(11) COMMENT '台区归属线路ID'")
+    private Long lineId;
+
 }

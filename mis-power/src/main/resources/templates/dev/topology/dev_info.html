@@ -20,15 +20,15 @@
             <div class="layui-col-md3">
                 <div class="layui-card">
                     <div class="layui-card-header"><i class="fa fa-table icon"></i> 设备信息</div>
-                    <div class="layui-card-body" id="devInfo" style="height:450px">
+                    <div class="layui-card-body" id="devInfo" style="height:360px">
                     </div>
                 </div>
             </div>
             <div class="layui-col-md9">
                 <div class="layui-card">
-                    <div class="layui-card-header"><i class="fa fa-table icon"></i> 当日设备实时数据</div>
+                    <div class="layui-card-header"><i class="fa fa-table icon"></i> 设备冻结数据</div>
                     <div class="layui-card-body">
-                        <table class="layui-hide" id="realListTable" lay-filter="realListTable"></table>
+                        <table class="layui-hide" id="freezeListTable" lay-filter="freezeListTable"></table>
                     </div>
                 </div>
             </div>
@@ -58,16 +58,16 @@
             </div>
             <div class="layui-col-md9">
                 <div class="layui-card">
-                    <div class="layui-card-header"><i class="fa fa-table icon"></i> 当日设备冻结数据</div>
+                    <div class="layui-card-header"><i class="fa fa-table icon"></i> 设备实时数据</div>
                     <div class="layui-card-body">
-                        <table class="layui-hide" id="freezeListTable" lay-filter="freezeListTable"></table>
+                        <table class="layui-hide" id="realListTable" lay-filter="realListTable"></table>
                     </div>
                 </div>
             </div>
 
             <div class="layui-col-md12">
                 <div class="layui-card">
-                    <div class="layui-card-header"><i class="fa fa-table icon"></i> 当日设备报警记录</div>
+                    <div class="layui-card-header"><i class="fa fa-table icon"></i> 设备报警记录</div>
                     <div class="layui-card-body">
                         <table class="layui-hide" id="alarmListTable" lay-filter="alarmListTable"></table>
                     </div>
@@ -111,7 +111,7 @@
         table.render($.extend(config.searchListTable, {
             url: free_list_url+"?freezeTime="+currentTime+"&devType="+devType+"&devId="+devId,
             elem: '#freezeListTable',  //默认的查询列表页面中table的ID
-            height: 350,
+            height: 340,
             page: false,
             toolbar: null,  //顶部工具栏的默认ID
             //表格列
@@ -141,7 +141,7 @@
         table.render($.extend(config.searchListTable, {
             url: real_list_url+"?callTime="+currentTime+"&devType="+devType+"&devId="+devId,
             elem: '#realListTable',  //默认的查询列表页面中table的ID
-            height: 430,
+            height: 340,
             page: false,
             toolbar: null,  //顶部工具栏的默认ID
             //表格列
@@ -173,7 +173,7 @@
 
         //当日报警设备信息
         table.render({
-            height: 350, //固定值
+            height: 340, //固定值
             page: false,
             method:'post', //设置提交方式为post
             elem: '#alarmListTable',  //默认的查询列表页面中table的ID

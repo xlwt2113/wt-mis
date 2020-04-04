@@ -33,6 +33,14 @@
                             </select>
                         </div>
                         <div class="layui-inline">
+                            <select class="layui-select" name="dyType" id="dyType" lay-filter="dyType" lay-search>
+                                <option value="">请选择报警类型</option>
+                                <each th:each="item:${T(com.wt.mis.sys.util.DictUtils).getDictItems('电压状态')}">
+                                    <option th:value="${item.itemValue}" th:text="${item.itemKey}"></option>
+                                </each>
+                            </select>
+                        </div>
+                        <div class="layui-inline">
                             <div class="layui-input-inline" style="width: 110px;">
                             <input type="text" name="occurTimeBegin" id="occurTimeBegin" autocomplete="off" class="layui-input"
                                    placeholder="报警日期开始">
@@ -71,6 +79,7 @@
                         <div class="layui-card-header"><i class="fa fa-table icon"></i> 设备报警次数排名</div>
                         <div class="layui-card-body">
                             <table class="layui-hide" id="searchListTable3" lay-filter="searchListTable3"></table>
+<!--                            <div id="echarts-records" style="width: 100%;min-height:500px"></div>-->
                         </div>
                     </div>
                 </div>
@@ -85,12 +94,44 @@
             </div>
         </div>
     </div>
-
-
-
-
     </div>
 </div>
+
+<script type="text/html" id="dyATemp">
+    {{#  if(d.voltageStatusA != '正常'){ }}
+      <font color="red">{{d.voltageStatusA}}</font>
+    {{#  } else { }}
+       {{d.voltageStatusA}}
+    {{#  } }}
+</script>
+<script type="text/html" id="dyBTemp">
+    {{#  if(d.voltageStatusB != '正常'){ }}
+    <font color="red">{{d.voltageStatusB}}</font>
+    {{#  } else { }}
+    {{d.voltageStatusB}}
+    {{#  } }}
+</script>
+<script type="text/html" id="dyCTemp">
+    {{#  if(d.voltageStatusC != '正常'){ }}
+    <font color="red">{{d.voltageStatusC}}</font>
+    {{#  } else { }}
+    {{d.voltageStatusC}}
+    {{#  } }}
+</script>
+<script type="text/html" id="powerStatusTemp">
+    {{#  if(d.powerStatus != '正常'){ }}
+    <font color="red">{{d.powerStatus}}</font>
+    {{#  } else { }}
+    {{d.powerStatus}}
+    {{#  } }}
+</script>
+<script type="text/html" id="phaseStatusTemp">
+    {{#  if(d.phaseStatus != '正常'){ }}
+    <font color="red">{{d.phaseStatus}}</font>
+    {{#  } else { }}
+    {{d.phaseStatus}}
+    {{#  } }}
+</script>
 
 <script th:replace="common/base::mianJs"></script>
 <script th:inline="none">
@@ -98,7 +139,7 @@
 
     // config.initQueryCondition();
 
-    layui.use(['form', 'table','laydate'], function () {
+    layui.use(['form', 'table','laydate','echarts'], function () {
         var $ = layui.jquery,
                 form = layui.form,
                 laydate = layui.laydate,
@@ -122,12 +163,12 @@
             cols: [[
                 {field: 'devName', width: 200, title: '设备名称'},
                 {field: 'devType', width: 120, title: '设备类型'},
-                {field: 'powerStatus', width: 120, title: '停电状态'},
-                {field: 'phaseStatus', width: 120, title: '相序状态'},
                 {field: 'occurTime', width: 200, title: '发生时间',sort:true},
-                {field: 'voltageStatusA', width: 100, title: 'A相电压'},
-                {field: 'voltageStatusB', width: 100, title: 'B相电压'},
-                {field: 'voltageStatusC', width: 100, title: 'C相电压'},
+                {field: 'powerStatus', width: 120, title: '停电状态',templet: '#powerStatusTemp'},
+                {field: 'phaseStatus', width: 120, title: '相序状态',templet: '#phaseStatusTemp'},
+                {field: 'voltageStatusA', width: 100, title: 'A相电压',templet: '#dyATemp'},
+                {field: 'voltageStatusB', width: 100, title: 'B相电压',templet: '#dyBTemp'},
+                {field: 'voltageStatusC', width: 100, title: 'C相电压',templet: '#dyCTemp'},
                 {field: 'devParentName', width: 200, title: '上级设备名称'},
                 {field: 'devParentType', width: 120, title: '上级设备类型'},
                 {field: 'transformName', width: 200, title: '所属台区'}
@@ -166,12 +207,12 @@
             cols: [[
                 {field: 'devName', width: 200, title: '设备名称'},
                 {field: 'devType', width: 120, title: '设备类型'},
-                {field: 'powerStatus', width: 120, title: '停电状态'},
-                {field: 'phaseStatus', width: 120, title: '相序状态'},
                 {field: 'occurTime', width: 200, title: '发生时间',sort:true},
-                {field: 'voltageStatusA', width: 100, title: 'A相电压'},
-                {field: 'voltageStatusB', width: 100, title: 'B相电压'},
-                {field: 'voltageStatusC', width: 100, title: 'C相电压'},
+                {field: 'powerStatus', width: 120, title: '停电状态',templet: '#powerStatusTemp'},
+                {field: 'phaseStatus', width: 120, title: '相序状态',templet: '#phaseStatusTemp'},
+                {field: 'voltageStatusA', width: 100, title: 'A相电压',templet: '#dyATemp'},
+                {field: 'voltageStatusB', width: 100, title: 'B相电压',templet: '#dyBTemp'},
+                {field: 'voltageStatusC', width: 100, title: 'C相电压',templet: '#dyCTemp'},
                 {field: 'devParentName', width: 200, title: '上级设备名称'},
                 {field: 'devParentType', width: 120, title: '上级设备类型'},
                 {field: 'transformName', width: 200, title: '所属台区'}
@@ -214,7 +255,7 @@
 
         // 监听搜索操作
         form.on('submit(data-search-btn)', function (data) {
-            if(data.field.devType==''||data.field.transFormId==''){
+            if(data.field.transFormId==''){
                 layer.alert("请选择台区及设备类型后在进行查询！",{icon: 2});
                 return false;
             }else{
@@ -223,6 +264,7 @@
                     page: false
                     , where: {
                         "devType": data.field.devType,
+                        "dyType": data.field.dyType,
                         "devId": data.field.devId,
                         "occurTimeBegin": data.field.occurTimeBegin,
                         "occurTimeEnd": data.field.occurTimeEnd,
@@ -244,6 +286,7 @@
                 where: {
                         "devId": "",
                         "devType": "",
+                        "dyType": "",
                         "occurTimeBegin" : "",
                         "occurTimeEnd" : "",
                         "transFormId" : ""
@@ -265,7 +308,7 @@
         //获取设备下拉列表
         function getDevListForSelect(devType,transFormId) {
             $('#devId').empty();
-            $.getJSON("/dev/api/dev_list?transFormId="+transFormId+"&devType="+devType,function (json) {
+            $.getJSON("/dev/api/dev_list?showByq=true&transFormId="+transFormId+"&devType="+devType,function (json) {
                 let html = "<option value=''>请选择设备名称</option>";
                 for(var i=0;i<json.length;i++){
                     // console.log(json[i].name);
@@ -275,6 +318,50 @@
                 form.render();
             });
         }
+
+        //加载统计图
+        // option = {
+        //     title: {
+        //         text: '报警类型比例',
+        //         left: 'center'
+        //     },
+        //     tooltip: {
+        //         trigger: 'item',
+        //         formatter: '{a} <br/>{b} : {c} ({d}%)'
+        //     },
+        //     legend: {
+        //         bottom: 10,
+        //         left: 'center',
+        //         data: ['失压', '欠压', '过压']
+        //     },
+        //     series: [
+        //         {
+        //             type: 'pie',
+        //             radius: '65%',
+        //             center: ['50%', '50%'],
+        //             selectedMode: 'single',
+        //             data: [
+        //                 {value: 535, name: '失压'},
+        //                 {value: 510, name: '欠压'},
+        //                 {value: 634, name: '过压'}
+        //             ],
+        //             emphasis: {
+        //                 itemStyle: {
+        //                     shadowBlur: 10,
+        //                     shadowOffsetX: 0,
+        //                     shadowColor: 'rgba(0, 0, 0, 0.5)'
+        //                 }
+        //             }
+        //         }
+        //     ]
+        // };
+        // var echartsRecords = echarts.init(document.getElementById('echarts-records'), 'walden');
+        // echartsRecords.setOption(option);
+        //
+        // // echarts 窗口缩放自适应
+        // window.onresize = function(){
+        //     echartsRecords.resize();
+        // }
 
     });
 </script>

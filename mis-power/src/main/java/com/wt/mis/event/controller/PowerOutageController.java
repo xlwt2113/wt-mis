@@ -54,21 +54,25 @@ public class PowerOutageController{
     public ResponseEntity list(HttpServletRequest request) {
         String devType = request.getParameter("devType");
         String devId = request.getParameter("devId");
+        //电压类型
+        String dyType = request.getParameter("dyType");
         String occurTimeBegin = request.getParameter("occurTimeBegin");
         String occurTimeEnd = request.getParameter("occurTimeEnd");
         String transFormId = request.getParameter("transFormId");
-        if(StringUtils.isEmpty(devType)||StringUtils.isEmpty(transFormId)){
+        if(StringUtils.isEmpty(transFormId)){
             Map<String,List> resultMap = new HashMap<>();
             resultMap.put("logList",null);
             resultMap.put("sumList",null);
             //设置map，避免前台页面js错误
-            return ResponseUtils.ok("没有参数，不查询数据",resultMap);
+            return ResponseUtils.ok("请选择台区后再查询数据！",resultMap);
         }else{
             StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from event_power_outage t1  ");
             sql.append(" LEFT JOIN dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
             sql.append(" LEFT JOIN dev_transform t3 on t3.id = t2.transform_id where t1.del = 0 ");
-            sql.append(" and t1.dev_type = " + devType);
             sql.append(" and t2.transform_id = " + transFormId);
+            if(StringUtils.isNotEmpty(devType)){
+                sql.append(" and t1.dev_type = " + devType);
+            }
             if(StringUtils.isNotEmpty(devId)){
                 sql.append(" and t1.dev_id = " + devId);
             }
@@ -77,6 +81,9 @@ public class PowerOutageController{
             }
             if(StringUtils.isNotEmpty(occurTimeEnd)){
                 sql.append(" and DATE_FORMAT(t1.occur_time,'%Y-%m-%d') <= '"+ occurTimeEnd +"'");
+            }
+            if(StringUtils.isNotEmpty(dyType)){
+                sql.append( " AND (voltage_status_a = "+dyType+" or voltage_status_b = "+dyType+" or voltage_status_c = "+dyType+")");
             }
             sql.append(" order by  t1.occur_time asc ");
             List list = searchService.findAllBySql(sql.toString());
@@ -117,7 +124,7 @@ public class PowerOutageController{
         sql.append(" and t1.dev_id = " + devId);
         sql.append(" and t1.dev_type = " + devType);
         sql.append(" and DATE_FORMAT(t1.occur_time,'%Y-%m-%d') = '"+occurTime+"'");
-        sql.append(" order by  t1.occur_time asc ");
+        sql.append(" order by  t1.occur_time desc limit 50");
         List list = searchService.findAllBySql(sql.toString());
         Map<String,List> resultMap = this.dealSearchList(list);
         return ResponseUtils.ok("获取到数据", resultMap.get("logList"));

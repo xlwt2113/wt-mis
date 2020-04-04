@@ -89,6 +89,17 @@ public class DateUtils {
         return str;
     }
 
+    public static Date dayAddNum(Date time, Integer num){
+        //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        //Date date = format.parse(time);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(time);
+        calendar.add(Calendar.DATE, num);
+        Date newTime = calendar.getTime();
+        return newTime;
+    }
+
     public static String parseToChinese(DayOfWeek dayOfWeek) {
         return parseToChinese(dayOfWeek, TextStyle.FULL);
     }

@@ -14,78 +14,84 @@
     <input type="hidden" th:field="*{id}"> <!--此处必须有业务主键的id-->
 
 
-        <div class="layui-form-item">
-            <label class="layui-form-label">台区名称</label>
-            <div class="layui-input-block">
-                        <input type="text" th:field="*{transformName}" lay-verify="transformName" autocomplete="off" placeholder="请输入台区名称" class="layui-input">
-            </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">台区名称</label>
+        <div class="layui-input-block">
+            <input type="text" th:field="*{transformName}" lay-verify="transformName" autocomplete="off"
+                   placeholder="请输入台区名称" class="layui-input">
         </div>
+    </div>
 
 
-        <div class="layui-form-item">
-            <label class="layui-form-label">台区编号</label>
-            <div class="layui-input-block">
-                        <input type="text" th:field="*{transformNum}" lay-verify="transformNum" autocomplete="off" placeholder="请输入台区编号" class="layui-input">
-            </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">台区编号</label>
+        <div class="layui-input-block">
+            <input type="text" th:field="*{transformNum}" lay-verify="transformNum" autocomplete="off"
+                   placeholder="请输入台区编号" class="layui-input">
         </div>
+    </div>
 
 
-        <div class="layui-form-item">
-            <label class="layui-form-label">安装位置</label>
-            <div class="layui-input-block">
-                        <input type="text" th:field="*{installationLocation}" lay-verify="installationLocation" autocomplete="off" placeholder="请输入设备安装位置" class="layui-input">
-            </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">安装位置</label>
+        <div class="layui-input-block">
+            <input type="text" th:field="*{installationLocation}" lay-verify="installationLocation" autocomplete="off"
+                   placeholder="请输入变压器安装位置" class="layui-input">
         </div>
+    </div>
 
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">汇集单元</label>
-            <div class="layui-input-block">
-                        <input type="text" th:field="*{devAddress}" lay-verify="devAddress" autocomplete="off" placeholder="请输入汇集单元地址" class="layui-input">
-            </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">厂家</label>
+        <div class="layui-input-block">
+            <input type="text" th:field="*{transformFactory}" autocomplete="off" placeholder="请输入变压器厂家"
+                   class="layui-input">
         </div>
+    </div>
 
 
-        <div class="layui-form-item">
-            <label class="layui-form-label">通讯地址</label>
-            <div class="layui-input-block">
-                        <input type="text" th:field="*{protocolAddress}" autocomplete="off" placeholder="请输入协议通讯地址" class="layui-input">
-            </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">出厂编号</label>
+        <div class="layui-input-block">
+            <input type="text" th:field="*{serialNumber}" autocomplete="off" placeholder="请输入变压器出厂编号"
+                   class="layui-input">
         </div>
+    </div>
 
 
-        <div class="layui-form-item">
-            <label class="layui-form-label">制造商</label>
-            <div class="layui-input-block">
-                        <input type="text" th:field="*{transformFactory}" autocomplete="off" placeholder="请输入变压器制造商" class="layui-input">
-            </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">出厂日期</label>
+        <div class="layui-input-block">
+            <input type="text" th:field="*{manufacturingDate}"
+                   th:value="*{#dates.format(manufacturingDate, 'yyyy-MM-dd HH:mm:ss')}" autocomplete="off"
+                   placeholder="请输入变压器出厂日期" class="layui-input">
         </div>
+    </div>
 
 
-        <div class="layui-form-item">
-            <label class="layui-form-label">出厂编号</label>
-            <div class="layui-input-block">
-                        <input type="text" th:field="*{serialNumber}" autocomplete="off" placeholder="请输入出厂编号" class="layui-input">
-            </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">汇集终端</label>
+        <div class="layui-input-block">
+            <input type="text" th:field="*{devAddress}" lay-verify="devAddress" autocomplete="off"
+                   placeholder="请输入汇集终端地址" class="layui-input">
         </div>
+    </div>
 
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">出厂日期</label>
-            <div class="layui-input-block">
-                        <input type="text" th:field="*{manufacturingDate}" th:value="*{#dates.format(manufacturingDate, 'yyyy-MM-dd HH:mm:ss')}" autocomplete="off" placeholder="请输入出厂日期" class="layui-input">
-            </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">通讯地址</label>
+        <div class="layui-input-block">
+            <input type="text" th:field="*{protocolAddress}" autocomplete="off" placeholder="请输入协议通讯地址"
+                   class="layui-input">
         </div>
+    </div>
 
 
-        <div class="layui-form-item">
-            <label class="layui-form-label">运维班组</label>
-            <div class="layui-input-block">
-                        <input type="text" th:field="*{operationsTeam}" lay-verify="operationsTeam" autocomplete="off" placeholder="请输入运维班组" class="layui-input" lay-filter="depTree">
-            </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">运维班组</label>
+        <div class="layui-input-block">
+            <input type="text" th:field="*{operationsTeam}" lay-verify="operationsTeam" autocomplete="off"
+                   placeholder="请输入运维班组" class="layui-input" lay-filter="depTree">
         </div>
-
-
+    </div>
 
 
     <div class="layui-form-item  layui-hide">
@@ -103,57 +109,57 @@
     //用于保存所有的上传文件信息
     var uploadFileMap = new Map();
 
-    layui.use(['form', 'laydate', 'upload','treeSelect'], function () {
+    layui.use(['form', 'laydate', 'upload', 'treeSelect'], function () {
         var form = layui.form
-                , laydate = layui.laydate
-                , upload = layui.upload
-                ,treeSelect = layui.treeSelect
-                , $ = layui.jquery;
+            , laydate = layui.laydate
+            , upload = layui.upload
+            , treeSelect = layui.treeSelect
+            , $ = layui.jquery;
 
-                laydate.render({elem: '#manufacturingDate', trigger: 'click'});
-                treeSelect.render({
-                    // 选择器
-                    elem: '#operationsTeam',
-                    data: '/api/sys/dep_tree_json?open=true&show_self=true',
-                    type: 'get',
-                    placeholder: '请选择运维班组',
-                    search: true,
-                    // 加载完成后的回调函数
-                    success: function (d) {
-                        treeSelect.checkNode('depTree', [[${model.operationsTeam}]]); //默认选中
-                    }
-                });
+        laydate.render({elem: '#manufacturingDate', trigger: 'click'});
+        treeSelect.render({
+            // 选择器
+            elem: '#operationsTeam',
+            data: '/api/sys/dep_tree_json?open=true&show_self=true',
+            type: 'get',
+            placeholder: '请选择运维班组',
+            search: true,
+            // 加载完成后的回调函数
+            success: function (d) {
+                treeSelect.checkNode('depTree', [[${model.operationsTeam}]]); //默认选中
+            }
+        });
 
         //自定义验证规则
         form.verify({
-                transformName:function (value) {
-                    if (value == '') {
-                        return '必须输入台区名称';
-                    }
-                },
-                transformNum:function (value) {
-                    if (value == '') {
-                        return '必须输入台区编号';
-                    }
-                },
-                installationLocation:function (value) {
-                    if (value == '') {
-                        return '必须输入设备安装位置';
-                    }
-                },
-                devAddress:function (value) {
-                    if (value == '') {
-                        return '必须输入汇集单元地址';
-                    }
-                },
-                operationsTeam:function (value) {
-                    if (value == '') {
-                        return '必须输入运维班组';
-                    }
-                },
-                "test" :function(){}
+            transformName: function (value) {
+                if (value == '') {
+                    return '必须输入台区名称';
+                }
+            },
+            transformNum: function (value) {
+                if (value == '') {
+                    return '必须输入台区编号';
+                }
+            },
+            installationLocation: function (value) {
+                if (value == '') {
+                    return '必须输入变压器安装位置';
+                }
+            },
+            devAddress: function (value) {
+                if (value == '') {
+                    return '必须输入汇集终端地址';
+                }
+            },
+            operationsTeam: function (value) {
+                if (value == '') {
+                    return '必须输入运维班组';
+                }
+            },
+            "test": function () {
+            }
         });
-
 
 
         //监听提交
@@ -175,13 +181,15 @@
     });
 
     //删除附件
-    function delRow(obj,fileInputId, id) {
+    function delRow(obj, fileInputId, id) {
         $(obj).parent().remove();
         let fileSets = new Set(uploadFileMap.get(fileInputId));
         fileSets.delete(parseInt(id));
-        uploadFileMap.set(fileInputId,fileSets);
+        uploadFileMap.set(fileInputId, fileSets);
         if (id != undefined) {
-            $.post('/sys/upload/'+id+'/del', function (result) {console.log(result);});
+            $.post('/sys/upload/' + id + '/del', function (result) {
+                console.log(result);
+            });
         }
     }
 

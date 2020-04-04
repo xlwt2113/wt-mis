@@ -50,9 +50,9 @@ public class Meter extends BaseEntity {
     @Column(columnDefinition = " varchar(100) COMMENT '协议通讯地址'")
     private String protocolAddress;
     /**
-    * 电报常数
+    * 电表常数
     */
-    @Column(columnDefinition = " varchar(100) COMMENT '电报常数'")
+    @Column(columnDefinition = " varchar(100) COMMENT '电表常数'")
     private String meterConstant;
     /**
     * 电表准确度

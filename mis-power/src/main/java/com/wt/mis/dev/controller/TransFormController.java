@@ -102,14 +102,14 @@ public class TransFormController extends BaseController<TransForm> {
         List meterDxList = topologyRepository.findAllByDelAndDevTypeAndTransformId(0,6,dev.getId());
         mv.addObject("meterDxCnt",meterDxList.size());
         //获取三相电能表数量
-        List meterSxList = topologyRepository.findAllByDelAndDevTypeAndTransformId(0,6,dev.getId());
+        List meterSxList = topologyRepository.findAllByDelAndDevTypeAndTransformId(0,7,dev.getId());
         mv.addObject("meterSxCnt",meterSxList.size());
         //获取设备在线数量
         List onLineList = topologyRepository.findAllByDelAndDevOnlineAndTransformId(0,0,dev.getId());
         mv.addObject("onLine",((onLineList.size()*100/allDevList.size()))+ "%" );
         //改台区报警设备数
-        List list = searchService.findAllBySql("select count(*) as cnt from dev_topology where transform_id = "+dev.getId()+" and CONCAT_WS('-',dev_id,dev_type) in (" +
-                "SELECT CONCAT_WS('-',dev_id,dev_type) FROM event_power_outage where del = 0 and history = 0 and power_status = 1" +
+        List list = searchService.findAllBySql("select count(*) as cnt from dev_topology where del = 0 and transform_id = "+dev.getId()+" and CONCAT_WS('-',dev_id,dev_type) in (" +
+                "SELECT CONCAT_WS('-',dev_id,dev_type) FROM event_power_outage where del = 0 and history = 0 and power_status = 1 " +
                 ")");
         mv.addObject("alarmCnt",((HashMap) list.get(0)).get("cnt"));
 

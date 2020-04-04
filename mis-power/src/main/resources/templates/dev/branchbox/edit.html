@@ -25,7 +25,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">安装位置</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{installationLocation}" lay-verify="installationLocation" autocomplete="off" placeholder="请输入设备安装位置" class="layui-input">
+                        <input type="text" th:field="*{installationLocation}" lay-verify="installationLocation" autocomplete="off" placeholder="请输入安装位置" class="layui-input">
             </div>
         </div>
 
@@ -33,7 +33,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">通信地址</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{protocolAddress}" autocomplete="off" placeholder="请输入协议通信地址" class="layui-input">
+                        <input type="text" th:field="*{protocolAddress}" autocomplete="off" placeholder="请输入通信地址" class="layui-input">
             </div>
         </div>
 
@@ -90,7 +90,7 @@
                 },
                 installationLocation:function (value) {
                     if (value == '') {
-                        return '必须输入设备安装位置';
+                        return '必须输入安装位置';
                     }
                 },
                 operationsTeam:function (value) {

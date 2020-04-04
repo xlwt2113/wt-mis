@@ -116,7 +116,7 @@ public class TopologyController {
         ModelAndView mv = new ModelAndView(this.getUrlPrefix() + "/dev_info");
         mv.addObject("devId",devId);
         mv.addObject("devType",devType);
-        mv.addObject("currentTime", DateUtils.dateFormat(new Date()));
+        mv.addObject("currentTime", DateUtils.dateFormat(DateUtils.dayAddNum(new Date(),-1)));
         return mv;
     }
 

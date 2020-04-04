@@ -25,7 +25,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">安装位置</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{installationLocation}" lay-verify="installationLocation" autocomplete="off" placeholder="请输入设备安装位置" class="layui-input">
+                        <input type="text" th:field="*{installationLocation}" lay-verify="installationLocation" autocomplete="off" placeholder="请输入安装位置" class="layui-input">
             </div>
         </div>
 
@@ -76,15 +76,15 @@
         <div class="layui-form-item">
             <label class="layui-form-label">通讯地址</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{protocolAddress}" autocomplete="off" placeholder="请输入协议通讯地址" class="layui-input">
+                        <input type="text" th:field="*{protocolAddress}" autocomplete="off" placeholder="请输入通讯地址" class="layui-input">
             </div>
         </div>
 
 
         <div class="layui-form-item">
-            <label class="layui-form-label">电报常数</label>
+            <label class="layui-form-label">电表常数</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{meterConstant}" autocomplete="off" placeholder="请输入电报常数" class="layui-input">
+                        <input type="text" th:field="*{meterConstant}" autocomplete="off" placeholder="请输入电表常数" class="layui-input">
             </div>
         </div>
 
@@ -151,7 +151,7 @@
                 },
                 installationLocation:function (value) {
                     if (value == '') {
-                        return '必须输入设备安装位置';
+                        return '必须输入安装位置';
                     }
                 },
                 meterBarcode:function (value) {

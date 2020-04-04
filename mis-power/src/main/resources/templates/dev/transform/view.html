@@ -15,7 +15,7 @@
 
     <table class="layui-table" lay-size="sm">
         <colgroup>
-            <col width="100">
+            <col width="120">
             <col>
         </colgroup>
         <tbody>
@@ -32,24 +32,24 @@
             <td th:text="*{installationLocation}"></td>
         </tr>
         <tr>
-            <th class="layui-bg-gray">汇集单元</th>
+            <th class="layui-bg-gray">变压器厂家</th>
+            <td th:text="*{transformFactory}"></td>
+        </tr>
+        <tr>
+            <th class="layui-bg-gray">变压器出厂编号</th>
+            <td th:text="*{serialNumber}"></td>
+        </tr>
+        <tr>
+            <th class="layui-bg-gray">变压器出厂日期</th>
+            <td th:text="*{#dates.format(manufacturingDate, 'yyyy-MM-dd')}"></td>
+        </tr>
+        <tr>
+            <th class="layui-bg-gray">汇集终端地址</th>
             <td th:text="*{devAddress}"></td>
         </tr>
         <tr>
             <th class="layui-bg-gray">通讯地址</th>
             <td th:text="*{protocolAddress}"></td>
-        </tr>
-        <tr>
-            <th class="layui-bg-gray">制造商</th>
-            <td th:text="*{transformFactory}"></td>
-        </tr>
-        <tr>
-            <th class="layui-bg-gray">出厂编号</th>
-            <td th:text="*{serialNumber}"></td>
-        </tr>
-        <tr>
-            <th class="layui-bg-gray">出厂日期</th>
-            <td th:text="*{#dates.format(manufacturingDate, 'yyyy-MM-dd')}"></td>
         </tr>
         <tr>
             <th class="layui-bg-gray">运维班组</th>

@@ -38,6 +38,13 @@ public class DevApiController {
         }
         Dep dep = depRespository.getOne(LoginUser.getCurrentUser().getDepId());
         List<SelectOption> list  = devService.getDevListForSelect(devType,transFormId, dep.getLevel());
+
+        //台区名称后是否显示变压器
+        if("true".equals(request.getParameter("showByq"))&&devType==2){
+            for(SelectOption option: list){
+                option.setName(option.getName()+"变压器");
+            }
+        }
         return list;
     }
 

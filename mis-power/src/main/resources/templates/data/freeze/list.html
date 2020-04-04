@@ -216,7 +216,7 @@
 
         function getDevListForSelect(devType,transFormId) {
             $('#devId').empty();
-            $.getJSON("/dev/api/dev_list?transFormId="+transFormId+"&devType="+devType,function (json) {
+            $.getJSON("/dev/api/dev_list?showByq=true&transFormId="+transFormId+"&devType="+devType,function (json) {
                 let html = "<option value=''>请选择设备名称</option>";
                 for(var i=0;i<json.length;i++){
                     // console.log(json[i].name);
