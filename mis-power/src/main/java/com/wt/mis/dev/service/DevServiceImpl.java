@@ -1,6 +1,7 @@
 package com.wt.mis.dev.service;
 
 import com.wt.mis.core.dao.SearchDao;
+import com.wt.mis.core.exception.AppException;
 import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.dev.entity.*;
 import com.wt.mis.dev.repository.*;
@@ -108,5 +109,33 @@ public class DevServiceImpl implements DevService{
             result.add(so);
         }
         return result;
+    }
+
+    @Override
+    public void deleteDev(long devId, int devType) throws AppException {
+        List<Topology> topologyList = topologyRepository.findAllByDelAndDevIdAndDevType(0,devId,devType);
+        if(topologyList != null && topologyList.size() > 0){
+            throw  new  AppException("所选设备正在运行状态，不允许删除");
+        }else{
+            if(devType == 2){
+                transFormRepository.deleteByIdOnLogic(devId);
+            }
+            if(devType == 3){
+                branchBoxRepository.deleteByIdOnLogic(devId);
+            }
+            if(devType == 4 || devType == 5){
+                meterBoxRepository.deleteByIdOnLogic(devId);
+            }
+            if(devType == 6 || devType == 7){
+                meterRepository.deleteByIdOnLogic(devId);
+            }
+        }
+    }
+
+    @Override
+    public void deleteDevs(List<Long> devIds, int devType) throws AppException {
+        for(Long devId:devIds){
+            this.deleteDev(devId,devType);
+        }
     }
 }

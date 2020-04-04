@@ -1,5 +1,6 @@
 package com.wt.mis.dev.service;
 
+import com.wt.mis.core.exception.AppException;
 import com.wt.mis.dev.view.DevModel;
 import com.wt.mis.dev.view.SelectOption;
 
@@ -23,5 +24,22 @@ public interface DevService {
      * @return
      */
     List<SelectOption> getDevListForSelect(int devType,Long transFormId, String depLevel);
+
+
+    /**
+     * 根据设备类型及ID删除设备，删除前判断是否该设备在拓扑表中存在，存在则不允许删除
+     * @param devId
+     * @param devType
+     * @throws Exception
+     */
+    void deleteDev(long devId,int devType)throws AppException;
+
+    /**
+     * 根据设备类型及ID删除设备，删除前判断是否该设备在拓扑表中存在，存在则不允许删除
+     * @param devIds
+     * @param devType
+     * @throws Exception
+     */
+    void deleteDevs(List<Long> devIds,int devType)throws AppException;
 
 }

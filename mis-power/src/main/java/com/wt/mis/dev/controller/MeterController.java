@@ -2,11 +2,14 @@
 package com.wt.mis.dev.controller;
 
 import com.wt.mis.core.controller.BaseController;
+import com.wt.mis.core.exception.AppException;
 import com.wt.mis.core.repository.BaseRepository;
 import com.wt.mis.core.util.LoginUser;
+import com.wt.mis.core.util.ResponseUtils;
 import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.dev.entity.Meter;
 import com.wt.mis.dev.repository.MeterRepository;
+import com.wt.mis.dev.service.DevService;
 import com.wt.mis.sys.entity.Dep;
 import com.wt.mis.sys.repository.DepRespository;
 import com.wt.mis.sys.util.DictUtils;
@@ -15,9 +18,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +35,9 @@ public class MeterController extends BaseController<Meter> {
 
     @Autowired
     DepRespository depRespository;
+
+    @Autowired
+    DevService devService;
 
     @Override
     public BaseRepository<Meter, Long> repository() {
@@ -87,6 +91,32 @@ public class MeterController extends BaseController<Meter> {
         mv.addObject("threePhase",DictUtils.getDictItemKey("单/三相",String.valueOf(meter.getThreePhase())));
         mv.addObject("operationsTeam",depRespository.getOne(meter.getOperationsTeam()).getName());
         return mv;
+    }
+
+    @Override
+    @ApiOperation("提交删除对象-单个删除")
+    @GetMapping("/delete")
+    @ResponseBody
+    protected String delete(@NonNull Long id) {
+        try{
+            devService.deleteDev(id,6);
+            return ResponseUtils.okJson("删除成功",id);
+        }catch(AppException e){
+            return ResponseUtils.errorJson(e.getMessage().toString(),id);
+        }
+    }
+
+    @Override
+    @ApiOperation("提交删除对象-批量删除")
+    @PostMapping("/delete")
+    @ResponseBody
+    protected String deleteIds(@RequestParam("ids") List<Long> ids) {
+        try{
+            devService.deleteDevs(ids,6);
+            return ResponseUtils.okJson("删除成功",ids);
+        }catch(AppException e){
+            return ResponseUtils.errorJson(e.getMessage().toString(),ids);
+        }
     }
 }
 
