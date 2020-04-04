@@ -9,6 +9,7 @@ import com.wt.mis.core.util.LoginUser;
 import com.wt.mis.core.util.ResponseUtils;
 import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.dev.entity.TransForm;
+import com.wt.mis.dev.repository.LineRepository;
 import com.wt.mis.dev.repository.TopologyRepository;
 import com.wt.mis.dev.repository.TransFormRepository;
 import com.wt.mis.dev.service.DevService;
@@ -19,6 +20,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -33,6 +35,9 @@ public class TransFormController extends BaseController<TransForm> {
 
     @Autowired
     TransFormRepository transFormRepository;
+
+    @Autowired
+    LineRepository lineRepository;
 
     @Autowired
     DepRespository depRespository;
@@ -54,6 +59,13 @@ public class TransFormController extends BaseController<TransForm> {
     @Override
     protected String getUrlPrefix() {
         return "dev/transform";
+    }
+
+    @Override
+    @ModelAttribute(name = "model")
+    public void initModel(@RequestParam(value = "id", required = false) Long id, Model model, TransForm transForm) {
+        super.initModel(id, model, transForm);
+        model.addAttribute("lines", lineRepository.getAllByDel(0));
     }
 
     @Override

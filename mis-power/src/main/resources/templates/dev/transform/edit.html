@@ -93,6 +93,18 @@
         </div>
     </div>
 
+    <div class="layui-form-item">
+        <label class="layui-form-label">归属线路</label>
+        <div class="layui-input-block">
+            <select class="layui-select" th:field="*{lineId}" lay-verify="lineId">
+                <option value="">请选择线路</option>
+                <each th:each="item:${lines}">
+                    <option th:value="${item.id}" th:text="${item.lineName}"></option>
+                </each>
+            </select>
+        </div>
+    </div>
+
 
     <div class="layui-form-item  layui-hide">
         <div class="layui-input-block">
@@ -155,6 +167,11 @@
             operationsTeam: function (value) {
                 if (value == '') {
                     return '必须输入运维班组';
+                }
+            },
+            lineId: function (value) {
+                if (value == '') {
+                    return '必须选择线路';
                 }
             },
             "test": function () {
