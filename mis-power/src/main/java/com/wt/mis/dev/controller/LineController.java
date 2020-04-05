@@ -15,7 +15,9 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -43,6 +45,16 @@ public class LineController extends BaseController<Line> {
     @Override
     protected String getUrlPrefix() {
         return "dev/line";
+    }
+
+    @Override
+    @ModelAttribute(name = "model")
+    public void initModel(@RequestParam(value = "id", required = false) Long id, Model model, Line line) {
+        super.initModel(id, model, line);
+        //初始化班组为当前登录人班组
+        if(line.getId()==null){
+            line.setOperationsTeam(LoginUser.getCurrentUser().getDepId());
+        }
     }
 
     @Override

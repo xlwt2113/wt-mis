@@ -3,8 +3,11 @@ package com.wt.mis.event.controller;
 
 import com.wt.mis.core.controller.BaseController;
 import com.wt.mis.core.repository.BaseRepository;
+import com.wt.mis.core.util.DateUtils;
 import com.wt.mis.core.util.ResponseUtils;
 import com.wt.mis.core.util.StringUtils;
+import com.wt.mis.dev.entity.Topology;
+import com.wt.mis.dev.repository.TopologyRepository;
 import com.wt.mis.event.entity.Notification;
 import com.wt.mis.event.repository.NotificationRepository;
 import com.wt.mis.sys.util.DictUtils;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,6 +33,9 @@ public class NotificationController extends BaseController<Notification> {
 
     @Autowired
     NotificationRepository notificationRepository;
+
+    @Autowired
+    TopologyRepository topologyRepository;
 
     @Override
     public BaseRepository<Notification, Long> repository() {
@@ -78,6 +85,17 @@ public class NotificationController extends BaseController<Notification> {
     public ResponseEntity sendEvent(HttpServletRequest request,@PathVariable int eventType){
         String devId = request.getParameter("devId");
         String devType = request.getParameter("devType");
+        //判断设备是否在线，不在线不继续进行下一步处理
+        List<Topology> devList = topologyRepository.findAllByDelAndDevIdAndDevType(0,Long.parseLong(devId),Integer.parseInt(devType));
+        for(Topology dev : devList){
+            if(dev.getDevOnline()==1){
+                return ResponseUtils.ok("设备离线，无法发送命令");
+            }
+        }
+        //如果是获取冻结数据，需要判断获取日期是否是当日，如果是当日，提示无法召测
+        if(DateUtils.dateFormat(new Date()).equals(request.getParameter("freezeTime"))){
+            return ResponseUtils.ok("当日尚未生成冻结数据，无法召测");
+        }
         int cnt = 0;
         //获取正在执行的事件数量
         if(StringUtils.isNotEmpty(devId)){

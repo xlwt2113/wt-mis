@@ -72,4 +72,5 @@ public interface BaseRepository<T, ID> extends JpaRepository<T, ID>, JpaSpecific
     @Modifying
     @Query("update #{#entityName} set del = 1 where id = ?1")
     void deleteByIdOnLogic(Long id);
+
 }

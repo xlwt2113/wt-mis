@@ -2,9 +2,7 @@ package com.wt.mis.sys.util;
 
 import com.wt.mis.sys.entity.Dict;
 import com.wt.mis.sys.entity.DictItem;
-import com.wt.mis.sys.repository.DictRepository;
 import com.wt.mis.sys.service.SysService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -55,7 +53,7 @@ public class DictUtils {
     }
 
     /**
-     * 更加字典项名称及键值获取键名
+     * 根据字典项名称及键值获取键名
      * @param dictName
      * @param dictItemValue
      * @return
@@ -66,6 +64,24 @@ public class DictUtils {
         for(DictItem item:dictItemList){
             if(item.getItemValue().equals(dictItemValue)){
                 key = item.getItemKey();
+                break;
+            }
+        }
+        return key;
+    }
+
+    /**
+     * 根据字典项名称及键名获取对应的键值
+     * @param dictName
+     * @param dictItemName
+     * @return
+     */
+    public static String getDictItemValue(String dictName,String dictItemName){
+        List<DictItem> dictItemList =  getDictItems(dictName);
+        String key = "";
+        for(DictItem item:dictItemList){
+            if(item.getItemValue().equals(dictItemName)){
+                key = item.getItemValue();
                 break;
             }
         }

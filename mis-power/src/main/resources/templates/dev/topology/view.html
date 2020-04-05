@@ -66,19 +66,19 @@
 
             $.getJSON("/dev/topology/line_view_data",function (data) {
                 var lineList = data.lineList;
-                var transformList = data.transformList;
-                addLine(lineList,transformList);
+                addLine(lineList);
             });
 
             //绘制线路及台区
-            function addLine(line,transform){
+            function addLine(line){
                 var baseX = 400,tempX = 400;
                 var baseY = 120,tempY = 180;
                 for(let i=0;i<line.length;i++){
                     let lineHead = newCircleNode(tempX,baseY,2,{devName:""});
-                    for(let j=0;j<transform.length;j++){
+                    console.log()
+                    for(let j=0;j<line[i].transfromList.length;j++){
                         tempX = tempX + 200;
-                        newNode(tempX,baseY-10,30,30,transform[j]);
+                        newNode(tempX,baseY-10,30,30,line[i].transfromList[j]);
                     }
                     tempX = tempX + 200;
                     let lineEnd = newCircleNode(tempX,baseY,2,{devName:""});

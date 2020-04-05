@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.List;
 
 @Data
 @Entity
@@ -84,5 +86,11 @@ public class Topology extends BaseEntity {
     */
     @Column(columnDefinition = " int COMMENT '设备是否存在'")
     private Integer devExist;
+
+    /**
+     * 只用于拓扑图上展示的归属线路的台区设备列表
+     */
+    @Transient
+    private List<Topology> transfromList;
 
 }

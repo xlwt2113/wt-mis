@@ -49,13 +49,13 @@
             </div>
         </div>
 
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">运维班组</label>
-            <div class="layui-input-block">
-                        <input type="text" th:field="*{operationsTeam}" lay-verify="operationsTeam" autocomplete="off" placeholder="请输入运维班组" class="layui-input" lay-filter="depTree">
-            </div>
-        </div>
+    <input type="hidden" th:field="*{operationsTeam}">
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">运维班组</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                        <input type="text" th:field="*{operationsTeam}" lay-verify="operationsTeam" autocomplete="off" placeholder="请输入运维班组" class="layui-input" lay-filter="depTree">-->
+<!--            </div>-->
+<!--        </div>-->
 
 
 
@@ -82,18 +82,18 @@
                 ,treeSelect = layui.treeSelect
                 , $ = layui.jquery;
 
-                treeSelect.render({
-                    // 选择器
-                    elem: '#operationsTeam',
-                    data: '/api/sys/dep_tree_json?open=true&show_self=true',
-                    type: 'get',
-                    placeholder: '请选择运维班组',
-                    search: true,
-                    // 加载完成后的回调函数
-                    success: function (d) {
-                        treeSelect.checkNode('depTree', [[${model.operationsTeam}]]); //默认选中
-                    }
-                });
+                // treeSelect.render({
+                //     // 选择器
+                //     elem: '#operationsTeam',
+                //     data: '/api/sys/dep_tree_json?open=true&show_self=true',
+                //     type: 'get',
+                //     placeholder: '请选择运维班组',
+                //     search: true,
+                //     // 加载完成后的回调函数
+                //     success: function (d) {
+                //         treeSelect.checkNode('depTree', [[${model.operationsTeam}]]); //默认选中
+                //     }
+                // });
 
         //自定义验证规则
         form.verify({
@@ -107,11 +107,11 @@
                         return '必须输入安装位置';
                     }
                 },
-                operationsTeam:function (value) {
-                    if (value == '') {
-                        return '必须输入运维班组';
-                    }
-                },
+                // operationsTeam:function (value) {
+                //     if (value == '') {
+                //         return '必须输入运维班组';
+                //     }
+                // },
                 "test" :function(){}
         });
 

@@ -2,6 +2,7 @@
 package com.wt.mis.dev.controller;
 
 import com.wt.mis.core.util.DateUtils;
+import com.wt.mis.core.util.LoginUser;
 import com.wt.mis.dev.entity.Line;
 import com.wt.mis.dev.entity.Topology;
 import com.wt.mis.dev.entity.TransForm;
@@ -55,17 +56,25 @@ public class TopologyController {
     @ResponseBody
     public Map<String,List<Topology>> getLineViewData(){
         Map<String,List<Topology>> resultMap = new HashMap();
-        List<Line> lineList = lineRepository.findAllByDel(0);
+//        List<Line> lineList = lineRepository.findAllByDel(0);
+        List<Line> lineList = lineRepository.findAllByOperationsTeam(LoginUser.getCurrentUser().getDepId());
         List<Topology> topologyLineList = new ArrayList<>();
+        List<Topology> transformList = topologyRepository.findAllByDelAndDevType(0,2);
         for(Line line :lineList){
             Topology topologyLine = new Topology();
             topologyLine.setDevId(line.getId());
             topologyLine.setDevName(line.getLineName());
             topologyLine.setDevType(1);
+            List<Topology> newTransformList = new ArrayList<>();
+            for(Topology transform :transformList){
+                TransForm temp = transFormRepository.getOne(transform.getDevId());
+                if(temp!=null && temp.getLineId()!=null && temp.getLineId().longValue() == line.getId().longValue()){
+                    newTransformList.add(transform);
+                }
+            }
+            topologyLine.setTransfromList(newTransformList);
             topologyLineList.add(topologyLine);
         }
-        List transformList = topologyRepository.findAllByDelAndDevType(0,2);
-        resultMap.put("transformList",transformList);
         resultMap.put("lineList",topologyLineList);
         return resultMap;
     }

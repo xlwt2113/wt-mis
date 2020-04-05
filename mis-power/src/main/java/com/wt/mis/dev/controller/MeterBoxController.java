@@ -18,6 +18,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -47,6 +48,16 @@ public class MeterBoxController extends BaseController<MeterBox> {
     @Override
     protected String getUrlPrefix() {
         return "dev/meterbox";
+    }
+
+    @Override
+    @ModelAttribute(name = "model")
+    public void initModel(@RequestParam(value = "id", required = false) Long id, Model model, MeterBox meterbox) {
+        super.initModel(id, model, meterbox);
+        //初始化班组为当前登录人班组
+        if(meterbox.getId()==null){
+            meterbox.setOperationsTeam(LoginUser.getCurrentUser().getDepId());
+        }
     }
 
     @Override

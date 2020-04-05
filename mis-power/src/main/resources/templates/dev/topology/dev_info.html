@@ -39,9 +39,12 @@
                 <div class="layui-card">
                     <div class="layui-card-header"><i class="fa fa-table icon"></i> 设备操作</div>
                     <div class="layui-card-body" style="text-align: center;height: 370px">
+                        <div class="layui-col-md6 layui-col-md-offset3" style="padding-bottom: 35px">
+                            <input type="text" name="freezeTime" id="freezeTime" autocomplete="off" class="layui-input" placeholder="冻结日期">
+                        </div>
                         <div class="layui-btn-container">
-                            <button type="button" class="layui-btn layui-btn-lg" id="event3">实时数据</button>
                             <button type="button" class="layui-btn layui-btn-lg" id="event4">冻结数据</button>
+                            <button type="button" class="layui-btn layui-btn-lg" id="event3">实时数据</button>
                             <if th:if="${devType == 2}">
                                 <button type="button" class="layui-btn layui-btn-lg layui-btn-normal" id="event6">设备对时</button>
                             </if>
@@ -94,6 +97,8 @@
                 , laydate = layui.laydate
                 , table = layui.table
                 , $ = layui.jquery;
+
+        laydate.render({elem: '#freezeTime'});
 
         if(devType==2){
             $('#devInfo').load('/dev/transform/view?id='+devId);
@@ -214,7 +219,7 @@
         });
         //召测冻结数据
         $('#event4').click(function (data) {
-            $.getJSON("/event/notification/send_event/4", {devId:devId,devType:devType}, function (data) {
+            $.getJSON("/event/notification/send_event/4", {devId:devId,devType:devType,freezeTime:$('#freezeTime').val()}, function (data) {
                 layer.msg(data.message);
             });
         });

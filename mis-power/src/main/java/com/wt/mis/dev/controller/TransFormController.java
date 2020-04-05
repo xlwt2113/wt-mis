@@ -65,6 +65,10 @@ public class TransFormController extends BaseController<TransForm> {
     @ModelAttribute(name = "model")
     public void initModel(@RequestParam(value = "id", required = false) Long id, Model model, TransForm transForm) {
         super.initModel(id, model, transForm);
+        //初始化班组为当前登录人班组
+        if(transForm.getId()==null){
+            transForm.setOperationsTeam(LoginUser.getCurrentUser().getDepId());
+        }
         model.addAttribute("lines", lineRepository.getAllByDel(0));
     }
 
