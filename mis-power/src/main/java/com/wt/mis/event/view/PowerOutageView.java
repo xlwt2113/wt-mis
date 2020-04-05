@@ -9,7 +9,7 @@ public class PowerOutageView {
 
     private Date occurTime;
     private String occurTimeStr;
-    private String devType;
+    private String devTypeName;
     private String devName;
     private String devParentType;
     private String devParentName;
@@ -20,4 +20,6 @@ public class PowerOutageView {
     private String voltageStatusB;
     private String voltageStatusC;
     private String operationsTeamName;
+    private int devType;
+    private long devId;
 }

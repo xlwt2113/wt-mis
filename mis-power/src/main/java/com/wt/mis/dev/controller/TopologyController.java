@@ -109,15 +109,6 @@ public class TopologyController {
         return resultMap;
     }
 
-    /**
-     * 获取当前停电的设备信息
-     * @return
-     */
-    @GetMapping("/current_poweroutage_data")
-    @ResponseBody
-    public List getPowerOutageInfo(){
-        return powerOutageRepository.getAllByDelAndHistoryAndPowerStatus(0,0,1);
-    }
 
 
     @GetMapping("/dev_info/{devId}/{devType}")

@@ -3,6 +3,7 @@ package com.wt.mis.event.controller;
 
 import com.wt.mis.core.service.SearchService;
 import com.wt.mis.core.util.DateUtils;
+import com.wt.mis.core.util.LoginUser;
 import com.wt.mis.core.util.ResponseUtils;
 import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.data.entity.Freeze;
@@ -92,16 +93,26 @@ public class PowerOutageController{
         }
     }
 
-    @ApiOperation("根据当前正在停电的设备")
-    @PostMapping("/current_power_list")
-    @ResponseBody
-    public ResponseEntity current_power_list() {
+    /**
+     * 获取当前登录人管辖台区下的所有设备报警信息
+     * @return
+     */
+    private List getCurrentPowerByDep(){
         StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from event_power_outage t1  ");
         sql.append(" LEFT JOIN dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
-        sql.append(" LEFT JOIN dev_transform t3 on t3.id = t2.transform_id where t1.del = 0 and t1.power_status = 1 and t1.history = 0");
+        sql.append(" LEFT JOIN dev_transform t3 on t3.id = t2.transform_id ");
+        sql.append(" inner join sys_dep t4 on t3.operations_team = t4.id and (t4.level like '%_"+ LoginUser.getCurrentUser().getDepId() +"%' or t4.id = "+LoginUser.getCurrentUser().getDepId()+")");
+        sql.append(" where t1.del = 0 and t1.power_status = 1 and t1.history = 0  and t2.del = 0");
         sql.append(" order by  t1.occur_time asc ");
         List list = searchService.findAllBySql(sql.toString());
-        Map<String,List> resultMap = this.dealSearchList(list);
+        return list ;
+    }
+
+    @ApiOperation("根据当前正在停电的设备")
+    @GetMapping("/current_power_list")
+    @ResponseBody
+    public ResponseEntity current_power_list() {
+        Map<String,List> resultMap = this.dealSearchList(this.getCurrentPowerByDep());
         return ResponseUtils.ok("获取到数据", resultMap.get("logList"));
     }
 
@@ -109,7 +120,8 @@ public class PowerOutageController{
     @GetMapping("/current_power_cnt")
     @ResponseBody
     public int current_power_cnt() {
-        int cnt  = powerOutageRepository.countAllByDelAndHistoryAndPowerStatus(0,0,1);
+        List list = this.getCurrentPowerByDep();
+        int cnt  = list.size();
         return cnt;
     }
 
@@ -160,9 +172,11 @@ public class PowerOutageController{
         for (Object obj : searchResultlist) {
             HashMap<String, Object> map = (HashMap) obj;
             PowerOutageView view = new PowerOutageView();
+            view.setDevId(Long.valueOf(map.get("dev_id").toString()));
             view.setOccurTime((Date) map.get("occur_time"));
             view.setOccurTimeStr(DateUtils.timeFormat(view.getOccurTime()));
-            view.setDevType(DictUtils.getDictItemKey("设备类型", String.valueOf(map.get("dev_type"))));
+            view.setDevTypeName(DictUtils.getDictItemKey("设备类型", String.valueOf(map.get("dev_type"))));
+            view.setDevType(Integer.valueOf(map.get("dev_type").toString()));
             view.setDevParentType(DictUtils.getDictItemKey("设备类型", String.valueOf(map.get("dev_parent_type"))));
             view.setPowerStatus(DictUtils.getDictItemKey("停电/相序状态", String.valueOf(map.get("power_status"))));
             view.setPhaseStatus(DictUtils.getDictItemKey("停电/相序状态", String.valueOf(map.get("phase_status"))));
@@ -180,7 +194,7 @@ public class PowerOutageController{
                 sumView.setCnt(sumView.getCnt()+1);
             }else{
                 sumView.setDevName(view.getDevName());
-                sumView.setDevType(view.getDevType());
+                sumView.setDevType(view.getDevTypeName());
                 sumView.setCnt(1);
             }
             sumMap.put(String.valueOf(map.get("dev_id")),sumView);

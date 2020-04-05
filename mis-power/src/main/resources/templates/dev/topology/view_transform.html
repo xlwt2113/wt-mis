@@ -97,20 +97,25 @@
                 //获取所有节点
                 allNodes = scene.getDisplayedNodes();
                 //获取停电报警数据
-                $.getJSON("/dev/topology/current_poweroutage_data",function (data) {
-                    alarm = setInterval(function(){
-                        for(let i=0;i<allNodes.length;i++){
-                            for(let j=0;j<data.length;j++){
-                                if(allNodes[i].info.devId ==data[j].devId && allNodes[i].info.devType == data[j].devType){
-                                    console.log("报警！！！");
-                                    allNodes[i].alarmColor = '255,0,0';
-                                    allNodes[i].alarmAlpha = 1;
-                                    allNodes[i].alarm == '设备报警'? allNodes[i].alarm = null : allNodes[i].alarm = '设备报警';
+                setInterval(function () {
+                    window.clearTimeout(alarm);
+                    $.getJSON("/event/poweroutage/current_power_list",function (res) {
+                        data = res.data;
+                        alarm = setInterval(function(){
+                            for(let i=0;i<allNodes.length;i++){
+                                for(let j=0;j<data.length;j++){
+                                    if(allNodes[i].info.devId ==data[j].devId && allNodes[i].info.devType == data[j].devType){
+                                        console.log("报警！！！");
+                                        allNodes[i].alarmColor = '255,0,0';
+                                        allNodes[i].alarmAlpha = 1;
+                                        allNodes[i].alarm == '设备报警'? allNodes[i].alarm = null : allNodes[i].alarm = '设备报警';
+                                    }
                                 }
                             }
-                        }
-                    },600);
-                });
+                        },600);
+                    });
+                },15000);
+
             });
 
 
