@@ -111,6 +111,12 @@
                         return '必须输入任务类型';
                     }
                 },
+                transformId:function(value){
+                    console.log(value);
+                    if (value == '' || value == null) {
+                        return '必须选择台区';
+                    }
+                },
                 taskDay:function (value) {
                     if (parseInt(value)<=0 || parseInt(value) >31) {
                         return '请输入1到31之间的数字';

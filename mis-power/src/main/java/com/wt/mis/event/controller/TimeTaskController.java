@@ -6,16 +6,17 @@ import com.wt.mis.core.repository.BaseRepository;
 import com.wt.mis.core.util.LoginUser;
 import com.wt.mis.dev.entity.TransForm;
 import com.wt.mis.dev.repository.TransFormRepository;
+import com.wt.mis.event.entity.Notification;
 import com.wt.mis.event.entity.TimeTask;
+import com.wt.mis.event.repository.NotificationRepository;
 import com.wt.mis.event.repository.TimeTaskRepository;
 import com.wt.mis.sys.util.DictUtils;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -31,6 +32,9 @@ public class TimeTaskController extends BaseController<TimeTask> {
 
     @Autowired
     TransFormRepository transFormRepository;
+
+    @Autowired
+    NotificationRepository notificationRepository;
 
     @Override
     public BaseRepository<TimeTask, Long> repository() {
@@ -87,5 +91,38 @@ public class TimeTaskController extends BaseController<TimeTask> {
             key = DictUtils.getDictItemKey("定时任务执行状态", String.valueOf(map.get("task_state")));
             map.replace("task_state", key);
         }
+    }
+
+    @Override
+    @ApiOperation("提交创建对象")
+    @PostMapping("/add")
+    @ResponseBody
+    protected String add(HttpServletRequest request, TimeTask timeTask) {
+        this.addEvent(timeTask);
+        return super.add(request, timeTask);
+    }
+
+    @Override
+    @ApiOperation("提交修改对象")
+    @PostMapping("/edit")
+    @ResponseBody
+    protected String edit(HttpServletRequest request, TimeTask timeTask) {
+        this.addEvent(timeTask);
+        return super.edit(request, timeTask);
+    }
+
+    private void addEvent(TimeTask timeTask){
+        Notification notification = new Notification();
+        //写入设备ID
+        notification.setDevId(timeTask.getTransformId());
+        //写入设备类型,默认为台区
+        notification.setDevType(2);
+        //事件类型，计划任务
+        notification.setEventType(100);
+        //事件状态设置为初始状态为未处理
+        notification.setEventStatus(0);
+        //设置事件接收端为前置机
+        notification.setEventReceiver(2);
+        notificationRepository.save(notification);
     }
 }

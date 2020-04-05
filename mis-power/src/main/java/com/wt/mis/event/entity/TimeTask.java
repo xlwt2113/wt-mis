@@ -26,7 +26,7 @@ public class TimeTask extends BaseEntity {
     * 台区Id
     */
     @Column(columnDefinition = " int COMMENT '台区Id'")
-    private Integer transformId;
+    private Long transformId;
     /**
     * 时间间隔类型
     */
