@@ -71,8 +71,10 @@ public class DevServiceImpl implements DevService{
             String[] depIds = dep.getLevel().split("_");
             String level_name = "";
             for(String depId : depIds){
-                Dep tempDep = depRespository.getOne(Long.parseLong(depId));
-                level_name = level_name + tempDep.getName() + "_" ;
+                if(StringUtils.isNotEmpty(depId)){
+                    Dep tempDep = depRespository.getOne(Long.parseLong(depId));
+                    level_name = level_name + tempDep.getName() + "_" ;
+                }
             }
             if(StringUtils.isNotEmpty(level_name)){
                 level_name = level_name.substring(0,level_name.length()-1);

@@ -130,6 +130,21 @@ public class PowerOutageController{
         return ResponseUtils.ok("获取到数据", resultMap.get("logList"));
     }
 
+    @ApiOperation("获取个设备最近50条的停电报警记录")
+    @PostMapping("/power_log_list/{devId}/{devType}")
+    @ResponseBody
+    public ResponseEntity all_power_list(@PathVariable long devId,@PathVariable int devType) {
+        StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from event_power_outage t1  ");
+        sql.append(" LEFT JOIN dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
+        sql.append(" LEFT JOIN dev_transform t3 on t3.id = t2.transform_id where t1.del = 0 ");
+        sql.append(" and t1.dev_id = " + devId);
+        sql.append(" and t1.dev_type = " + devType);
+        sql.append(" order by  t1.occur_time desc limit 50");
+        List list = searchService.findAllBySql(sql.toString());
+        Map<String,List> resultMap = this.dealSearchList(list);
+        return ResponseUtils.ok("获取到数据", resultMap.get("logList"));
+    }
+
 
     /**
      * 处理列表页面中要显示的数据内容,将行转列显示

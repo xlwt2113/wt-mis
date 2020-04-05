@@ -40,7 +40,7 @@
                     <div class="layui-card-header"><i class="fa fa-table icon"></i> 设备操作</div>
                     <div class="layui-card-body" style="text-align: center;height: 370px">
                         <div class="layui-col-md6 layui-col-md-offset3" style="padding-bottom: 35px">
-                            <input type="text" name="freezeTime" id="freezeTime" autocomplete="off" class="layui-input" placeholder="冻结日期">
+                            <input type="text" name="freezeTime" id="freezeTime" th:value="${currentTime}" autocomplete="off" class="layui-input" placeholder="冻结日期">
                         </div>
                         <div class="layui-btn-container">
                             <button type="button" class="layui-btn layui-btn-lg" id="event4">冻结数据</button>
@@ -182,7 +182,7 @@
             page: false,
             method:'post', //设置提交方式为post
             elem: '#alarmListTable',  //默认的查询列表页面中table的ID
-            url: power_log_list_url+"/"+devId+"/"+devType+"/"+currentTime,
+            url: power_log_list_url+"/"+devId+"/"+devType,
             toolbar: null,  //顶部工具栏的默认ID
             cols: [[
                 {field: 'devName', width: 200, title: '设备名称'},
