@@ -61,12 +61,13 @@
         <div class="layui-form-item">
             <label class="layui-form-label">执行时间</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{taskTime}" th:value="*{#dates.format(taskTime, 'yyyy-MM-dd HH:mm:ss')}" lay-verify="taskTime" autocomplete="off" placeholder="请输入任务执行时间" class="layui-input">
+                        <input type="text" th:field="*{taskTimeStr}" lay-verify="taskTime" autocomplete="off" placeholder="请输入任务执行时间" class="layui-input">
             </div>
         </div>
 
 
-    <input type="text" th:field="*{nextTask}">
+    <input type="hidden" th:field="*{taskTime}">
+    <input type="hidden" th:field="*{nextTask}">
     <input type="hidden" th:field="*{depId}" >
     <input type="hidden" th:field="*{taskState}" >
 
@@ -97,8 +98,7 @@
                 ,treeSelect = layui.treeSelect
                 , $ = layui.jquery;
 
-                laydate.render({elem: '#taskTime', trigger: 'click',type: 'datetime'});
-                laydate.render({elem: '#nextTask', trigger: 'click',type: 'datetime'});
+                laydate.render({elem: '#taskTimeStr', trigger: 'click',type: 'time',value:'[[${#dates.format(model.taskTime, 'HH:mm:ss')}]]'});
 
         //自定义验证规则
         form.verify({
@@ -119,7 +119,7 @@
                 },
                 taskTime:function (value) {
                     if (value == '') {
-                        return '必须输入任务执行时刻';
+                        return '请输入任务执行时间';
                     }
                 },
                 "test" :function(){}
@@ -150,16 +150,6 @@
         });
     });
 
-    //删除附件
-    function delRow(obj,fileInputId, id) {
-        $(obj).parent().remove();
-        let fileSets = new Set(uploadFileMap.get(fileInputId));
-        fileSets.delete(parseInt(id));
-        uploadFileMap.set(fileInputId,fileSets);
-        if (id != undefined) {
-            $.post('/sys/upload/'+id+'/del', function (result) {console.log(result);});
-        }
-    }
 
     //更新间隔类型的说文字
     function chanageText(val) {

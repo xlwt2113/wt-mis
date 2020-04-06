@@ -28,6 +28,9 @@ public class Account extends BaseEntity implements UserDetails {
     @Column(columnDefinition = " varchar(20) COMMENT '真实名称'")
     private String realName;
 
+    @Column(columnDefinition = " varchar(20) COMMENT '手机号'")
+    private String mobile;
+
     @Column(columnDefinition = " varchar(100) COMMENT '密码'")
     private String password;
 

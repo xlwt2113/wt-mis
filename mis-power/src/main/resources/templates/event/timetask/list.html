@@ -53,6 +53,21 @@
     </div>
 </div>
 
+<script type="text/html" id="taskDayTempl">
+    {{#  if(d.interval_type == 1){ }}
+    间隔 {{d.task_day}} 小时
+    {{#  } }}
+    {{#  if(d.interval_type == 2){ }}
+    每 {{d.task_day}} 天
+    {{#  } }}
+    {{#  if(d.interval_type == 3){ }}
+    星期 {{d.task_day}}
+    {{#  } }}
+    {{#  if(d.interval_type == 4){ }}
+    每月 {{d.task_day}} 号
+    {{#  } }}
+</script>
+
 <script th:replace="common/base::mianJs"></script>
 <script th:inline="none">
 
@@ -81,9 +96,9 @@
                 {type: "checkbox", width: 50, fixed: "left"},
                 {field: 'task_type', width: 200, title: '任务类型'},
                 {field: 'transform_name', width: 200, title: '台区'},
-                {field: 'interval_type', width: 200, title: '时间间隔类型'},
-                {field: 'task_day', width: 200, title: '执行日'},
-                {field: 'task_time', width: 200, title: '任务执行时刻'},
+                {field: 'interval_type_name', width: 200, title: '时间间隔类型'},
+                {field: 'task_day', width: 200, title: '间隔量',templet: '#taskDayTempl'},
+                {field: 'task_time_str', width: 200, title: '任务执行时刻'},
                 {field: 'next_task', width: 200, title: '下次任务执行时间'},
                 {field: 'task_state', width: 200, title: '定时任务执行状态'},
                 {title: '操作', width: 220, templet: '#currentTableBar', fixed: "right", align: "center"}

@@ -15,11 +15,15 @@ import com.wt.mis.sys.util.DictUtils;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -50,6 +54,10 @@ public class TimeTaskController extends BaseController<TimeTask> {
     @Override
     @ModelAttribute(name = "model")
     public void initModel(@RequestParam(value = "id", required = false) Long id, Model model, TimeTask timeTask) {
+
+        Collection list1 = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+
+
         super.initModel(id, model, timeTask);
         //获取台区列表
         List<TransForm> transFormList = transFormRepository.getAllByOperationsTeamAndDel(LoginUser.getCurrentUser().getDepId(),0);
@@ -64,7 +72,7 @@ public class TimeTaskController extends BaseController<TimeTask> {
 
     @Override
     protected String generateSearchSql(TimeTask timeTask, HttpServletRequest request) {
-        StringBuffer sql = new StringBuffer("select t1.*,t2.transform_name from time_task as t1 left join dev_transform t2 on t1.transform_id = t2.id  where t1.del = 0  and dep_id = " + LoginUser.getCurrentUser().getDepId());
+        StringBuffer sql = new StringBuffer("select t1.*,t2.transform_name, date_format(t1.task_time,'%H:%i:%s') as task_time_str from time_task as t1 left join dev_transform t2 on t1.transform_id = t2.id  where t1.del = 0  and dep_id = " + LoginUser.getCurrentUser().getDepId());
         if (timeTask.getTaskType() != null) {
             sql.append(" and t1.task_type = " + timeTask.getTaskType());
         }
@@ -85,7 +93,7 @@ public class TimeTaskController extends BaseController<TimeTask> {
             key = DictUtils.getDictItemKey("定时任务类型", String.valueOf(map.get("task_type")));
             map.replace("task_type", key);
             key = DictUtils.getDictItemKey("定时任务时间间隔类型", String.valueOf(map.get("interval_type")));
-            map.replace("interval_type", key);
+            map.put("interval_type_name", key);
 //            key = DictUtils.getDictItemKey("台区Id", map.get("transform_id"));
 //            map.replace("transform_id", key);
 //            key = DictUtils.getDictItemKey("执行日", map.get("task_day"));
@@ -100,6 +108,11 @@ public class TimeTaskController extends BaseController<TimeTask> {
     @PostMapping("/add")
     @ResponseBody
     protected String add(HttpServletRequest request, TimeTask timeTask) {
+        try {
+            timeTask.setTaskTime(DateUtils.parse(DateUtils.dateFormat(new Date())+" "+timeTask.getTaskTimeStr(),"yyyy-MM-dd HH:mm:ss"));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         this.addEvent(timeTask);
         calculationDay(timeTask);
         return super.add(request, timeTask);
@@ -110,6 +123,11 @@ public class TimeTaskController extends BaseController<TimeTask> {
     @PostMapping("/edit")
     @ResponseBody
     protected String edit(HttpServletRequest request, TimeTask timeTask) {
+        try {
+            timeTask.setTaskTime(DateUtils.parse(DateUtils.dateFormat(new Date())+" "+timeTask.getTaskTimeStr(),"yyyy-MM-dd HH:mm:ss"));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         this.addEvent(timeTask);
         calculationDay(timeTask);
         return super.edit(request, timeTask);
@@ -117,42 +135,40 @@ public class TimeTaskController extends BaseController<TimeTask> {
 
     //计算下一次的任务执行时间
     private void calculationDay(TimeTask timeTask){
-        if(timeTask.getTaskTime() != null){
-            if(timeTask.getIntervalType()==1){
-                //小时
-                timeTask.setNextTask(DateUtils.hourAddNum(timeTask.getTaskTime(),timeTask.getTaskDay()));
-            }else if(timeTask.getIntervalType()==2){
-                //天
-                timeTask.setNextTask(DateUtils.dayAddNum(timeTask.getTaskTime(),timeTask.getTaskDay()));
-            }else if(timeTask.getIntervalType()==3){
-                int week = DateUtils.getWeekNum(timeTask.getTaskTime());
-                if(week>timeTask.getTaskDay()){
-                    //本周执行
-                    timeTask.setNextTask(DateUtils.dayAddNum(timeTask.getTaskTime(),(week-timeTask.getTaskDay())));
-                }else{
-                    //下周执行
-                    timeTask.setNextTask(DateUtils.dayAddNum(timeTask.getTaskTime(),7));
-                }
-
-
-            }else if(timeTask.getIntervalType()==4){
-                //月
+        try{
+            if(timeTask.getTaskTime() != null){
                 String year = DateUtils.dateFormat(timeTask.getTaskTime(),"yyyy");
-                String day = DateUtils.dateFormat(timeTask.getTaskTime(),"dd");
                 String month = DateUtils.dateFormat(timeTask.getTaskTime(),"MM");
                 String time = DateUtils.dateFormat(timeTask.getTaskTime(),"HH:mm:ss");
-                int days = DateUtils.getDays(Integer.parseInt(year),Integer.parseInt(month));
-                month = DateUtils.dateFormat(DateUtils.dayAddNum(timeTask.getTaskTime(),days));
-                days = DateUtils.getDays(Integer.parseInt(year),Integer.parseInt(month));
-                if(days<Integer.parseInt(day)){
-                    day = String.valueOf(days);
-                }
-                try{
-                    timeTask.setNextTask(DateUtils.parse(year+"-"+month + "-"+day+" "+time,"yyyy-MM-dd HH:mm:ss"));
-                }catch (Exception e){
-                    e.printStackTrace();
+
+                if(timeTask.getIntervalType()==1){
+                    //小时
+                    Date nextTime = DateUtils.hourAddNum(timeTask.getTaskTime(),timeTask.getTaskDay());
+                    nextTime = DateUtils.parse(DateUtils.dateFormat(new Date())+ " " +DateUtils.dateFormat(nextTime,"HH:mm:ss"),"yyyy-MM-dd HH:mm:ss");
+                    timeTask.setNextTask(nextTime);
+                }else if(timeTask.getIntervalType()==2){
+                    //天
+                    timeTask.setNextTask(DateUtils.dayAddNum(timeTask.getTaskTime(),timeTask.getTaskDay()));
+                }else if(timeTask.getIntervalType()==3){
+                    int current_week = DateUtils.getWeekNum(new Date());
+                    if(current_week<timeTask.getTaskDay()){
+                        //本周执行
+                        Date nextDay = DateUtils.dayAddNum(new Date(),(timeTask.getTaskDay()-current_week));
+                        String nextTime = DateUtils.dateFormat(nextDay)+" "+time;
+                        timeTask.setNextTask(DateUtils.parse(nextTime,"yyyy-MM-dd HH:mm:ss"));
+                    }else{
+                        //下周执行
+                        timeTask.setNextTask(DateUtils.dayAddNum(new Date(),7));
+                    }
+                }else if(timeTask.getIntervalType()==4){
+                    //月
+                    int days = DateUtils.getDays(Integer.parseInt(year),Integer.parseInt(month));
+                    Date next_month = DateUtils.dayAddNum(timeTask.getTaskTime(),days);
+                    timeTask.setNextTask(DateUtils.parse(DateUtils.dateFormat(next_month,"yyyy-MM-")+timeTask.getTaskDay() + " " + time,"yyyy-MM-dd HH:mm:ss"));
                 }
             }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

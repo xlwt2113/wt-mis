@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.Date;
 
 @Data
@@ -44,6 +45,9 @@ public class TimeTask extends BaseEntity {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(columnDefinition = " datetime COMMENT '任务执行时刻'")
     private Date taskTime;
+
+    @Transient
+    private String taskTimeStr;
     /**
     * 下次任务执行时间
     */
@@ -61,5 +65,7 @@ public class TimeTask extends BaseEntity {
     */
     @Column(columnDefinition = " int COMMENT '归属部门'")
     private Long depId;
+
+
 
 }
