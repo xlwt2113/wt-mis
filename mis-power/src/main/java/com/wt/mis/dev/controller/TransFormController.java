@@ -80,7 +80,9 @@ public class TransFormController extends BaseController<TransForm> {
         }else{
             dep = depRespository.getOne(Long.valueOf(transForm.getOperationsTeam()));
         }
-        StringBuffer sql = new StringBuffer("select t1.*,t2.name as operations_team_name from dev_transform as t1  left join  sys_dep t2 on t1.operations_team = t2.id  where t1.del = 0 ");
+        StringBuffer sql = new StringBuffer("select t1.*,t2.name as operations_team_name ,t3.line_name from dev_transform as t1 " +
+                " left join  sys_dep as t2 on t1.operations_team = t2.id " +
+                " left join dev_line as t3 on t1.line_id = t3.id where t1.del = 0 ");
         if (StringUtils.isNotEmpty(transForm.getTransformName())) {
             sql.append(" and t1.transform_name like '%" + transForm.getTransformName() + "%'");
         }

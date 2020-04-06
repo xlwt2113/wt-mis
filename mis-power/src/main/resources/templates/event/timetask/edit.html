@@ -39,9 +39,9 @@
 
 
         <div class="layui-form-item">
-            <label class="layui-form-label">时间间隔</label>
+            <label class="layui-form-label">间隔类型</label>
             <div class="layui-input-block">
-                <select class="layui-select" th:field="*{intervalType}" lay-verify="taskState">
+                <select class="layui-select" th:field="*{intervalType}" lay-filter="intervalType">
                     <each th:each="item:${T(com.wt.mis.sys.util.DictUtils).getDictItems('定时任务时间间隔类型')}">
                         <option th:value="${item.itemValue}" th:text="${item.itemKey}"></option>
                     </each>
@@ -51,7 +51,7 @@
 
 
         <div class="layui-form-item">
-            <label class="layui-form-label">执行日</label>
+            <label class="layui-form-label" id="dayName"></label>
             <div class="layui-input-block">
                 <input type="number" th:field="*{taskDay}" lay-verify="taskDay" placeholder="请输入执行日" class="layui-input" min="1"  max="31">
             </div>
@@ -66,13 +66,7 @@
         </div>
 
 
-        <div class="layui-form-item">
-            <label class="layui-form-label">下次执行</label>
-            <div class="layui-input-block">
-                        <input type="text" th:field="*{nextTask}" th:value="*{#dates.format(nextTask, 'yyyy-MM-dd HH:mm:ss')}" lay-verify="nextTask" autocomplete="off" placeholder="请输入下次任务执行时间" class="layui-input">
-            </div>
-        </div>
-
+    <input type="text" th:field="*{nextTask}">
     <input type="hidden" th:field="*{depId}" >
     <input type="hidden" th:field="*{taskState}" >
 
@@ -90,6 +84,8 @@
 <script>
 
     var submitUrl = '[[${#request.servletPath}]]';
+
+    chanageText([[${model.intervalType}]]);
 
     //用于保存所有的上传文件信息
     var uploadFileMap = new Map();
@@ -112,7 +108,6 @@
                     }
                 },
                 transformId:function(value){
-                    console.log(value);
                     if (value == '' || value == null) {
                         return '必须选择台区';
                     }
@@ -127,15 +122,14 @@
                         return '必须输入任务执行时刻';
                     }
                 },
-                nextTask:function (value) {
-                    if (value == '') {
-                        return '必须输入下次任务执行时间';
-                    }
-                },
                 "test" :function(){}
         });
 
-
+        //监听间隔类型的下拉选择
+        form.on('select(intervalType)', function(data){
+            //更新间隔类型的文字
+            chanageText(data.value);
+        });
 
         //监听提交
         form.on('submit(saveBtn)', function (data) {
@@ -164,6 +158,23 @@
         uploadFileMap.set(fileInputId,fileSets);
         if (id != undefined) {
             $.post('/sys/upload/'+id+'/del', function (result) {console.log(result);});
+        }
+    }
+
+    //更新间隔类型的说文字
+    function chanageText(val) {
+        if(val == 1){
+            //小时
+            $('#dayName').html('间隔小时');
+        }else if(val == 2){
+            //天
+            $('#dayName').html('每天');
+        }else if(val == 3){
+            //周
+            $('#dayName').html('星期');
+        }else if(val == 4){
+            //月
+            $('#dayName').html('每月');
         }
     }
 

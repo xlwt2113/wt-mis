@@ -39,7 +39,10 @@
                 <div class="layui-card">
                     <div class="layui-card-header"><i class="fa fa-table icon"></i> 设备操作</div>
                     <div class="layui-card-body" style="text-align: center;height: 370px">
-                        <div class="layui-col-md6 layui-col-md-offset3" style="padding-bottom: 35px">
+                        <div class="layui-col-md3" style="padding-bottom: 35px">
+                            召测日期：
+                        </div>
+                        <div class="layui-col-md8" style="padding-bottom: 35px">
                             <input type="text" name="freezeTime" id="freezeTime" th:value="${currentTime}" autocomplete="off" class="layui-input" placeholder="冻结日期">
                         </div>
                         <div class="layui-btn-container">
@@ -80,6 +83,42 @@
     </div>
 
 </form>
+
+<script type="text/html" id="dyATemp">
+    {{#  if(d.voltageStatusA != '正常'){ }}
+    <font color="red">{{d.voltageStatusA}}</font>
+    {{#  } else { }}
+    {{d.voltageStatusA}}
+    {{#  } }}
+</script>
+<script type="text/html" id="dyBTemp">
+    {{#  if(d.voltageStatusB != '正常'){ }}
+    <font color="red">{{d.voltageStatusB}}</font>
+    {{#  } else { }}
+    {{d.voltageStatusB}}
+    {{#  } }}
+</script>
+<script type="text/html" id="dyCTemp">
+    {{#  if(d.voltageStatusC != '正常'){ }}
+    <font color="red">{{d.voltageStatusC}}</font>
+    {{#  } else { }}
+    {{d.voltageStatusC}}
+    {{#  } }}
+</script>
+<script type="text/html" id="powerStatusTemp">
+    {{#  if(d.powerStatus != '正常'){ }}
+    <font color="red">{{d.powerStatus}}</font>
+    {{#  } else { }}
+    {{d.powerStatus}}
+    {{#  } }}
+</script>
+<script type="text/html" id="phaseStatusTemp">
+    {{#  if(d.phaseStatus != '正常'){ }}
+    <font color="red">{{d.phaseStatus}}</font>
+    {{#  } else { }}
+    {{d.phaseStatus}}
+    {{#  } }}
+</script>
 
 <script th:replace="common/base::mianJs"></script>
 <script th:inline="none">
@@ -186,13 +225,13 @@
             toolbar: null,  //顶部工具栏的默认ID
             cols: [[
                 {field: 'devName', width: 200, title: '设备名称'},
-                {field: 'devType', width: 120, title: '设备类型'},
-                {field: 'powerStatus', width: 120, title: '停电状态'},
-                {field: 'phaseStatus', width: 120, title: '相序状态'},
+                {field: 'devTypeName', width: 120, title: '设备类型'},
                 {field: 'occurTime', width: 200, title: '发生时间',sort:true},
-                {field: 'voltageStatusA', width: 100, title: 'A相电压'},
-                {field: 'voltageStatusB', width: 100, title: 'B相电压'},
-                {field: 'voltageStatusC', width: 100, title: 'C相电压'},
+                {field: 'powerStatus', width: 120, title: '停电状态',templet: '#powerStatusTemp'},
+                {field: 'phaseStatus', width: 120, title: '相序状态',templet: '#phaseStatusTemp'},
+                {field: 'voltageStatusA', width: 100, title: 'A相电压',templet: '#dyATemp'},
+                {field: 'voltageStatusB', width: 100, title: 'B相电压',templet: '#dyBTemp'},
+                {field: 'voltageStatusC', width: 100, title: 'C相电压',templet: '#dyCTemp'},
                 {field: 'devParentName', width: 200, title: '上级设备名称'},
                 {field: 'devParentType', width: 120, title: '上级设备类型'},
                 {field: 'transformName', width: 200, title: '所属台区'}

@@ -3,6 +3,7 @@ package com.wt.mis.core.util;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -26,6 +27,8 @@ public class DateUtils {
     private static final DateTimeFormatter defaultTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     private static final DateTimeFormatter datePathFormatter = DateTimeFormatter.ofPattern("yyyyMM/dd");
     private static final HashMap<DayOfWeek, List<String>> weekMap = new HashMap<>();
+
+    static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     static {
         weekMap.put(DayOfWeek.MONDAY, Arrays.asList("一", "周一", "星期一"));
@@ -89,13 +92,20 @@ public class DateUtils {
         return str;
     }
 
+    //日期天数加减
     public static Date dayAddNum(Date time, Integer num){
-        //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        //Date date = format.parse(time);
-
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(time);
         calendar.add(Calendar.DATE, num);
+        Date newTime = calendar.getTime();
+        return newTime;
+    }
+
+    //时间小时加减
+    public static Date hourAddNum(Date time, Integer num){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(time);
+        calendar.add(Calendar.HOUR, num);
         Date newTime = calendar.getTime();
         return newTime;
     }
@@ -136,5 +146,94 @@ public class DateUtils {
         return System.nanoTime();
     }
 
+    /**
+     * 开发人：zhangbo
+     * 开发日期：2007-05-31
+     * 开发时间：16:20
+     * 功能描述：返回当前日期是周几，分别返回日,一,二,三,四,五,六
+     * 方法的参数和返回值：
+     */
+    public static String getWeek() {
+        return getWeek(new Date());
+    }
+
+    /**
+     * 开发人： 王涛
+     * 开发时间： 2011-6-23 上午10:14:07
+     * 功能描述：返回指定日期是周几，分别返回日,一,二,三,四,五,六
+     * 方法的参数和返回值
+     *
+     * @param d
+     * @return String
+     * ==================================
+     * 修改历史
+     * 修改人        修改时间      修改原因及内容
+     * <p>
+     * ==================================
+     */
+    public static String getWeek(Date d) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(d);
+        int posOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+        posOfWeek--;
+        String[] ary = "日,一,二,三,四,五,六".split(",");
+        return ary[posOfWeek];
+    }
+
+    public static int getWeekNum(Date d) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(d);
+        int posOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+        posOfWeek--;
+        String[] ary = "7,1,2,3,4,5,6".split(",");
+        return Integer.parseInt(ary[posOfWeek]);
+    }
+
+    /**
+     * 开发人： 王涛
+     * 开发时间： 2011-6-23 上午11:06:05
+     * 功能描述：获取指定月份的天数
+     * 方法的参数和返回值
+     *
+     * @param year 年份
+     * @param mon  月份 取值范围 1-12
+     * @return int
+     * ==================================
+     * 修改历史
+     * 修改人        修改时间      修改原因及内容
+     * <p>
+     * ==================================
+     */
+    public static int getDays(int year, int mon) {
+        Calendar ca = Calendar.getInstance();
+        ca.set(Calendar.YEAR, year);
+        ca.set(Calendar.MONTH, mon - 1);
+        ca.set(Calendar.DAY_OF_MONTH, 1);
+        ca.add(Calendar.MONTH, 1);
+        ca.add(Calendar.DAY_OF_MONTH, -1);
+        return ca.get(Calendar.DAY_OF_MONTH);
+    }
+
+    /**
+     * 开发人： 王涛
+     * 开发时间： 2011-6-23 上午10:30:41
+     * 功能描述：按指定格式对字符串进行日期转换
+     * 方法的参数和返回值
+     *
+     * @param dateStr
+     * @param format
+     * @return
+     * @throws ParseException Date
+     *                        ==================================
+     *                        修改历史
+     *                        修改人        修改时间      修改原因及内容
+     *                        <p>
+     *                        ==================================
+     */
+    public static Date parse(String dateStr, String format) throws ParseException {
+        if (dateStr == null) return null;
+        sdf.applyPattern(format);
+        return sdf.parse(dateStr);
+    }
 
 }

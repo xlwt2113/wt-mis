@@ -3,6 +3,7 @@ package com.wt.mis.event.controller;
 
 import com.wt.mis.core.controller.BaseController;
 import com.wt.mis.core.repository.BaseRepository;
+import com.wt.mis.core.util.DateUtils;
 import com.wt.mis.core.util.LoginUser;
 import com.wt.mis.dev.entity.TransForm;
 import com.wt.mis.dev.repository.TransFormRepository;
@@ -57,6 +58,7 @@ public class TimeTaskController extends BaseController<TimeTask> {
         if(timeTask.getId()==null){
             timeTask.setDepId(LoginUser.getCurrentUser().getDepId());
             timeTask.setTaskDay(1);
+            timeTask.setIntervalType(1);
         }
     }
 
@@ -99,6 +101,7 @@ public class TimeTaskController extends BaseController<TimeTask> {
     @ResponseBody
     protected String add(HttpServletRequest request, TimeTask timeTask) {
         this.addEvent(timeTask);
+        calculationDay(timeTask);
         return super.add(request, timeTask);
     }
 
@@ -108,9 +111,52 @@ public class TimeTaskController extends BaseController<TimeTask> {
     @ResponseBody
     protected String edit(HttpServletRequest request, TimeTask timeTask) {
         this.addEvent(timeTask);
+        calculationDay(timeTask);
         return super.edit(request, timeTask);
     }
 
+    //计算下一次的任务执行时间
+    private void calculationDay(TimeTask timeTask){
+        if(timeTask.getTaskTime() != null){
+            if(timeTask.getIntervalType()==1){
+                //小时
+                timeTask.setNextTask(DateUtils.hourAddNum(timeTask.getTaskTime(),timeTask.getTaskDay()));
+            }else if(timeTask.getIntervalType()==2){
+                //天
+                timeTask.setNextTask(DateUtils.dayAddNum(timeTask.getTaskTime(),timeTask.getTaskDay()));
+            }else if(timeTask.getIntervalType()==3){
+                int week = DateUtils.getWeekNum(timeTask.getTaskTime());
+                if(week>timeTask.getTaskDay()){
+                    //本周执行
+                    timeTask.setNextTask(DateUtils.dayAddNum(timeTask.getTaskTime(),(week-timeTask.getTaskDay())));
+                }else{
+                    //下周执行
+                    timeTask.setNextTask(DateUtils.dayAddNum(timeTask.getTaskTime(),7));
+                }
+
+
+            }else if(timeTask.getIntervalType()==4){
+                //月
+                String year = DateUtils.dateFormat(timeTask.getTaskTime(),"yyyy");
+                String day = DateUtils.dateFormat(timeTask.getTaskTime(),"dd");
+                String month = DateUtils.dateFormat(timeTask.getTaskTime(),"MM");
+                String time = DateUtils.dateFormat(timeTask.getTaskTime(),"HH:mm:ss");
+                int days = DateUtils.getDays(Integer.parseInt(year),Integer.parseInt(month));
+                month = DateUtils.dateFormat(DateUtils.dayAddNum(timeTask.getTaskTime(),days));
+                days = DateUtils.getDays(Integer.parseInt(year),Integer.parseInt(month));
+                if(days<Integer.parseInt(day)){
+                    day = String.valueOf(days);
+                }
+                try{
+                    timeTask.setNextTask(DateUtils.parse(year+"-"+month + "-"+day+" "+time,"yyyy-MM-dd HH:mm:ss"));
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    //添加任务事件通知
     private void addEvent(TimeTask timeTask){
         Notification notification = new Notification();
         //写入设备ID
@@ -123,6 +169,8 @@ public class TimeTaskController extends BaseController<TimeTask> {
         notification.setEventStatus(0);
         //设置事件接收端为前置机
         notification.setEventReceiver(2);
+        //设置优先级
+        notification.setEventPriority(10);
         notificationRepository.save(notification);
     }
 }

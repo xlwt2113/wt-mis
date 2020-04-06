@@ -85,6 +85,12 @@ public class NotificationController extends BaseController<Notification> {
     public ResponseEntity sendEvent(HttpServletRequest request,@PathVariable int eventType){
         String devId = request.getParameter("devId");
         String devType = request.getParameter("devType");
+        String freezeTime = request.getParameter("freezeTime");
+        //默认的事件执行优先级，用户手动点击的事件优先级
+        int eventPriority = 5;
+        if(StringUtils.isNotEmpty(request.getParameter("seq"))){
+            eventPriority = Integer.parseInt(request.getParameter("seq"));
+        }
         //判断设备是否在线，不在线不继续进行下一步处理
         List<Topology> devList = topologyRepository.findAllByDelAndDevIdAndDevType(0,Long.parseLong(devId),Integer.parseInt(devType));
         for(Topology dev : devList){
@@ -93,7 +99,7 @@ public class NotificationController extends BaseController<Notification> {
             }
         }
         //如果是获取冻结数据，需要判断获取日期是否是当日，如果是当日，提示无法召测
-        if(DateUtils.dateFormat(new Date()).equals(request.getParameter("freezeTime"))){
+        if(DateUtils.dateFormat(new Date()).equals(freezeTime) && eventType == 4){
             return ResponseUtils.ok("当日尚未生成冻结数据，无法召测");
         }
         int cnt = 0;
@@ -118,11 +124,18 @@ public class NotificationController extends BaseController<Notification> {
             if(StringUtils.isNotEmpty(devType)){
                 notification.setDevType(Integer.parseInt(request.getParameter("devType")));
             }
+            //
+            if(eventType==4){
+                //召测冻结数据存入召测日期
+                notification.setEventValue(freezeTime.replace("-","/"));
+            }
             notification.setEventType(eventType);
             //事件状态设置为初始状态为未处理
             notification.setEventStatus(0);
             //设置事件接收端为前置机
             notification.setEventReceiver(2);
+            //事件处理优先级，默认为5
+            notification.setEventPriority(eventPriority);
             notificationRepository.save(notification);
             return ResponseUtils.ok("命令发送成功！");
         }else {
