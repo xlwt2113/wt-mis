@@ -42,4 +42,5 @@ public interface DevService {
      */
     void deleteDevs(List<Long> devIds,int devType)throws AppException;
 
+
 }

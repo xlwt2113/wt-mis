@@ -69,7 +69,7 @@ public class TransFormController extends BaseController<TransForm> {
         if(transForm.getId()==null){
             transForm.setOperationsTeam(LoginUser.getCurrentUser().getDepId());
         }
-        model.addAttribute("lines", lineRepository.getAllByDel(0));
+        model.addAttribute("lines", lineRepository.findAllByOperationsTeam(LoginUser.getCurrentUser().getDepId()));
     }
 
     @Override

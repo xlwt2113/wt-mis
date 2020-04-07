@@ -5,6 +5,7 @@ import com.wt.mis.core.controller.BaseController;
 import com.wt.mis.core.repository.BaseRepository;
 import com.wt.mis.core.util.DateUtils;
 import com.wt.mis.core.util.LoginUser;
+import com.wt.mis.core.util.ResponseUtils;
 import com.wt.mis.dev.entity.TransForm;
 import com.wt.mis.dev.repository.TransFormRepository;
 import com.wt.mis.event.entity.Notification;
@@ -110,12 +111,14 @@ public class TimeTaskController extends BaseController<TimeTask> {
     protected String add(HttpServletRequest request, TimeTask timeTask) {
         try {
             timeTask.setTaskTime(DateUtils.parse(DateUtils.dateFormat(new Date())+" "+timeTask.getTaskTimeStr(),"yyyy-MM-dd HH:mm:ss"));
+            calculationDay(timeTask);
+            timeTask.setTaskState(2); //暂停状态
+            this.timeTaskRepository.save(timeTask);
         } catch (ParseException e) {
             e.printStackTrace();
         }
         this.addEvent(timeTask);
-        calculationDay(timeTask);
-        return super.add(request, timeTask);
+        return ResponseUtils.okJson("新增成功", timeTask);
     }
 
     @Override
@@ -125,12 +128,14 @@ public class TimeTaskController extends BaseController<TimeTask> {
     protected String edit(HttpServletRequest request, TimeTask timeTask) {
         try {
             timeTask.setTaskTime(DateUtils.parse(DateUtils.dateFormat(new Date())+" "+timeTask.getTaskTimeStr(),"yyyy-MM-dd HH:mm:ss"));
+            calculationDay(timeTask);
+            timeTask.setTaskState(2);  //暂停状态
+            this.timeTaskRepository.save(timeTask);
         } catch (ParseException e) {
             e.printStackTrace();
         }
         this.addEvent(timeTask);
-        calculationDay(timeTask);
-        return super.edit(request, timeTask);
+        return ResponseUtils.okJson("修改成功",timeTask);
     }
 
     //计算下一次的任务执行时间
@@ -139,16 +144,26 @@ public class TimeTaskController extends BaseController<TimeTask> {
             if(timeTask.getTaskTime() != null){
                 String year = DateUtils.dateFormat(timeTask.getTaskTime(),"yyyy");
                 String month = DateUtils.dateFormat(timeTask.getTaskTime(),"MM");
+                String day = DateUtils.dateFormat(timeTask.getTaskTime(),"dd");
                 String time = DateUtils.dateFormat(timeTask.getTaskTime(),"HH:mm:ss");
+                Date currentRunTime =  DateUtils.parse(DateUtils.dateFormat(new Date())+ " " +DateUtils.dateFormat(timeTask.getTaskTime(),"HH:mm:ss"),"yyyy-MM-dd HH:mm:ss");
 
                 if(timeTask.getIntervalType()==1){
-                    //小时
-                    Date nextTime = DateUtils.hourAddNum(timeTask.getTaskTime(),timeTask.getTaskDay());
-                    nextTime = DateUtils.parse(DateUtils.dateFormat(new Date())+ " " +DateUtils.dateFormat(nextTime,"HH:mm:ss"),"yyyy-MM-dd HH:mm:ss");
-                    timeTask.setNextTask(nextTime);
+                    if(currentRunTime.getTime()>(new Date()).getTime()){
+                        timeTask.setNextTask(currentRunTime);
+                    }else{
+                        //小时
+                        Date nextTime = DateUtils.hourAddNum(timeTask.getTaskTime(),timeTask.getTaskDay());
+                        nextTime = DateUtils.parse(DateUtils.dateFormat(new Date())+ " " +DateUtils.dateFormat(nextTime,"HH:mm:ss"),"yyyy-MM-dd HH:mm:ss");
+                        timeTask.setNextTask(nextTime);
+                    }
                 }else if(timeTask.getIntervalType()==2){
-                    //天
-                    timeTask.setNextTask(DateUtils.dayAddNum(timeTask.getTaskTime(),timeTask.getTaskDay()));
+                    if(currentRunTime.getTime()>(new Date()).getTime()){
+                        timeTask.setNextTask(currentRunTime);
+                    }else{
+                        //天
+                        timeTask.setNextTask(DateUtils.dayAddNum(timeTask.getTaskTime(),timeTask.getTaskDay()));
+                    }
                 }else if(timeTask.getIntervalType()==3){
                     int current_week = DateUtils.getWeekNum(new Date());
                     if(current_week<timeTask.getTaskDay()){
@@ -157,15 +172,25 @@ public class TimeTaskController extends BaseController<TimeTask> {
                         String nextTime = DateUtils.dateFormat(nextDay)+" "+time;
                         timeTask.setNextTask(DateUtils.parse(nextTime,"yyyy-MM-dd HH:mm:ss"));
                     }else{
-                        //下周执行
-                        timeTask.setNextTask(DateUtils.dayAddNum(new Date(),7));
+                        if(current_week==timeTask.getTaskDay() && currentRunTime.getTime()>(new Date()).getTime()){
+                            timeTask.setNextTask(currentRunTime);
+                        }else{
+                            //下周执行
+                            timeTask.setNextTask(DateUtils.dayAddNum(new Date(),7));
+                        }
                     }
                 }else if(timeTask.getIntervalType()==4){
-                    //月
-                    int days = DateUtils.getDays(Integer.parseInt(year),Integer.parseInt(month));
-                    Date next_month = DateUtils.dayAddNum(timeTask.getTaskTime(),days);
-                    timeTask.setNextTask(DateUtils.parse(DateUtils.dateFormat(next_month,"yyyy-MM-")+timeTask.getTaskDay() + " " + time,"yyyy-MM-dd HH:mm:ss"));
-                }
+                    if(day.equals(DateUtils.dateFormat(timeTask.getTaskTime(),"dd"))&&currentRunTime.getTime()>(new Date()).getTime()){
+                        timeTask.setNextTask(currentRunTime);
+                    }else{
+                        //月
+                        int days = DateUtils.getDays(Integer.parseInt(year),Integer.parseInt(month));
+                        Date next_month = DateUtils.dayAddNum(timeTask.getTaskTime(),days);
+                        timeTask.setNextTask(DateUtils.parse(DateUtils.dateFormat(next_month,"yyyy-MM-")+timeTask.getTaskDay() + " " + time,"yyyy-MM-dd HH:mm:ss"));                }
+                    }
+
+
+
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -179,6 +204,8 @@ public class TimeTaskController extends BaseController<TimeTask> {
         notification.setDevId(timeTask.getTransformId());
         //写入设备类型,默认为台区
         notification.setDevType(2);
+        //写入定时任务ID
+        notification.setEventValue(String.valueOf(timeTask.getId()));
         //事件类型，计划任务
         notification.setEventType(100);
         //事件状态设置为初始状态为未处理
@@ -186,7 +213,7 @@ public class TimeTaskController extends BaseController<TimeTask> {
         //设置事件接收端为前置机
         notification.setEventReceiver(2);
         //设置优先级
-        notification.setEventPriority(10);
+          notification.setEventPriority(10);
         notificationRepository.save(notification);
     }
 }

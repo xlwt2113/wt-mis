@@ -52,6 +52,7 @@
             var canvas = document.getElementById('canvas');
             var stage = new JTopo.Stage(canvas);
             var scene = new JTopo.Scene(stage);
+            var allNodes;
             $('#canvas').attr("height",$(window).height()-100);
             $('#canvas').attr("width",$(window).width()-40);
             showJTopoToobar(stage);
@@ -67,7 +68,22 @@
             $.getJSON("/dev/topology/line_view_data",function (data) {
                 var lineList = data.lineList;
                 addLine(lineList);
+                allNodes = scene.getDisplayedNodes()
             });
+
+
+            setInterval(function () {
+                $.getJSON("/dev/topology/all_transform",function (data) {
+                    var topologyList = data.topologyList;
+                    for(let i=0;i<allNodes.length;i++){
+                        for(let j=0;j<topologyList.length;j++){
+                            if(allNodes[i].info.devId == topologyList[j].devId && allNodes[i].info.devType == topologyList[j].devType){
+                                allNodes[i].setImage('/images/'+topologyList[j].devType+'_'+topologyList[j].devOnline+'.png', true);
+                            }
+                        }
+                    }
+                });
+            },15000);
 
             //绘制线路及台区
             function addLine(line){
@@ -75,7 +91,6 @@
                 var baseY = 120,tempY = 180;
                 for(let i=0;i<line.length;i++){
                     let lineHead = newCircleNode(tempX,baseY,2,{devName:""});
-                    console.log()
                     for(let j=0;j<line[i].transfromList.length;j++){
                         tempX = tempX + 200;
                         newNode(tempX,baseY-10,30,30,line[i].transfromList[j]);

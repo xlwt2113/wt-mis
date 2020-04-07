@@ -116,7 +116,7 @@ public class DevServiceImpl implements DevService{
     @Override
     public void deleteDev(long devId, int devType) throws AppException {
         List<Topology> topologyList = topologyRepository.findAllByDelAndDevIdAndDevType(0,devId,devType);
-        if(topologyList != null && topologyList.size() > 0){
+        if(topologyList != null && topologyList.size() > 0 && devType !=1){
             throw  new  AppException("所选设备正在运行状态，不允许删除");
         }else{
             if(devType == 2){
@@ -130,6 +130,15 @@ public class DevServiceImpl implements DevService{
             }
             if(devType == 6 || devType == 7){
                 meterRepository.deleteByIdOnLogic(devId);
+            }
+            if(devType == 1){
+                //删除线路
+                int cnt = transFormRepository.countAllByDelAndLineId(0,devId);
+                if(cnt>0){
+                    throw  new  AppException("所选线路上有台区，不允许删除");
+                }else{
+                    lineRepository.deleteByIdOnLogic(devId);
+                }
             }
         }
     }

@@ -109,6 +109,20 @@ public class TopologyController {
         return resultMap;
     }
 
+    /**
+     * 获取台区下面的拓扑信息
+     * @param id
+     * @return
+     */
+    @GetMapping("/all_transform")
+    @ResponseBody
+    public Map<String,Object> getAllTransform(){
+        Map<String,Object> resultMap = new HashMap();
+        List<Topology> transformList = topologyRepository.findAllByDelAndDevType(0,2);
+        resultMap.put("topologyList",transformList);
+        return resultMap;
+    }
+
 
 
     @GetMapping("/dev_info/{devId}/{devType}")

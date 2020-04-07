@@ -114,6 +114,17 @@
                             }
                         },600);
                     });
+                    $.getJSON("/dev/topology/transform_view_data/"+transformId,function (data) {
+                        topologyList = data.topologyList;
+                        for(let i=0;i<allNodes.length;i++){
+                            for(let j=0;j<topologyList.length;j++){
+                                if(allNodes[i].info.devId ==topologyList[j].devId && allNodes[i].info.devType == topologyList[j].devType){
+                                    allNodes[i].setImage('/images/'+topologyList[j].devType+'_'+topologyList[j].devOnline+'.png', true);
+                                }
+                            }
+                        }
+                    });
+
                 },15000);
 
             });

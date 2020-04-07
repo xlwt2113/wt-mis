@@ -12,4 +12,6 @@ public interface TransFormRepository extends BaseRepository<TransForm,Long> {
     List<TransForm> getAllByDel(int del);
 
     List<TransForm> getAllByOperationsTeamAndDel(long depId,int del);
+
+    int countAllByDelAndLineId(int del,long lineId);
 }
