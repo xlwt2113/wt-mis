@@ -33,9 +33,9 @@ public class TransForm extends BaseEntity {
     @Column(columnDefinition = " varchar(100) COMMENT '设备安装位置'")
     private String installationLocation;
     /**
-    * 汇集单元地址
+    * 汇聚单元地址
     */
-    @Column(columnDefinition = " varchar(100) COMMENT '汇集单元地址'")
+    @Column(columnDefinition = " varchar(100) COMMENT '汇聚单元地址'")
     private String devAddress;
     /**
     * 协议通讯地址

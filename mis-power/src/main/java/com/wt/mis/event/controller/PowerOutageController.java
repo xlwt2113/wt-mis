@@ -86,7 +86,7 @@ public class PowerOutageController{
             if(StringUtils.isNotEmpty(dyType)){
                 sql.append( " AND (voltage_status_a = "+dyType+" or voltage_status_b = "+dyType+" or voltage_status_c = "+dyType+")");
             }
-            sql.append(" order by  t1.occur_time asc ");
+            sql.append(" order by  t1.occur_time desc ");
             List list = searchService.findAllBySql(sql.toString());
             Map<String,List> resultMap = this.dealSearchList(list);
             return ResponseUtils.ok("获取到数据", resultMap);
@@ -103,7 +103,7 @@ public class PowerOutageController{
         sql.append(" LEFT JOIN dev_transform t3 on t3.id = t2.transform_id ");
         sql.append(" inner join sys_dep t4 on t3.operations_team = t4.id and (t4.level like '%_"+ LoginUser.getCurrentUser().getDepId() +"%' or t4.id = "+LoginUser.getCurrentUser().getDepId()+")");
         sql.append(" where t1.del = 0 and t1.power_status = 1 and t1.history = 0  and t2.del = 0");
-        sql.append(" order by  t1.occur_time asc ");
+        sql.append(" order by  t1.occur_time desc ");
         List list = searchService.findAllBySql(sql.toString());
         return list ;
     }
