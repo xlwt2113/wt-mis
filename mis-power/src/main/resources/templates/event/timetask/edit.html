@@ -65,11 +65,23 @@
             </div>
         </div>
 
+    <div class="layui-form-item">
+        <label class="layui-form-label">间隔类型</label>
+        <div class="layui-input-block">
+            <select class="layui-select" th:field="*{taskState}">
+                    <option value="1">执行</option>
+                    <option value="2">暂停</option>
+            </select>
+        </div>
+    </div>
+
+
+
 
     <input type="hidden" th:field="*{taskTime}">
     <input type="hidden" th:field="*{nextTask}">
     <input type="hidden" th:field="*{depId}" >
-    <input type="hidden" th:field="*{taskState}" >
+
 
 
 
@@ -158,7 +170,7 @@
             $('#dayName').html('间隔小时');
         }else if(val == 2){
             //天
-            $('#dayName').html('每天');
+            $('#dayName').html('间隔天数');
         }else if(val == 3){
             //周
             $('#dayName').html('星期');

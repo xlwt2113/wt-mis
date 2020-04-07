@@ -16,14 +16,12 @@ import com.wt.mis.sys.util.DictUtils;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -55,9 +53,6 @@ public class TimeTaskController extends BaseController<TimeTask> {
     @Override
     @ModelAttribute(name = "model")
     public void initModel(@RequestParam(value = "id", required = false) Long id, Model model, TimeTask timeTask) {
-
-        Collection list1 = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-
 
         super.initModel(id, model, timeTask);
         //获取台区列表
@@ -112,7 +107,6 @@ public class TimeTaskController extends BaseController<TimeTask> {
         try {
             timeTask.setTaskTime(DateUtils.parse(DateUtils.dateFormat(new Date())+" "+timeTask.getTaskTimeStr(),"yyyy-MM-dd HH:mm:ss"));
             calculationDay(timeTask);
-            timeTask.setTaskState(2); //暂停状态
             this.timeTaskRepository.save(timeTask);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -129,7 +123,6 @@ public class TimeTaskController extends BaseController<TimeTask> {
         try {
             timeTask.setTaskTime(DateUtils.parse(DateUtils.dateFormat(new Date())+" "+timeTask.getTaskTimeStr(),"yyyy-MM-dd HH:mm:ss"));
             calculationDay(timeTask);
-            timeTask.setTaskState(2);  //暂停状态
             this.timeTaskRepository.save(timeTask);
         } catch (ParseException e) {
             e.printStackTrace();
