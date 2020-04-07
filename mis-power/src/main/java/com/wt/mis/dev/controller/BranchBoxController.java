@@ -12,6 +12,7 @@ import com.wt.mis.dev.repository.BranchBoxRepository;
 import com.wt.mis.dev.service.DevService;
 import com.wt.mis.sys.entity.Dep;
 import com.wt.mis.sys.repository.DepRespository;
+import com.wt.mis.sys.util.DictUtils;
 import io.swagger.annotations.ApiOperation;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -74,6 +76,16 @@ public class BranchBoxController extends BaseController<BranchBox> {
         }
         sql.append(" and (t2.level like '" + dep.getLevel() + "%' or t1.operations_team is null )" );
         return sql.toString();
+    }
+
+    @ApiOperation("打开查看页面")
+    @GetMapping("/view")
+    @Override
+    protected ModelAndView openViewPage(@RequestParam("id") @NonNull Long id) {
+        ModelAndView mv = super.openViewPage(id);
+        BranchBox branchBox = branchBoxRepository.getOne(id);
+        mv.addObject("operationsTeam",depRespository.getOne(branchBox.getOperationsTeam()).getName());
+        return mv;
     }
 
     @Override
