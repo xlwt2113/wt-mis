@@ -8,11 +8,12 @@ import com.wt.mis.core.util.LoginUser;
 import com.wt.mis.core.util.ResponseUtils;
 import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.dev.entity.BranchBox;
+import com.wt.mis.dev.entity.Topology;
 import com.wt.mis.dev.repository.BranchBoxRepository;
+import com.wt.mis.dev.repository.TopologyRepository;
 import com.wt.mis.dev.service.DevService;
 import com.wt.mis.sys.entity.Dep;
 import com.wt.mis.sys.repository.DepRespository;
-import com.wt.mis.sys.util.DictUtils;
 import io.swagger.annotations.ApiOperation;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,9 @@ public class BranchBoxController extends BaseController<BranchBox> {
 
     @Autowired
     DevService devService;
+
+    @Autowired
+    TopologyRepository topologyRepository;
 
     @Override
     public BaseRepository<BranchBox, Long> repository() {
@@ -76,6 +80,17 @@ public class BranchBoxController extends BaseController<BranchBox> {
         }
         sql.append(" and (t2.level like '" + dep.getLevel() + "%' or t1.operations_team is null )" );
         return sql.toString();
+    }
+
+    @Override
+    @ApiOperation("提交修改对象")
+    @PostMapping("/edit")
+    protected String edit(HttpServletRequest request, BranchBox branchBox) {
+        List<Topology> topologyList = topologyRepository.findAllByDelAndDevIdAndDevType(0,branchBox.getId(),3);
+        for(Topology topology:topologyList){
+            topology.setDevName(branchBox.getBranchBoxName());
+        }
+        return super.edit(request, branchBox);
     }
 
     @ApiOperation("打开查看页面")

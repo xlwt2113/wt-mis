@@ -12,6 +12,8 @@ import com.wt.mis.event.entity.Notification;
 import com.wt.mis.event.entity.TimeTask;
 import com.wt.mis.event.repository.NotificationRepository;
 import com.wt.mis.event.repository.TimeTaskRepository;
+import com.wt.mis.sys.entity.Dep;
+import com.wt.mis.sys.repository.DepRespository;
 import com.wt.mis.sys.util.DictUtils;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +41,9 @@ public class TimeTaskController extends BaseController<TimeTask> {
 
     @Autowired
     NotificationRepository notificationRepository;
+
+    @Autowired
+    DepRespository depRespository;
 
     @Override
     public BaseRepository<TimeTask, Long> repository() {
@@ -68,7 +73,12 @@ public class TimeTaskController extends BaseController<TimeTask> {
 
     @Override
     protected String generateSearchSql(TimeTask timeTask, HttpServletRequest request) {
-        StringBuffer sql = new StringBuffer("select t1.*,t2.transform_name, date_format(t1.task_time,'%H:%i:%s') as task_time_str from time_task as t1 left join dev_transform t2 on t1.transform_id = t2.id  where t1.del = 0  and dep_id = " + LoginUser.getCurrentUser().getDepId());
+
+        Dep dep = depRespository.getOne(LoginUser.getCurrentUser().getDepId());
+
+        StringBuffer sql = new StringBuffer("select t1.*,t2.transform_name, date_format(t1.task_time,'%H:%i:%s') as task_time_str,t3.name as dep_name from time_task as t1 " +
+                " left join dev_transform t2 on t1.transform_id = t2.id" +
+                " left join  sys_dep t3 on t3.id = t1.dep_id  where t1.del = 0  and t3.level like '" + dep.getLevel() + "%' ");
         if (timeTask.getTaskType() != null) {
             sql.append(" and t1.task_type = " + timeTask.getTaskType());
         }

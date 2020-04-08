@@ -8,6 +8,7 @@ import com.wt.mis.core.service.SearchService;
 import com.wt.mis.core.util.LoginUser;
 import com.wt.mis.core.util.ResponseUtils;
 import com.wt.mis.core.util.StringUtils;
+import com.wt.mis.dev.entity.Topology;
 import com.wt.mis.dev.entity.TransForm;
 import com.wt.mis.dev.repository.LineRepository;
 import com.wt.mis.dev.repository.TopologyRepository;
@@ -139,6 +140,17 @@ public class TransFormController extends BaseController<TransForm> {
         mv.setViewName(this.getUrlPrefix()+"/detail");
 
         return mv;
+    }
+
+    @Override
+    @ApiOperation("提交修改对象")
+    @PostMapping("/edit")
+    protected String edit(HttpServletRequest request, TransForm transForm) {
+        List<Topology> topologyList = topologyRepository.findAllByDelAndDevIdAndDevType(0,transForm.getId(),2);
+        for(Topology topology:topologyList){
+            topology.setDevName(transForm.getTransformName());
+        }
+        return super.edit(request, transForm);
     }
 
     @Override

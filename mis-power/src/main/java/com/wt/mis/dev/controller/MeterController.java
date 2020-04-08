@@ -8,7 +8,9 @@ import com.wt.mis.core.util.LoginUser;
 import com.wt.mis.core.util.ResponseUtils;
 import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.dev.entity.Meter;
+import com.wt.mis.dev.entity.Topology;
 import com.wt.mis.dev.repository.MeterRepository;
+import com.wt.mis.dev.repository.TopologyRepository;
 import com.wt.mis.dev.service.DevService;
 import com.wt.mis.sys.entity.Dep;
 import com.wt.mis.sys.repository.DepRespository;
@@ -39,6 +41,9 @@ public class MeterController extends BaseController<Meter> {
 
     @Autowired
     DevService devService;
+
+    @Autowired
+    TopologyRepository topologyRepository;
 
     @Override
     public BaseRepository<Meter, Long> repository() {
@@ -102,6 +107,26 @@ public class MeterController extends BaseController<Meter> {
         mv.addObject("threePhase",DictUtils.getDictItemKey("单/三相",String.valueOf(meter.getThreePhase())));
         mv.addObject("operationsTeam",depRespository.getOne(meter.getOperationsTeam()).getName());
         return mv;
+    }
+
+    @Override
+    @ApiOperation("提交修改对象")
+    @PostMapping("/edit")
+    protected String edit(HttpServletRequest request, Meter meterBox) {
+        List<Topology> topologyList = null;
+        int[] devTypes = {4,5};
+        if(meterBox.getThreePhase()==1){
+            //单相
+            topologyList = topologyRepository.findAllByDelAndDevIdAndDevType(0,meterBox.getId(),4);
+        }else{
+            //三相
+            topologyList = topologyRepository.findAllByDelAndDevIdAndDevType(0,meterBox.getId(),5);
+        }
+        topologyList = topologyRepository.findAllByDelAndDevIdAndDevTypeIn(0,meterBox.getId(),devTypes);
+        for(Topology topology:topologyList){
+            topology.setDevName(meterBox.getOwnerName());
+        }
+        return super.edit(request, meterBox);
     }
 
     @Override

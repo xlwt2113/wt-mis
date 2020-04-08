@@ -22,4 +22,6 @@ public interface TopologyRepository extends BaseRepository<Topology,Long> {
 
     List<Topology> findAllByDelAndDevOnlineAndTransformId(int del,int onLine,long transformId);
 
+    List<Topology> findAllByDelAndDevIdAndDevTypeIn(int del,long devId,int[] depTypes);
+
 }
