@@ -38,48 +38,62 @@ public class DevServiceImpl implements DevService{
 
     @Override
     public DevModel getDevModel(long devId, int devType) {
-        DevModel dev = new DevModel();
-        dev.setDevType(devType);
+        DevModel dev = null;
         if(devType==1){
             //线路
             Line line = lineRepository.getOne(devId);
+            dev = new DevModel();
             dev.setDevName(line.getLineName());
             dev.setOperationsTeam(line.getOperationsTeam());
+            dev.setDevType(devType);
         }else if(devType==2){
             //台区
             TransForm transForm = transFormRepository.getOne(devId);
+            dev = new DevModel();
             dev.setDevName(transForm.getTransformName());
             dev.setOperationsTeam(transForm.getOperationsTeam());
+            dev.setDevType(devType);
         }else if(devType==3){
             //分支箱
             BranchBox branchBox = branchBoxRepository.getOne(devId);
+            dev = new DevModel();
             dev.setDevName(branchBox.getBranchBoxName());
             dev.setOperationsTeam(branchBox.getOperationsTeam());
+            dev.setDevType(devType);
         }else if(devType==4 || devType == 5){
             //电表相
             MeterBox meterBox = meterBoxRepository.getOne(devId);
+            dev = new DevModel();
             dev.setDevName(meterBox.getMeterBoxName());
             dev.setOperationsTeam(meterBox.getOperationsTeam());
+            dev.setDevType(devType);
         }else if(devType==6 || devType == 7){
             //单相电能表
             Meter meter = meterRepository.getOne(devId);
+            dev = new DevModel();
             dev.setDevName(meter.getMeterBarcode());
             dev.setOperationsTeam(meter.getOperationsTeam());
+            dev.setDevType(devType);
         }
-        Dep dep = depRespository.getOne(dev.getOperationsTeam());
-        if(StringUtils.isNotEmpty(dep.getLevel())){
-            String[] depIds = dep.getLevel().split("_");
-            String level_name = "";
-            for(String depId : depIds){
-                if(StringUtils.isNotEmpty(depId)){
-                    Dep tempDep = depRespository.getOne(Long.parseLong(depId));
-                    level_name = level_name + tempDep.getName() + "_" ;
+        //有可能拓扑和台账没有对应上
+        if(dev!=null){
+            Dep dep = depRespository.getOne(dev.getOperationsTeam());
+            if(StringUtils.isNotEmpty(dep.getLevel())){
+                String[] depIds = dep.getLevel().split("_");
+                String level_name = "";
+                for(String depId : depIds){
+                    if(StringUtils.isNotEmpty(depId)){
+                        Dep tempDep = depRespository.getOne(Long.parseLong(depId));
+                        if(tempDep!=null){
+                            level_name = level_name + tempDep.getName() + "_" ;
+                        }
+                    }
                 }
+                if(StringUtils.isNotEmpty(level_name)){
+                    level_name = level_name.substring(0,level_name.length()-1);
+                }
+                dev.setOperationsTeamName(level_name);
             }
-            if(StringUtils.isNotEmpty(level_name)){
-                level_name = level_name.substring(0,level_name.length()-1);
-            }
-            dev.setOperationsTeamName(level_name);
         }
         return dev;
     }

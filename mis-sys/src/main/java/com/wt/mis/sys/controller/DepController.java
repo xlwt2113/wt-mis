@@ -56,13 +56,16 @@ public class DepController extends BaseController<Dep> {
     @ResponseBody
     @Override
     protected String add(HttpServletRequest request, Dep dep) {
+        super.add(request, dep);
+        //先增加机构，然后再重新计算level
         if(dep.getPid()!=0){
             Dep parent = repository().getOne(dep.getPid());
             dep.setLevel(parent.getLevel()+"_"+dep.getId());
         }else{
             dep.setLevel(dep.getId().toString());
         }
-        return super.add(request, dep);
+        this.depRespository.save(dep);
+        return ResponseUtils.okJson("新增成功", dep);
     }
 
     @ApiOperation("提交修改对象")

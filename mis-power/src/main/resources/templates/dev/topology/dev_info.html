@@ -39,7 +39,7 @@
                 <div class="layui-card">
                     <div class="layui-card-header"><i class="fa fa-table icon"></i> 设备操作</div>
                     <div class="layui-card-body" style="text-align: center;height: 370px">
-                        <div class="layui-col-md3" style="padding-bottom: 35px">
+                        <div class="layui-col-md3" style="padding-top: 7px">
                             召测日期：
                         </div>
                         <div class="layui-col-md8" style="padding-bottom: 35px">
@@ -51,7 +51,7 @@
                             <if th:if="${devType == 2}">
                                 <button type="button" class="layui-btn layui-btn-lg layui-btn-normal" id="event6">设备对时</button>
                             </if>
-                            <if th:if="${devType < 6 }">
+                            <if th:if="${devType > 5 }">
                                 <button type="button" class="layui-btn layui-btn-lg layui-btn-normal" id="event5">设备复位</button>
                             </if>
                             <!--

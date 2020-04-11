@@ -76,7 +76,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">通讯地址</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{protocolAddress}" autocomplete="off" placeholder="请输入通讯地址" class="layui-input">
+                        <input type="text" th:field="*{protocolAddress}" autocomplete="off" placeholder="请输入通讯地址" lay-verify="protocolAddress" class="layui-input">
             </div>
         </div>
 
@@ -164,6 +164,15 @@
                         return '必须输入出厂编号';
                     }
                 },
+            protocolAddress: function (value) {
+                var pattern = /^[A-Z0-9]{12}$/;
+                if(value == ''){
+                    return '必须输入通讯地址';
+                }
+                if (!pattern.test(value)) {
+                    return '通讯地址必须由12位的数字或大写字母组成';
+                }
+            },
                 // operationsTeam:function (value) {
                 //     if (value == '') {
                 //         return '必须输入运维班组';

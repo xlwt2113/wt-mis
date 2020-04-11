@@ -25,7 +25,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">线路编号</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{lineNum}" lay-verify="lineNum" autocomplete="off" placeholder="请输入线路编号" class="layui-input">
+                        <input type="number" th:field="*{lineNum}" lay-verify="lineNum" autocomplete="off" placeholder="请输入线路编号" class="layui-input"  min="1">
             </div>
         </div>
 

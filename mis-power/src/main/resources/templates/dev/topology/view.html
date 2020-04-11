@@ -95,7 +95,11 @@
                         tempX = tempX + 200;
                         newNode(tempX,baseY-10,30,30,line[i].transfromList[j]);
                     }
-                    tempX = tempX + 200;
+                    if(tempX == 400){
+                        tempX = tempX + 400
+                    }else{
+                        tempX = tempX + 200;
+                    }
                     let lineEnd = newCircleNode(tempX,baseY,2,{devName:""});
                     // console.log(line[i]);
                     newLink(lineHead, lineEnd, line[i]);

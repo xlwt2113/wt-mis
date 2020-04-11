@@ -106,7 +106,9 @@ public class FreezeController{
             view.setDevName(map.get("dev_name").toString());
             view.setDevParentName(map.get("dev_parent_name").toString());
             view.setTransformName(map.get("transform_name").toString());
-            view.setOperationsTeamName(devModel.getOperationsTeamName());
+            if(devModel!=null){
+                view.setOperationsTeamName(devModel.getOperationsTeamName());
+            }
             rowMap.put(freezeTimeStr,view);
         }
 
