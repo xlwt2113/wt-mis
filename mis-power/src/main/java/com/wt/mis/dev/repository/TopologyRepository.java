@@ -24,4 +24,6 @@ public interface TopologyRepository extends BaseRepository<Topology,Long> {
 
     List<Topology> findAllByDelAndDevIdAndDevTypeIn(int del,long devId,int[] depTypes);
 
+    int countAllByDelAndDevAddress(int del ,String devAddress);
+
 }

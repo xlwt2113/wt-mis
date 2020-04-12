@@ -86,33 +86,49 @@ public class NotificationController extends BaseController<Notification> {
         String devId = request.getParameter("devId");
         String devType = request.getParameter("devType");
         String freezeTime = request.getParameter("freezeTime");
+        String eventValue = request.getParameter("eventValue");
         //默认的事件执行优先级，用户手动点击的事件优先级
         int eventPriority = 5;
         if(StringUtils.isNotEmpty(request.getParameter("seq"))){
             eventPriority = Integer.parseInt(request.getParameter("seq"));
         }
-        //判断设备是否在线，不在线不继续进行下一步处理
-        List<Topology> devList = topologyRepository.findAllByDelAndDevIdAndDevType(0,Long.parseLong(devId),Integer.parseInt(devType));
-        for(Topology dev : devList){
-            if(dev.getDevOnline()==1){
-                return ResponseUtils.ok("设备离线，无法发送命令");
-            }
-        }
-        //如果是获取冻结数据，需要判断获取日期是否是当日，如果是当日，提示无法召测
-        if(DateUtils.dateFormat(new Date()).equals(freezeTime) && eventType == 4){
-            return ResponseUtils.ok("当日尚未生成冻结数据，无法召测");
-        }
         int cnt = 0;
         //获取正在执行的事件数量
-        if(StringUtils.isNotEmpty(devId)){
-            //根据设备ID及类型以及事件类型获取正在执行的事件数量
+        if(eventType == 9){
+            //添加设备需要根据发送的命令内容获取名下数量
             cnt = notificationRepository
-                    .countAllByDelAndDevIdAndDevTypeAndEventTypeAndEventStatusIsLessThanEqual(0,Long.parseLong(devId),Integer.parseInt(devType),eventType,1);
+                    .countAllByDelAndEventValueAndEventStatusIsLessThanEqual(0,eventValue,1);
+        }else if(eventType == 10) {
+            //删除设备
+            //删除时先判断该设备通讯地址在拓扑中是否存在，部存在提示用户修改
+            int exitsDevCnt = topologyRepository.countAllByDelAndDevAddress(0,eventValue);
+            if(exitsDevCnt==0){
+                return ResponseUtils.ok("通讯地址不存在，请检查！");
+            }
         }else{
-            //根据事件类型获取正在执行的事件数量（有的事件不一定传递设备信息）
-            cnt = notificationRepository
-                    .countAllByDelAndEventTypeAndEventStatusIsLessThanEqual(0,eventType,1);
+            //判断设备是否在线，不在线不继续进行下一步处理
+            List<Topology> devList = topologyRepository.findAllByDelAndDevIdAndDevType(0,Long.parseLong(devId),Integer.parseInt(devType));
+            for(Topology dev : devList){
+                if(dev.getDevOnline()==1){
+                    return ResponseUtils.ok("设备离线，无法发送命令");
+                }
+            }
+            //如果是获取冻结数据，需要判断获取日期是否是当日，如果是当日，提示无法召测
+            if(DateUtils.dateFormat(new Date()).equals(freezeTime) && eventType == 4){
+                return ResponseUtils.ok("当日尚未生成冻结数据，无法召测");
+            }
+
+            if(StringUtils.isNotEmpty(devId)){
+                //根据设备ID及类型以及事件类型获取正在执行的事件数量
+                cnt = notificationRepository
+                        .countAllByDelAndDevIdAndDevTypeAndEventTypeAndEventStatusIsLessThanEqual(0,Long.parseLong(devId),Integer.parseInt(devType),eventType,1);
+            }else{
+                //根据事件类型获取正在执行的事件数量（有的事件不一定传递设备信息）
+                cnt = notificationRepository
+                        .countAllByDelAndEventTypeAndEventStatusIsLessThanEqual(0,eventType,1);
+            }
         }
+
         //当前没有正在执行事件的任务时，才能新建事件通知
         if(cnt==0){
             Notification notification = new Notification();
@@ -124,11 +140,16 @@ public class NotificationController extends BaseController<Notification> {
             if(StringUtils.isNotEmpty(devType)){
                 notification.setDevType(Integer.parseInt(request.getParameter("devType")));
             }
-            //
+
+
+            //冻结数据的召测日期格式需要处理下
             if(eventType==4){
                 //召测冻结数据存入召测日期
                 notification.setEventValue(freezeTime.replace("-","/"));
+            }else{
+                notification.setEventValue(eventValue);
             }
+
             notification.setEventType(eventType);
             //事件状态设置为初始状态为未处理
             notification.setEventStatus(0);

@@ -94,16 +94,16 @@
             url: list_url,
             //表格列
             cols: [[
-                {field: 'devName', width: 200, title: '设备名称'},
+                {field: 'devName', width: 180, title: '设备名称'},
                 {field: 'devType', width: 120, title: '设备类型'},
                 {field: 'freezeTime', width: 200, title: '冻结时间',sort:true},
-                {field: 'freezeDataA', width: 100, title: 'A相电压'},
-                {field: 'freezeDataB', width: 100, title: 'B相电压'},
-                {field: 'freezeDataC', width: 100, title: 'C相电压'},
-                {field: 'devParentName', width: 200, title: '上级设备名称'},
+                {field: 'freezeDataA', width: 90, title: 'A相电压'},
+                {field: 'freezeDataB', width: 90, title: 'B相电压'},
+                {field: 'freezeDataC', width: 90, title: 'C相电压'},
+                {field: 'devParentName', width: 180, title: '上级设备名称'},
                 {field: 'devParentType', width: 120, title: '上级设备类型'},
                 {field: 'transformName', width: 200, title: '所属台区'},
-                {field: 'operationsTeamName', width: 300, title: '所属班组'}
+                {field: 'operationsTeamName', width: 450, title: '所属班组'}
             ]],
             //将返回的列表数据格式化成layui的格式
             parseData: function (res) { //res 即为原始返回的数据
