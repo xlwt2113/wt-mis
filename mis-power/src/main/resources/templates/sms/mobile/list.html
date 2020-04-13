@@ -57,14 +57,15 @@
                 elem: '#test1'  //绑定元素
                 ,data: json,
                 click: function(obj){
-                    console.log(obj.data.type); //得到当前点击的节点数据
+                    console.log(obj.data.operationsTeam); //得到当前点击的节点数据
                     if(obj.data.type == 2){
+                        console.log(obj.data.operationsTeam);
                         //是台区的话更新归属人员
                         table.reload('searchListTable', {
-                                url: list_url,
-                                toolbar:null,
+                            url: list_url,
+                            toolbar:null,
                             where: {
-                                "devId": obj.data.operationsTeam
+                                "devId": obj.data.id
                             }
                         });
                     }

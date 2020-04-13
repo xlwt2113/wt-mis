@@ -94,7 +94,7 @@
                     <div class="layui-card">
                         <div class="layui-card-header"><i class="fa fa-table icon"></i> 设备报警次数排名</div>
                         <div class="layui-card-body">
-                            <div id="echarts-records" style="width: 100%;min-height:350px"></div>
+                            <div id="echarts-records" style="width: 100%;min-height:370px"></div>
                         </div>
                     </div>
                 </div>
@@ -194,6 +194,9 @@
                             {field: 'cnt', width: 130, title: '报警次数',sort:true}
                         ]],
                     });
+
+                    //统计图表格
+                    initChart(res.data.logList);
                 }
                 return {
                     "code": res.code, //解析接口状态
@@ -244,7 +247,6 @@
         form.on('select(devType)',function (data) {
             let devType = data.value;
             let transFormId = $('#transFormId').val();
-            console.log(devType + "====" + transFormId);
             if(devType!="" && transFormId !=""){
                 getDevListForSelect(devType,transFormId);
             }
@@ -254,7 +256,6 @@
         form.on('select(transFormId)',function (data) {
             let devType = $('#devType').val();
             let transFormId = data.value;
-            console.log(devType + "====" + transFormId);
             if(devType!="" && transFormId !=""){
                 getDevListForSelect(devType,transFormId);
             }
@@ -326,44 +327,65 @@
             });
         }
 
-        //加载统计图
-        option = {
-            title: {
-                text: '报警类型比例',
-                left: 'center'
-            },
-            tooltip: {
-                trigger: 'item',
-                formatter: '{b} : {c} ({d}%)'
-            },
-            legend: {
-                bottom: 10,
-                left: 'center',
-                data: ['失压', '欠压', '过压']
-            },
-            series: [
-                {
-                    type: 'pie',
-                    radius: '65%',
-                    center: ['50%', '50%'],
-                    selectedMode: 'single',
-                    data: [
-                        {value: 535, name: '失压'},
-                        {value: 510, name: '欠压'},
-                        {value: 634, name: '过压'}
-                    ],
-                    emphasis: {
-                        itemStyle: {
-                            shadowBlur: 10,
-                            shadowOffsetX: 0,
-                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+        var echartsRecords = echarts.init(document.getElementById('echarts-records'), 'walden');
+
+        //绘制统计图
+        function initChart(list){
+            let syCnt = 0;
+            let qyCnt = 0;
+            let gyCnt = 0;
+            for(let i=0;i<list.length;i++){
+                if(list[i].voltageStatusA == '失压'){syCnt++;}
+                if(list[i].voltageStatusA == '欠压'){qyCnt++;}
+                if(list[i].voltageStatusA == '过压'){gyCnt++;}
+                if(list[i].voltageStatusB == '失压'){syCnt++;}
+                if(list[i].voltageStatusB == '欠压'){qyCnt++;}
+                if(list[i].voltageStatusB == '过压'){gyCnt++;}
+                if(list[i].voltageStatusC == '失压'){syCnt++;}
+                if(list[i].voltageStatusC == '欠压'){qyCnt++;}
+                if(list[i].voltageStatusC == '过压'){gyCnt++;}
+            }
+
+            //加载统计图
+            option = {
+                title: {
+                    text: '报警类型比例',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b} : {c} ({d}%)'
+                },
+                legend: {
+                    bottom: 10,
+                    left: 'center',
+                    data: ['失压', '欠压', '过压']
+                },
+                series: [
+                    {
+                        type: 'pie',
+                        radius: '65%',
+                        center: ['50%', '50%'],
+                        selectedMode: 'single',
+                        data: [
+                            {value: syCnt, name: '失压'},
+                            {value: qyCnt, name: '欠压'},
+                            {value: gyCnt, name: '过压'}
+                        ],
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
                         }
                     }
-                }
-            ]
-        };
-        var echartsRecords = echarts.init(document.getElementById('echarts-records'), 'walden');
-        echartsRecords.setOption(option);
+                ]
+            };
+            echartsRecords.setOption(option);
+        }
+
+
 
         // echarts 窗口缩放自适应
         window.onresize = function(){

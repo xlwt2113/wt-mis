@@ -14,10 +14,8 @@ import com.wt.mis.dev.repository.TransFormRepository;
 import com.wt.mis.sms.entity.JsonTreeModel;
 import com.wt.mis.sms.entity.Mobile;
 import com.wt.mis.sms.repository.MobileRepository;
-import com.wt.mis.sys.entity.Account;
 import com.wt.mis.sys.entity.Dep;
 import com.wt.mis.sys.repository.DepRespository;
-import com.wt.mis.sys.util.DictUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,7 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -67,29 +64,13 @@ public class MobileController extends BaseController<Mobile> {
         StringBuffer sql = new StringBuffer("select t1.*,t2.`name` as dep_name from sys_account t1 left join sys_dep t2  on t1.dep_id = t2.id  where t1.del = 0 ");
         //默认查看当前登录人归属部门及下级部门的
         if(StringUtils.isNotEmpty(devId)){
-            dep = depRespository.getOne(Long.parseLong(devId));
-            sql.append(" and t2.level like '" + dep.getLevel() + "%' " );
-        }else{
-            sql.append(" and t2.level like '" + dep.getLevel() + "%' " );
+            TransForm transForm = transFormRepository.getOne(Long.parseLong(devId));
+            dep = depRespository.getOne(transForm.getOperationsTeam());
         }
+        sql.append(" and t2.level like '" + dep.getLevel() + "%' " );
         return sql.toString();
     }
 
-
-    /**
-    * 处理列表页面中要显示的数据内容
-    * @param searchResultlist
-    */
-    @Override
-    protected void dealSearchList(List searchResultlist) {
-        //将字典项中的值替换成显示名称
-        for(Object obj:searchResultlist){
-            HashMap<String,String> map = (HashMap) obj;
-            String key = "";
-            key = DictUtils.getDictItemKey("短信接收人员分组",map.get("group_name"));
-            map.replace("group_name",key);
-        }
-    }
 
     @ResponseBody
     @GetMapping("line_tree")
