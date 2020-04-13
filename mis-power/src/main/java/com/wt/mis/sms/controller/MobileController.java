@@ -14,6 +14,9 @@ import com.wt.mis.dev.repository.TransFormRepository;
 import com.wt.mis.sms.entity.JsonTreeModel;
 import com.wt.mis.sms.entity.Mobile;
 import com.wt.mis.sms.repository.MobileRepository;
+import com.wt.mis.sys.entity.Account;
+import com.wt.mis.sys.entity.Dep;
+import com.wt.mis.sys.repository.DepRespository;
 import com.wt.mis.sys.util.DictUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +47,9 @@ public class MobileController extends BaseController<Mobile> {
     @Autowired
     TopologyRepository topologyRepository;
 
+    @Autowired
+    DepRespository depRespository;
+
     @Override
     public BaseRepository<Mobile, Long> repository() {
         return mobileRepository;
@@ -56,18 +62,19 @@ public class MobileController extends BaseController<Mobile> {
 
     @Override
     protected String generateSearchSql(Mobile mobile, HttpServletRequest request) {
-        StringBuffer sql = new StringBuffer("select t1.* from sms_mobile as t1  where t1.del = 0 ");
-        if (StringUtils.isNotEmpty(mobile.getMobile())) {
-            sql.append(" and t1.mobile like '%" + mobile.getMobile() + "%'");
-        }
-        if (StringUtils.isNotEmpty(mobile.getName())) {
-            sql.append(" and t1.name like '%" + mobile.getName() + "%'");
-        }
-        if (StringUtils.isNotEmpty(mobile.getGroupName())) {
-            sql.append(" and t1.group_name like '%" + mobile.getGroupName() + "%'");
+        String devId = request.getParameter("devId");
+        Dep dep = depRespository.getOne(LoginUser.getCurrentUser().getDepId());
+        StringBuffer sql = new StringBuffer("select t1.*,t2.`name` as dep_name from sys_account t1 left join sys_dep t2  on t1.dep_id = t2.id  where t1.del = 0 ");
+        //默认查看当前登录人归属部门及下级部门的
+        if(StringUtils.isNotEmpty(devId)){
+            dep = depRespository.getOne(Long.parseLong(devId));
+            sql.append(" and t2.level like '" + dep.getLevel() + "%' " );
+        }else{
+            sql.append(" and t2.level like '" + dep.getLevel() + "%' " );
         }
         return sql.toString();
     }
+
 
     /**
     * 处理列表页面中要显示的数据内容

@@ -49,7 +49,7 @@
                 table = layui.table;
 
         // 默认的操作地址
-        var list_url = '/sys/account/list';
+        var list_url = '/sms/mobile/list';
 
 
         $.getJSON('/sms/mobile/line_tree', function(json){
@@ -58,6 +58,16 @@
                 ,data: json,
                 click: function(obj){
                     console.log(obj.data.type); //得到当前点击的节点数据
+                    if(obj.data.type == 2){
+                        //是台区的话更新归属人员
+                        table.reload('searchListTable', {
+                                url: list_url,
+                                toolbar:null,
+                            where: {
+                                "devId": obj.data.operationsTeam
+                            }
+                        });
+                    }
                 }
             });
         });

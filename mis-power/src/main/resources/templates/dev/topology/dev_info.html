@@ -13,6 +13,7 @@
 <form class="layui-form" action="" >
     <input type="hidden" id="devType" th:value="${devType}">
     <input type="hidden" id="devId" th:value="${devId}">
+    <input type="hidden" id="yestodayTime" th:value="${yestodayTime}">
     <input type="hidden" id="currentTime" th:value="${currentTime}">
 
     <div style="padding: 20px; background-color: #F2F2F2;">
@@ -43,15 +44,16 @@
                             召测日期：
                         </div>
                         <div class="layui-col-md8" style="padding-bottom: 35px">
-                            <input type="text" name="freezeTime" id="freezeTime" th:value="${currentTime}" autocomplete="off" class="layui-input" placeholder="冻结日期">
+                            <input type="text" name="freezeTime" id="freezeTime" th:value="${yestodayTime}" autocomplete="off" class="layui-input" placeholder="冻结日期">
                         </div>
                         <div class="layui-btn-container">
                             <button type="button" class="layui-btn layui-btn-lg" id="event4">冻结数据</button>
                             <button type="button" class="layui-btn layui-btn-lg" id="event3">实时数据</button>
                             <if th:if="${devType == 2}">
                                 <button type="button" class="layui-btn layui-btn-lg layui-btn-normal" id="event6">设备对时</button>
+                                <button type="button" class="layui-btn layui-btn-lg layui-btn-normal" id="event2">召测拓扑</button>
                             </if>
-                            <if th:if="${devType > 5 }">
+                            <if th:if="${devType > 5 or devType == 2}">
                                 <button type="button" class="layui-btn layui-btn-lg layui-btn-normal" id="event5">设备复位</button>
                             </if>
                             <!--
@@ -129,6 +131,7 @@
     //设备id及设备类型
     var devId = $('#devId').val();
     var devType = $('#devType').val();
+    var yestodayTime = $('#yestodayTime').val();
     var currentTime = $('#currentTime').val();
 
     layui.use(['form', 'laydate', 'table'], function () {
@@ -153,7 +156,7 @@
 
         //冻结数据列表
         table.render($.extend(config.searchListTable, {
-            url: free_list_url+"?freezeTime="+currentTime+"&devType="+devType+"&devId="+devId,
+            url: free_list_url+"?freezeTime="+yestodayTime+"&devType="+devType+"&devId="+devId,
             elem: '#freezeListTable',  //默认的查询列表页面中table的ID
             height: 340,
             page: false,
@@ -283,6 +286,12 @@
         //刷新相位
         $('#event8').click(function (data) {
             $.getJSON("/event/notification/send_event/8", {devId:devId,devType:devType}, function (data) {
+                layer.msg(data.message);
+            });
+        });
+        //召测台区拓扑
+        $('#event2').click(function (data) {
+            $.getJSON("/event/notification/send_event/2", {devId:devId,devType:devType}, function (data) {
                 layer.msg(data.message);
             });
         });
