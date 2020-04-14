@@ -2,7 +2,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <title>layui</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -12,41 +11,30 @@
 <body>
 <form class="layui-form" action="" th:object="${model}">
     <input type="hidden" th:field="*{id}"> <!--此处必须有业务主键的id-->
-
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">手机号</label>
-            <div class="layui-input-block">
-                        <input type="text" th:field="*{mobile}" lay-verify="mobile" autocomplete="off" placeholder="请输入手机号" class="layui-input">
+    <input type="text" name="chooseAccountId" id="chooseAccountId"> <!--此处必须有业务主键的id-->
+    <input type="text" name="chooseTransformId" id="chooseTransformId"> <!--此处必须有业务主键的id-->
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md3">
+                <div class="layui-card">
+                    <div class="layui-card-header">选择台区</div>
+                    <div class="layui-card-body">
+                        <div id="test1"></div>
+                    </div>
+                </div>
             </div>
-        </div>
-
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">姓名</label>
-            <div class="layui-input-block">
-                        <input type="text" th:field="*{name}" lay-verify="name" autocomplete="off" placeholder="请输入姓名" class="layui-input">
+            <div class="layui-col-md9">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <table class="layui-hide" id="searchListTable" lay-filter="searchListTable"></table>
+                    </div>
+                </div>
             </div>
-        </div>
-
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">人员分组</label>
-            <div class="layui-input-block">
-                        <select class="layui-select" th:field="*{groupName}" lay-verify="groupName" >
-                            <each th:each="item:${T(com.wt.mis.sys.util.DictUtils).getDictItems('短信接收人员分组')}">
-                                <option th:value="${item.itemValue}" th:text="${item.itemKey}"></option>
-                            </each>
-                        </select>
-            </div>
-        </div>
-
-    <div class="layui-form-item">
-        <label class="layui-form-label">信息说明</label>
-        <div class="layui-input-block">
-            <textarea th:field="*{note}" autocomplete="off" placeholder="请输入人员信息说明" class="layui-textarea"></textarea>
         </div>
     </div>
+</div>
+
 
 
     <div class="layui-form-item  layui-hide">
@@ -56,74 +44,98 @@
     </div>
 </form>
 
+
 <script th:replace="common/base::mianJs"></script>
-<script>
+<script th:inline="none">
 
-    var submitUrl = '[[${#request.servletPath}]]';
+    var submitUrl = '/sms/mobile/add';
 
-    //用于保存所有的上传文件信息
-    var uploadFileMap = new Map();
+    layui.use(['form', 'table','laydate','treeSelect','tree'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            laydate = layui.laydate,
+            treeSelect = layui.treeSelect,
+            tree = layui.tree,
+            table = layui.table;
 
-    layui.use(['form', 'laydate', 'upload','treeSelect'], function () {
-        var form = layui.form
-                , laydate = layui.laydate
-                , upload = layui.upload
-                ,treeSelect = layui.treeSelect
-                , $ = layui.jquery;
+        // 默认的操作地址
+        var list_url = '/sms/mobile/list_user';
 
 
-        //自定义验证规则
-        form.verify({
-                mobile:function (value) {
-                    if (value == '') {
-                        return '必须输入手机号';
+        $.getJSON('/sms/mobile/line_tree', function(json){
+            tree.render({
+                elem: '#test1'  //绑定元素
+                ,data: json,
+                click: function(obj){
+                    if(obj.data.type == 2){
+                        $('#chooseTransformId').val(obj.data.id);
+                        //是台区的话更新归属人员
+                        table.reload('searchListTable', {
+                            url: list_url,
+                            toolbar:null,
+                            where: {
+                                "devId": obj.data.id
+                            }
+                        });
                     }
-                },
-                name:function (value) {
-                    if (value == '') {
-                        return '必须输入姓名';
-                    }
-                },
-                groupName:function (value) {
-                    if (value == '') {
-                        return '必须输入短信接收人员分组';
-                    }
-                },
-                "test" :function(){}
+                }
+            });
         });
 
 
+
+
+
+        table.render($.extend(config.searchListTable, {
+            url: list_url,
+            toolbar:null,
+            //表格列
+            cols: [[
+                {type: "checkbox", width: 50, fixed: "left"},
+                {field: 'real_name', width: 120,title: '姓名'},
+                {field: 'sex', width: 80, title: '性别', sort: true},
+                {field: 'mobile', width: 120,title: '手机号'},
+                {field: 'dep_name',  title: '部门', sort: true}
+            ]]
+        }));
 
         //监听提交
         form.on('submit(saveBtn)', function (data) {
-            let index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-            let loadIndex = parent.layer.load();
-
-
-            $.post(submitUrl, data.field, function (result) {
-                let r = JSON.parse(result);
-                if (r.code == 200) {
-                    parent.layer.close(index); //再执行关闭
-                    parent.layui.table.reload('searchListTable');
+            console.log("点击提交");
+            let selectRows = table.checkStatus('searchListTable');
+            if(selectRows.data.length==0){
+                layer.msg("请选择设备！");
+                return false;
+            }else{
+                console.log(selectRows.data);
+                var chooseAccountId = "";
+                for(var i=0;i<selectRows.data.length;i++){
+                    chooseAccountId = chooseAccountId + selectRows.data[i].id + ",";
                 }
-                parent.layer.close(loadIndex);
-                parent.layer.msg(r.message);
-            });
+                chooseAccountId = chooseAccountId.substring(0,chooseAccountId.length-1);
+
+                let index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                let loadIndex = parent.layer.load();
+
+                $.post(submitUrl, {chooseAccountId:chooseAccountId,chooseTransformId:$('#chooseTransformId').val()}, function (result) {
+                    let r = JSON.parse(result);
+                    if (r.code == 200) {
+                        parent.layer.close(index); //再执行关闭
+                        parent.layui.table.reload('searchListTable');
+                    }
+                    parent.layer.close(loadIndex);
+                    parent.layer.msg(r.message);
+                });
+            }
+
+
             return false;
         });
+
+
+
     });
-
-    //删除附件
-    function delRow(obj,fileInputId, id) {
-        $(obj).parent().remove();
-        let fileSets = new Set(uploadFileMap.get(fileInputId));
-        fileSets.delete(parseInt(id));
-        uploadFileMap.set(fileInputId,fileSets);
-        if (id != undefined) {
-            $.post('/sys/upload/'+id+'/del', function (result) {console.log(result);});
-        }
-    }
-
 </script>
+
 </body>
 </html>

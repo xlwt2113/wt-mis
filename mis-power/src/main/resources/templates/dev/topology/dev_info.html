@@ -27,7 +27,7 @@
             </div>
             <div class="layui-col-md9">
                 <div class="layui-card">
-                    <div class="layui-card-header"><i class="fa fa-table icon"></i> 设备冻结数据</div>
+                    <div class="layui-card-header"><i class="fa fa-table icon"></i> 设备冻结数据 <button class="layui-btn layui-btn-xs" id="reloadFreeze">刷新</button></div>
                     <div class="layui-card-body">
                         <table class="layui-hide" id="freezeListTable" lay-filter="freezeListTable"></table>
                     </div>
@@ -66,7 +66,7 @@
             </div>
             <div class="layui-col-md9">
                 <div class="layui-card">
-                    <div class="layui-card-header"><i class="fa fa-table icon"></i> 设备实时数据</div>
+                    <div class="layui-card-header"><i class="fa fa-table icon"></i> 设备实时数据 <button class="layui-btn layui-btn-xs" id="reloadReal">刷新</button></div>
                     <div class="layui-card-body">
                         <table class="layui-hide" id="realListTable" lay-filter="realListTable"></table>
                     </div>
@@ -244,7 +244,6 @@
             },
             //将返回的列表数据格式化成layui的格式
             parseData: function (res) { //res 即为原始返回的数据
-                console.log(res);
                 return {
                     "code": res.code, //解析接口状态
                     "msg": res.message, //解析提示文本
@@ -252,6 +251,18 @@
                 };
             }
         });
+
+        //刷新冻结数据
+        $('#reloadFreeze').click(function(){
+            table.reload('freezeListTable');
+            return false;
+        });
+
+        $('#reloadReal').click(function(){
+            table.reload('realListTable');
+            return false;
+        });
+
 
         //召测实时数据
         $('#event3').click(function (data) {

@@ -9,30 +9,45 @@
     <link th:replace="common/base::static"/>
 </head>
 <body>
-
 <div class="layuimini-container">
     <div class="layuimini-main">
-        <div class="layui-row layui-col-space15">
-            <div class="layui-col-md3">
-                <div class="layui-card">
-                    <div class="layui-card-header">选择台区</div>
-                    <div class="layui-card-body">
-                        <div id="test1"></div>
+        <fieldset class="layui-elem-field layuimini-search">
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" id="searchForm">
+                    <div style="display: none"><input type="text" name="test" value=""></div>
+                    <div class="layui-form-item">
+                   <div class="layui-inline">
+                       <input type="text" name="mobile" autocomplete="off" class="layui-input" placeholder="手机号">
+                   </div>
+                   <div class="layui-inline">
+                       <input type="text" name="name" autocomplete="off" class="layui-input" placeholder="姓名">
+                   </div>
+                   <div class="layui-inline">
+                       <input type="text" name="groupName" autocomplete="off" class="layui-input" placeholder="短信接收人员分组">
+                   </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>查询</a>
+                        </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-warm data-reset-btn" lay-button=""><i class="layui-icon">&#xe666;</i>重置</a>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
-            <div class="layui-col-md9">
-                <div class="layui-card">
-                    <div class="layui-card-body">
-                        <table class="layui-hide" id="searchListTable" lay-filter="searchListTable"></table>
-                    </div>
-                </div>
+        </fieldset>
+        <table class="layui-hide" id="searchListTable" lay-filter="searchListTable"></table>
+
+        <!--顶部工具按钮-->
+        <script type="text/html" id="TopTableBar">
+            <div class="layui-btn-group">
+                <button class="layui-btn data-add-btn layui-btn-sm" lay-event="add"><i class="layui-icon">&#xe654;</i>添加</button>
+                <button class="layui-btn layui-btn-danger data-delete-btn layui-btn-sm" lay-event="deleteAll"><i class="layui-icon">&#xe640;</i>删除
+                </button>
             </div>
-        </div>
+        </script>
+
     </div>
 </div>
-
-
 
 <script th:replace="common/base::mianJs"></script>
 <script th:inline="none">
@@ -40,61 +55,102 @@
 
     // config.initQueryCondition();
 
-    layui.use(['form', 'table','laydate','treeSelect','tree'], function () {
+    layui.use(['form', 'table','laydate','treeSelect'], function () {
         var $ = layui.jquery,
                 form = layui.form,
                 laydate = layui.laydate,
                 treeSelect = layui.treeSelect,
-                tree = layui.tree,
                 table = layui.table;
 
         // 默认的操作地址
         var list_url = '/sms/mobile/list';
-
-
-        $.getJSON('/sms/mobile/line_tree', function(json){
-            tree.render({
-                elem: '#test1'  //绑定元素
-                ,data: json,
-                click: function(obj){
-                    console.log(obj.data.operationsTeam); //得到当前点击的节点数据
-                    if(obj.data.type == 2){
-                        console.log(obj.data.operationsTeam);
-                        //是台区的话更新归属人员
-                        table.reload('searchListTable', {
-                            url: list_url,
-                            toolbar:null,
-                            where: {
-                                "devId": obj.data.id
-                            }
-                        });
-                    }
-                }
-            });
-        });
-
-
-
+        var delete_url = '/sms/mobile/delete';
+        var add_page_url = '/sms/mobile/add';
+        var edit_page_url = '/sms/mobile/edit';
+        var view_page_url = '/sms/mobile/view';
 
 
         table.render($.extend(config.searchListTable, {
             url: list_url,
-            toolbar:null,
             //表格列
             cols: [[
                 {type: "checkbox", width: 50, fixed: "left"},
-                {field: 'real_name', width: 120,title: '姓名'},
-                {field: 'sex', width: 80, title: '性别', sort: true},
-                {field: 'mobile', width: 120,title: '手机号'},
-                {field: 'dep_name',  title: '部门', sort: true},
-                {field: 'statis', width: 120, title: '账号状态', templet:function (d) {
-                        return d.status == 0 ? "<span class=\"layui-badge layui-bg-green\">正常</span>" : "<span class=\"layui-badge layui-bg-danger\">禁用</span>";
-                    }}
+                {field: 'real_name', width: 180, title: '姓名'},
+                {field: 'mobile', width: 130, title: '手机号'},
+                {field: 'transform_name', width: 200, title: '管理台区'}
             ]]
         }));
 
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            table.reload('searchListTable', {
+                page: {
+                    curr: 1  //重新加载后默认为第一页
+                }
+                , where: {
+                "mobile": data.field.mobile,
+                "name": data.field.name,
+                "groupName": data.field.groupName,
+                 "test" : ""  //为了js不出错而加，
+                }
+            });
+            return false;
+        });
 
 
+        //重置按钮操作
+        $(".data-reset-btn").on('click', function () {
+            //清空表单
+            $("#searchForm")[0].reset();
+            //重新加载
+            table.reload('searchListTable',{
+                page: {curr: 1},
+                where: {
+                        "mobile": "",
+                        "name": "",
+                        "groupName": "",
+                        "test" : ""
+                }
+            });
+        });
+
+        //监听表格右侧的操作按钮
+        table.on('tool(searchListTable)', function (obj) {
+            event(obj);
+        });
+
+        //监听表格工具栏操作按钮
+        table.on('toolbar(searchListTable)', function (obj) {
+            event(obj);
+        });
+
+        //各种事件处理
+        function event(obj) {
+            var data = obj.data;
+            switch (obj.event) {
+                    //==============勾选后删除按钮事件============================
+                case "deleteAll":
+                    config.deleteAll(table,delete_url);
+                    break;
+                    //==============添加按钮点击事件============================
+                case "add":
+                    config.add(add_page_url,{area:['100%','100%']});
+                    break;
+                    //==============查看按钮点击事件============================
+                case "view":
+                    config.view(obj,view_page_url);
+                    break;
+                    //==============删除单行按钮事件============================
+                case "delete":
+                    config.delete(obj,delete_url);
+                    break;
+                    //==============编辑按钮点击事件============================
+                case "edit":
+                    config.edit(obj,edit_page_url);
+                    break;
+            }
+        }
     });
 </script>
 
