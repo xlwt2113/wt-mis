@@ -138,10 +138,13 @@ public class MobileController extends BaseController<Mobile> {
         String[] chooseAccountIds = request.getParameter("chooseAccountId").split(",");
         String chooseTransformId = request.getParameter("chooseTransformId");
         for(String chooseAccountId : chooseAccountIds){
-            Mobile mobile1 = new Mobile();
-            mobile1.setAccountId(Long.parseLong(chooseAccountId));
-            mobile1.setTransformId(Long.parseLong(chooseTransformId));
-            this.mobileRepository.save(mobile1);
+            int cnt = this.mobileRepository.countAllByDelAndAccountIdAndTransformId(0,Long.parseLong(chooseAccountId),Long.parseLong(chooseTransformId));
+            if(cnt==0){
+                Mobile mobile1 = new Mobile();
+                mobile1.setAccountId(Long.parseLong(chooseAccountId));
+                mobile1.setTransformId(Long.parseLong(chooseTransformId));
+                this.mobileRepository.save(mobile1);
+            }
         }
         return ResponseUtils.okJson("新增成功", mobile);
     }

@@ -11,8 +11,8 @@
 <body>
 <form class="layui-form" action="" th:object="${model}">
     <input type="hidden" th:field="*{id}"> <!--此处必须有业务主键的id-->
-    <input type="text" name="chooseAccountId" id="chooseAccountId"> <!--此处必须有业务主键的id-->
-    <input type="text" name="chooseTransformId" id="chooseTransformId"> <!--此处必须有业务主键的id-->
+    <input type="hidden" name="chooseAccountId" id="chooseAccountId"> <!--此处必须有业务主键的id-->
+    <input type="hidden" name="chooseTransformId" id="chooseTransformId"> <!--此处必须有业务主键的id-->
 <div class="layuimini-container">
     <div class="layuimini-main">
         <div class="layui-row layui-col-space15">
