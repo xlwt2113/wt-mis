@@ -58,11 +58,14 @@ public class FreezeController{
         if(StringUtils.isEmpty(devId)||StringUtils.isEmpty(devType)||StringUtils.isEmpty(freezeTime)){
             return ResponseUtils.ok("没有参数，不查询数据",null);
         }else{
+            Date endSearchDate = DateUtils.dayAddNum(DateUtils.parse(freezeTime,"yyyy-MM-dd"),1);
+            String endFreezeTime = DateUtils.dateFormat(endSearchDate) + " 00:00:00";
+            freezeTime = freezeTime + " 00:00:00";
             StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from data_freeze t1  ");
             sql.append(" LEFT JOIN dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
             sql.append(" LEFT JOIN dev_transform t3 on t3.id = t2.transform_id where t1.del = 0");
             sql.append(" and t1.dev_type = "+request.getParameter("devType")+" and t1.dev_id = " + request.getParameter("devId"));
-            sql.append(" and DATE_FORMAT(t1.freeze_time,'%Y-%m-%d') = '"+ request.getParameter("freezeTime") +"'");
+            sql.append(" and t1.freeze_time > '"+freezeTime+"' and t1.freeze_time <= '"+endFreezeTime+"' ");
             sql.append(" order by  t1.freeze_time asc ");
             List list = searchService.findAllBySql(sql.toString());
             DevModel dev = devService.getDevModel(Long.parseLong(devId),Integer.parseInt(devType));

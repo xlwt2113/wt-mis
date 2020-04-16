@@ -12,7 +12,7 @@
     <script th:src="@{/js/toolbar.js}" charset="utf-8"></script>
 </head>
 <body style="background-color: #9F9F9F">
-<input type="hidden" id="transFromId" th:value="${id}">
+<input type="hidden" id="transformId" th:value="${id}">
 <!--工具栏-->
 <div style="margin: 10px 10px 10px 10px">
     <form class="layui-form layui-form-pane" id="searchForm">
@@ -35,6 +35,9 @@
             <div class="layui-inline">
                 <a class="layui-btn" id="findButton"><i class="layui-icon">&#xe615;</i>查询</a>
                 <a class="layui-btn" id="viewDetail">台区详情</a>
+                <if th:if="${showDevCntError == true}">
+                    <a class="layui-btn layui-btn-danger" id="viewError">拓扑异常设备</a>
+                </if>
                 <a class="layui-btn" id="backBtn"><i class="fa fa-arrow-circle-left icon"></i> 返回上层</a>
             </div>
         </div>
@@ -133,7 +136,7 @@
             $('#viewDetail').click(function(){
                 layer.open({
                     type: 2,
-                    content: '/dev/transform/view_detail?id='+$('#transFromId').val()
+                    content: '/dev/transform/view_detail?id=' + transformId
                     , anim: 2 //载入方式
                     , area: ['600px', '500px'] //设置窗口宽高
                     , title: '台区详情' //窗口标题
@@ -145,6 +148,23 @@
                     }
                 });
             });
+
+            // 显示拓扑异常设备
+            $('#viewError').click(function(){
+                layer.open({
+                    type: 2,
+                    content: '/dev/topologyunnormal/list?transformId=' + transformId
+                    , anim: 2 //载入方式
+                    , area: ['100%', '100%'] //设置窗口宽高
+                    , title: '图片异常设备' //窗口标题
+                    , maxmin: true //允许最大化
+                    , btn: ['关闭']
+                    , btnAlign: 'r' //按钮靠右
+                    , yes: function (index, layerObj) {
+                        layer.close(index);
+                    }
+                });
+            })
 
 
             //定时扫描停电报警表及设备状态表，更新设备信息

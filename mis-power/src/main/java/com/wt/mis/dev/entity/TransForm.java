@@ -71,4 +71,10 @@ public class TransForm extends BaseEntity {
     @Column(columnDefinition = " int(11) COMMENT '台区归属线路ID'")
     private Long lineId;
 
+    /**
+     * 注册设备数量
+     */
+    @Column(columnDefinition = " int(11) default 0 COMMENT '注册设备数'")
+    private int devNum;
+
 }

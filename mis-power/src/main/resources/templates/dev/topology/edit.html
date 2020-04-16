@@ -44,7 +44,7 @@
         <div class="layui-row">
             <div class="layui-col-md1"><button type="button" class="layui-btn layui-btn-normal" id="event7">刷新拓扑</button></div>
             <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event14">设置拓扑等级</button></div>
-            <div class="layui-col-md1"><input type="text" autocomplete="off" class="layui-input" id="event14val" name="event14val" placeholder="拓扑等级"/></div>
+            <div class="layui-col-md1"><input type="number" autocomplete="off" class="layui-input" id="event14val" name="event14val" placeholder="拓扑等级"/></div>
             <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event9">添加设备</button></div>
             <div class="layui-col-md1">
                 <select class="layui-select" name="event9val1" id="event9val1">
@@ -68,7 +68,7 @@
         <div class="layui-row" style="padding-top: 25px">
             <div class="layui-col-md1"><button type="button" class="layui-btn layui-btn-normal" id="event8">刷新相位</button></div>
             <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event15">查询拓扑等级</button></div>
-            <div class="layui-col-md1"><input type="text" autocomplete="off" class="layui-input" placeholder="" id="event15Val" name="event15Val"></div>
+            <div class="layui-col-md1"><input type="number" autocomplete="off" class="layui-input" placeholder="" id="event15Val" name="event15Val"></div>
             <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event10">删除设备</button></div>
             <div class="layui-col-md1"><input type="text" autocomplete="off" class="layui-input" placeholder="设备地址"  id="event10val" name="event10val"></div>
         </div>
@@ -76,9 +76,9 @@
         <div class="layui-row" style="padding-top: 25px">
             <div class="layui-col-md1"><button type="button" class="layui-btn layui-btn-normal" id="event2">召测拓扑</button></div>
             <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event13">查询台区号</button></div>
-            <div class="layui-col-md1"><input type="text" autocomplete="off" class="layui-input" placeholder="" id="event13Val" name="event13Val"></div>
+            <div class="layui-col-md1"><input type="number" autocomplete="off" class="layui-input" placeholder="" id="event13Val" name="event13Val"></div>
             <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event11"> 设置台区号 </button></div>
-            <div class="layui-col-md1"><input type="text" autocomplete="off" class="layui-input" id="event11val" name="event11val" placeholder="台区号"></div>
+            <div class="layui-col-md1"><input type="number" autocomplete="off" class="layui-input" id="event11val" name="event11val" placeholder="台区号"></div>
         </div>
     </div>
 
@@ -198,26 +198,62 @@
 
         //添加设备
         $('#event9').click(function(){
-            if($('#event9val1').val()==''||$('#event9val2').val()==''||$('#event9val3').val()==''||$('#event9val4').val()==''){
-                layer.msg("请录入添加的设备信息！");
+            let selectRows = table.checkStatus('searchListTable');
+            if(selectRows.data.length==0){
+                layer.msg("请选择台区设备！");
                 return false;
             }else{
-                $.getJSON("/event/notification/send_event/9", { eventValue:$('#event9val1').val()+","+$('#event9val2').val()+","+$('#event9val3').val()+","+$('#event9val4').val()}, function (data) {
-                    layer.msg(data.message);
-                });
+                let selectRow = selectRows.data[0];
+                if(selectRow.dev_type != 2){
+                    layer.msg("请选择台区设备！");
+                    return false;
+                }else{
+                    if($('#event9val1').val()==''||$('#event9val2').val()==''||$('#event9val3').val()==''||$('#event9val4').val()==''){
+                        layer.msg("请录入添加的设备信息！");
+                        return false;
+                    }else{
+                        var pattern = /^[A-Z0-9]{12}$/;
+                        if (!pattern.test($('#event9val4').val())||!pattern.test($('#event9val2').val())) {
+                            layer.msg("通讯地址必须由12位的数字或大写字母组成！");
+                            return ;
+                        }
+                        $.getJSON("/event/notification/send_event/9", { devId:selectRow.dev_id,devType:selectRow.dev_type,eventValue:$('#event9val1').val()+","+$('#event9val2').val()+","+$('#event9val3').val()+","+$('#event9val4').val()}, function (data) {
+                            layer.msg(data.message);
+                        });
+                    }
+                }
             }
         });
 
         //删除设备
         $('#event10').click(function(){
-            if($('#event10val').val()==''){
-                layer.msg("请录入删除设备的通讯地址！");
+            let selectRows = table.checkStatus('searchListTable');
+            if(selectRows.data.length==0){
+                layer.msg("请选择台区设备！");
                 return false;
             }else{
-                $.getJSON("/event/notification/send_event/10", { eventValue:$('#event10val').val()}, function (data) {
-                    layer.msg(data.message);
-                });
+                let selectRow = selectRows.data[0];
+                if(selectRow.dev_type != 2){
+                    layer.msg("请选择台区设备！");
+                    return false;
+                }else{
+                    if($('#event10val').val()==''){
+                        layer.msg("请录入删除设备的通讯地址！");
+                        return false;
+                    }else{
+                        var pattern = /^[A-Z0-9]{12}$/;
+                        if (!pattern.test($('#event10val').val())) {
+                            layer.msg("通讯地址必须由12位的数字或大写字母组成！");
+                            return ;
+                        }
+                        $.getJSON("/event/notification/send_event/10", { devId:selectRow.dev_id,devType:selectRow.dev_type,eventValue:$('#event10val').val()}, function (data) {
+                            layer.msg(data.message);
+                        });
+                    }
+                }
+
             }
+
         });
 
         //设置拓扑等级

@@ -23,7 +23,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -114,13 +113,9 @@ public class TimeTaskController extends BaseController<TimeTask> {
     @PostMapping("/add")
     @ResponseBody
     protected String add(HttpServletRequest request, TimeTask timeTask) {
-        try {
-            timeTask.setTaskTime(DateUtils.parse(DateUtils.dateFormat(new Date())+" "+timeTask.getTaskTimeStr(),"yyyy-MM-dd HH:mm:ss"));
-            calculationDay(timeTask);
-            this.timeTaskRepository.save(timeTask);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        timeTask.setTaskTime(DateUtils.parse(DateUtils.dateFormat(new Date())+" "+timeTask.getTaskTimeStr(),"yyyy-MM-dd HH:mm:ss"));
+        calculationDay(timeTask);
+        this.timeTaskRepository.save(timeTask);
         this.addEvent(timeTask);
         return ResponseUtils.okJson("新增成功", timeTask);
     }
@@ -130,14 +125,10 @@ public class TimeTaskController extends BaseController<TimeTask> {
     @PostMapping("/edit")
     @ResponseBody
     protected String edit(HttpServletRequest request, TimeTask timeTask) {
-        try {
-            timeTask.setTaskTime(DateUtils.parse(DateUtils.dateFormat(new Date())+" "+timeTask.getTaskTimeStr(),"yyyy-MM-dd HH:mm:ss"));
-            calculationDay(timeTask);
-            this.timeTaskRepository.save(timeTask);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        this.addEvent(timeTask);
+        timeTask.setTaskTime(DateUtils.parse(DateUtils.dateFormat(new Date())+" "+timeTask.getTaskTimeStr(),"yyyy-MM-dd HH:mm:ss"));
+        calculationDay(timeTask);
+        this.timeTaskRepository.save(timeTask);
+    this.addEvent(timeTask);
         return ResponseUtils.okJson("修改成功",timeTask);
     }
 

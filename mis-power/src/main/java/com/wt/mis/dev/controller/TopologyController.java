@@ -96,6 +96,13 @@ public class TopologyController {
     public ModelAndView view(@PathVariable Long id){
         ModelAndView mv = new ModelAndView(this.getUrlPrefix() + "/view_transform");
         TransForm transForm = transFormRepository.getOne(id);
+        List<Topology> topologyList = topologyRepository.findAllByDelAndTransformId(0,id);
+        //是否显示拓扑设备和实际设备数量不一致的提示信息
+        boolean showDevCntError = false;
+        if(transForm.getDevNum()!=topologyList.size()){
+            showDevCntError = true;
+        }
+        mv.addObject("showDevCntError",showDevCntError);
         mv.addObject("id",id);
         mv.addObject("name",transForm.getTransformName());
         return mv;

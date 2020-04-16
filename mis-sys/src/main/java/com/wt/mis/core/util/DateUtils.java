@@ -230,10 +230,17 @@ public class DateUtils {
      *                        <p>
      *                        ==================================
      */
-    public static Date parse(String dateStr, String format) throws ParseException {
-        if (dateStr == null) return null;
-        sdf.applyPattern(format);
-        return sdf.parse(dateStr);
+    public static Date parse(String dateStr, String format) {
+        try{
+            if (dateStr == null){
+                return null;
+            }
+            sdf.applyPattern(format);
+            return sdf.parse(dateStr);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
