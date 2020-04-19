@@ -43,6 +43,9 @@
 
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
+                <a href="javascript:" id="showEventBtn"><i class="fa fa-exclamation-circle"></i></a>
+            </li>
+            <li class="layui-nav-item">
                 <a href="javascript:" data-refresh="刷新"><i class="fa fa-refresh"></i></a>
             </li>
             <li class="layui-nav-item">
@@ -116,11 +119,33 @@
                 }
             })
         },15000);
-
-
-
         //加载配置信息（菜单）
         layuimini.init('api/init');
+
+
+
+        //点击查看命令运行状态
+        $('#showEventBtn').click(function(){
+
+            // 打开新的窗口
+            layuimini.addTab('notification_tab',"/event/notification/list", "命令执行状态");
+            layuimini.changeTab('notification_tab');
+
+
+            // layer.open({
+            //     type: 2,
+            //     content: '/event/notification/list'
+            //     , anim: 2 //载入方式
+            //     , area: ['950px', '500px'] //设置窗口宽高
+            //     , title: '命令执行状态' //窗口标题
+            //     , maxmin: true //允许最大化
+            //     , btn: ['关闭']
+            //     , btnAlign: 'r' //按钮靠右
+            //     , yes: function (index, layerObj) {
+            //         layer.close(index);
+            //     }
+            // });
+        });
 
     });
 </script>

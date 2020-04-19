@@ -83,9 +83,25 @@ public class BranchBoxController extends BaseController<BranchBox> {
     }
 
     @Override
+    @ApiOperation("提交创建对象")
+    @PostMapping("/add")
+    @ResponseBody
+    protected String add(HttpServletRequest request, BranchBox branchBox) {
+        int cnt = branchBoxRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,branchBox.getProtocolAddress(),branchBox.getOperationsTeam());
+        if(cnt>0){
+            return ResponseUtils.errorJson("通讯地址已经存在！",branchBox);
+        }
+        return super.add(request, branchBox);
+    }
+
+    @Override
     @ApiOperation("提交修改对象")
     @PostMapping("/edit")
     protected String edit(HttpServletRequest request, BranchBox branchBox) {
+        int cnt = branchBoxRepository.countAllByDelAndProtocolAddressAndOperationsTeamAndIdNot(0,branchBox.getProtocolAddress(),branchBox.getOperationsTeam(),branchBox.getId());
+        if(cnt>0){
+            return ResponseUtils.errorJson("通讯地址已经存在！",branchBox);
+        }
         List<Topology> topologyList = topologyRepository.findAllByDelAndDevIdAndDevType(0,branchBox.getId(),3);
         for(Topology topology:topologyList){
             topology.setDevName(branchBox.getBranchBoxName());

@@ -146,11 +146,37 @@ public class TransFormController extends BaseController<TransForm> {
     @ApiOperation("提交修改对象")
     @PostMapping("/edit")
     protected String edit(HttpServletRequest request, TransForm transForm) {
+        //验证是否有汇聚单元地址相同的台区，有的话不允许添加
+        int cnt = transFormRepository.countAllByDelAndDevAddressAndOperationsTeamAndIdNot(0,transForm.getDevAddress(),transForm.getOperationsTeam(),transForm.getId());
+        if(cnt>0){
+            return ResponseUtils.errorJson("汇聚单元地址已经存在！",transForm);
+        }
+        cnt = transFormRepository.countAllByDelAndProtocolAddressAndOperationsTeamAndIdNot(0,transForm.getProtocolAddress(),transForm.getOperationsTeam(),transForm.getId());
+        if(cnt>0){
+            return ResponseUtils.errorJson("通讯地址已经存在！",transForm);
+        }
         List<Topology> topologyList = topologyRepository.findAllByDelAndDevIdAndDevType(0,transForm.getId(),2);
         for(Topology topology:topologyList){
             topology.setDevName(transForm.getTransformName());
         }
         return super.edit(request, transForm);
+    }
+
+    @Override
+    @ApiOperation("提交创建对象")
+    @PostMapping("/add")
+    @ResponseBody
+    protected String add(HttpServletRequest request, TransForm transForm) {
+        //验证是否有汇聚单元地址相同的台区，有的话不允许添加
+        int cnt = transFormRepository.countAllByDelAndDevAddressAndOperationsTeam(0,transForm.getDevAddress(),transForm.getOperationsTeam());
+        if(cnt>0){
+            return ResponseUtils.errorJson("汇聚单元地址已经存在！",transForm);
+        }
+        cnt = transFormRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,transForm.getProtocolAddress(),transForm.getOperationsTeam());
+        if(cnt>0){
+            return ResponseUtils.errorJson("通讯地址已经存在！",transForm);
+        }
+        return super.add(request, transForm);
     }
 
     @Override

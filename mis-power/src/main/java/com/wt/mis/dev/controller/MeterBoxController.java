@@ -110,9 +110,25 @@ public class MeterBoxController extends BaseController<MeterBox> {
     }
 
     @Override
+    @ApiOperation("提交创建对象")
+    @PostMapping("/add")
+    @ResponseBody
+    protected String add(HttpServletRequest request, MeterBox meterBox) {
+        int cnt = meterBoxRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,meterBox.getProtocolAddress(),meterBox.getOperationsTeam());
+        if(cnt>0){
+            return ResponseUtils.errorJson("通讯地址已经存在！",meterBox);
+        }
+        return super.add(request, meterBox);
+    }
+
+    @Override
     @ApiOperation("提交修改对象")
     @PostMapping("/edit")
     protected String edit(HttpServletRequest request, MeterBox meterBox) {
+        int cnt = meterBoxRepository.countAllByDelAndProtocolAddressAndOperationsTeamAndIdNot(0,meterBox.getProtocolAddress(),meterBox.getOperationsTeam(),meterBox.getId());
+        if(cnt>0){
+            return ResponseUtils.errorJson("通讯地址已经存在！",meterBox);
+        }
         List<Topology> topologyList = null;
         int[] devTypes = {4,5};
         if(meterBox.getThreePhase()==1){

@@ -49,7 +49,15 @@ public class NotificationController extends BaseController<Notification> {
 
     @Override
     protected String generateSearchSql(Notification notification, HttpServletRequest request) {
-        StringBuffer sql = new StringBuffer("select t1.* from event_notification as t1  where t1.del = 0 ");
+        //只获取需要前置机处理的事件通知
+        StringBuffer sql = new StringBuffer("select t1.*,t2.dev_name from event_notification as t1 left join dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type  where t1.del = 0  and t1.event_receiver = 2");
+        if(StringUtils.isNotEmpty(request.getParameter("devType"))){
+            sql.append(" and t1.dev_type = " + request.getParameter("devType"));
+        }
+        if(StringUtils.isNotEmpty(request.getParameter("devName"))){
+            sql.append(" and t2.dev_name like '%"+request.getParameter("devName")+"%'");
+        }
+        sql.append(" order by create_time desc ");
         return sql.toString();
     }
 
