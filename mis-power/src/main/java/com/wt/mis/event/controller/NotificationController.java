@@ -76,7 +76,7 @@ public class NotificationController extends BaseController<Notification> {
             key = DictUtils.getDictItemKey("事件类型", String.valueOf(map.get("event_type")));
             map.replace("event_type", key);
             key = DictUtils.getDictItemKey("事件状态", String.valueOf(map.get("event_status")));
-            map.replace("event_status", key);
+            map.put("event_status_name", key);
             key = DictUtils.getDictItemKey("事件接收处理方", String.valueOf(map.get("event_receiver")));
             map.replace("event_receiver", key);
         }
