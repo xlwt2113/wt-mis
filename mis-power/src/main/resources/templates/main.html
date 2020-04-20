@@ -98,26 +98,36 @@
 
 
 <script src="lib/layui-v2.5.4/layui.js?v=1.0.4" charset="utf-8"></script>
-<script src="js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <script>
     layui.use(['element', 'layer', 'layuimini','notice'], function () {
         var $ = layui.jquery,
             element = layui.element,
             notice = layui.notice,
             layer = layui.layer;
-            notice.options = {
-                closeButton:true,
-                timeOut:"8000",//停留的时间
-                positionClass:"toast-top-center"//弹出的位置,
-            }
+        notice.options = {
+            closeButton:false,
+            timeOut:"8000",//停留的时间
+            positionClass:"toast-top-center"//弹出的位置,
+        }
 
         //定时获取报警设备数量
         setInterval(function () {
-            $.get('/event/poweroutage/current_power_cnt',function (data) {
-                if(data>0){
-                    notice.error("目前有"+data+"个设备报警！");
+            // $.get('/event/poweroutage/current_power_cnt',function (data) {
+            //     if(data>0){
+            //         notice.error("目前有"+data+"个设备报警！");
+            //     }
+            // })
+
+            $.post('/event/task/list',function(result){
+                for(var i=0;i<result.data.content.length;i++){
+                    row = result.data.content[i];
+                    notice.error(row.msg);
                 }
-            })
+                $(".task_notice").click(function(){
+                    $.getJSON("/event/task/delete", { id: $(this).attr("val")});
+                })
+            });
+
         },15000);
         //加载配置信息（菜单）
         layuimini.init('api/init');
@@ -147,7 +157,20 @@
             // });
         });
 
+
+
     });
+
+    // $(function(){
+    //     function del(id) {
+    //         $.getJSON("/event/task/del", { id: id}, function(json){
+    //
+    //         });
+    //     }
+    // })
+
+
 </script>
+<script src="js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 </body>
 </html>

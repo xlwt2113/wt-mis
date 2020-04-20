@@ -4,6 +4,8 @@ import com.wt.mis.core.repository.BaseRepository;
 import com.wt.mis.sys.entity.Account;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface AccountRepository extends BaseRepository<Account, Long> {
 
@@ -32,4 +34,12 @@ public interface AccountRepository extends BaseRepository<Account, Long> {
      * @return
      */
     Account findByNameAndDelAndIdNot(String name, int del, Long id);
+
+    /**
+     * 根据部门id获取该部门下的所有人员
+     * @param del
+     * @param depId
+     * @return
+     */
+    List<Account> findAllByDelAndDepId(int del, long depId);
 }

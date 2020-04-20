@@ -50,4 +50,10 @@ public class Notification extends BaseEntity {
     @Column(columnDefinition = " int COMMENT '事件处理优先级'")
     private Integer eventPriority;
 
+    /**
+     * 事件处理优先级
+     */
+    @Column(columnDefinition = " int default 0 COMMENT '是否已经处理，默认0未处理 1已处理'")
+    private int dealStatus;
+
 }
