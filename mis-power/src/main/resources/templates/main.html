@@ -119,8 +119,8 @@
             // })
 
             $.post('/event/task/list',function(result){
-                for(var i=0;i<result.data.content.length;i++){
-                    row = result.data.content[i];
+                for(var i=0;i<result.data.length;i++){
+                    row = result.data[i];
                     notice.error(row.msg);
                 }
                 $(".task_notice").click(function(){

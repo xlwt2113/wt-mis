@@ -56,4 +56,10 @@ public class Notification extends BaseEntity {
     @Column(columnDefinition = " int default 0 COMMENT '是否已经处理，默认0未处理 1已处理'")
     private int dealStatus;
 
+    /**
+     * 事件命令执行人
+     */
+    @Column(columnDefinition = " int COMMENT '命令执行人'")
+    private Long accountId;
+
 }

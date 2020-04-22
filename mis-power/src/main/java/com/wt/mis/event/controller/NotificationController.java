@@ -4,6 +4,7 @@ package com.wt.mis.event.controller;
 import com.wt.mis.core.controller.BaseController;
 import com.wt.mis.core.repository.BaseRepository;
 import com.wt.mis.core.util.DateUtils;
+import com.wt.mis.core.util.LoginUser;
 import com.wt.mis.core.util.ResponseUtils;
 import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.dev.entity.Topology;
@@ -165,6 +166,8 @@ public class NotificationController extends BaseController<Notification> {
             notification.setEventReceiver(2);
             //事件处理优先级，默认为5
             notification.setEventPriority(eventPriority);
+            //写入事件的发起人
+            notification.setAccountId(LoginUser.getCurrentUser().getId());
             notificationRepository.save(notification);
             return ResponseUtils.ok("命令发送成功！");
         }else {

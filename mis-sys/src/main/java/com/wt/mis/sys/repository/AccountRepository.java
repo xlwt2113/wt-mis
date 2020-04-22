@@ -2,6 +2,7 @@ package com.wt.mis.sys.repository;
 
 import com.wt.mis.core.repository.BaseRepository;
 import com.wt.mis.sys.entity.Account;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -42,4 +43,7 @@ public interface AccountRepository extends BaseRepository<Account, Long> {
      * @return
      */
     List<Account> findAllByDelAndDepId(int del, long depId);
+
+    @Query(value = "select t1 from Account as t1 left join Dep as t2 on t1.depId = t2.id where t1.del=0 and t2.level like '_?1%'")
+    List<Account> findAllByDepLevel(String depLevel);
 }

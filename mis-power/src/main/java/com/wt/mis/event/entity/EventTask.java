@@ -12,7 +12,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "event_task")
 @EqualsAndHashCode(callSuper = true)
-public class EeventTask extends BaseEntity {
+public class EventTask extends BaseEntity {
 
     /**
     * 消息通知接收人ID
@@ -29,5 +29,10 @@ public class EeventTask extends BaseEntity {
     */
     @Column(columnDefinition = " varchar(1000) COMMENT '消息详情的查看地址'")
     private String url;
+    /**
+     * 事件的标记，用于区分某一类的事件
+     */
+    @Column(columnDefinition = " varchar(100) COMMENT '消息详情的查看地址'")
+    private String tag;
 
 }
