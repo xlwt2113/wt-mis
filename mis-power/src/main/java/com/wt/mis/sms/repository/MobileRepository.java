@@ -4,6 +4,8 @@ import com.wt.mis.core.repository.BaseRepository;
 import com.wt.mis.sms.entity.Mobile;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface MobileRepository extends BaseRepository<Mobile,Long> {
 
@@ -15,4 +17,13 @@ public interface MobileRepository extends BaseRepository<Mobile,Long> {
      * @return
      */
     int countAllByDelAndAccountIdAndTransformId(int del,long accountId ,long transformId);
+
+
+    /**
+     * 获取某个台区下所有的短信接收人员列表
+     * @param del
+     * @param transfromId
+     * @return
+     */
+    List<Mobile> findAllByDelAndTransformId(int del, long transfromId);
 }

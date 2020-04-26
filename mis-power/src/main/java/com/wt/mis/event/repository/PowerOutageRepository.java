@@ -9,8 +9,10 @@ import java.util.List;
 @Repository
 public interface PowerOutageRepository extends BaseRepository<PowerOutage,Long> {
 
-    List<PowerOutage> getAllByDelAndHistoryAndPowerStatus(int del,int history,int powerStatus);
+//    List<PowerOutage> getAllByDelAndHistoryAndPowerStatus(int del,int history,int powerStatus);
+//
+//    int countAllByDelAndHistoryAndPowerStatus(int del,int history,int powerStatus);
 
-    int countAllByDelAndHistoryAndPowerStatus(int del,int history,int powerStatus);
+    List<PowerOutage> findAllByDelAndDevIdAndDevTypeAndHistoryOrderByCreateTimeDesc(int del,long devId,int devType,int history);
 
 }

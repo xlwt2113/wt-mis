@@ -92,6 +92,12 @@ public class DateUtils {
         return str;
     }
 
+    public static String dateFormat(LocalDateTime date,String strFormat){
+        DateTimeFormatter sf = DateTimeFormatter.ofPattern(strFormat);
+        String str = sf.format(date);
+        return str;
+    }
+
     //日期天数加减
     public static Date dayAddNum(Date time, Integer num){
         Calendar calendar = Calendar.getInstance();

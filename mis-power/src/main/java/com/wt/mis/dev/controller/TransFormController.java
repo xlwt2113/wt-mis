@@ -10,9 +10,7 @@ import com.wt.mis.core.util.ResponseUtils;
 import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.dev.entity.Topology;
 import com.wt.mis.dev.entity.TransForm;
-import com.wt.mis.dev.repository.LineRepository;
-import com.wt.mis.dev.repository.TopologyRepository;
-import com.wt.mis.dev.repository.TransFormRepository;
+import com.wt.mis.dev.repository.*;
 import com.wt.mis.dev.service.DevService;
 import com.wt.mis.sys.entity.Dep;
 import com.wt.mis.sys.repository.DepRespository;
@@ -34,6 +32,12 @@ import java.util.List;
 @RequestMapping("/dev/transform")
 public class TransFormController extends BaseController<TransForm> {
 
+    @Autowired
+    BranchBoxRepository branchBoxRepository;
+    @Autowired
+    MeterBoxRepository meterBoxRepository;
+    @Autowired
+    MeterRepository meterRepository;
     @Autowired
     TransFormRepository transFormRepository;
 
@@ -152,6 +156,7 @@ public class TransFormController extends BaseController<TransForm> {
             return ResponseUtils.errorJson("汇聚单元地址已经存在！",transForm);
         }
         cnt = transFormRepository.countAllByDelAndProtocolAddressAndOperationsTeamAndIdNot(0,transForm.getProtocolAddress(),transForm.getOperationsTeam(),transForm.getId());
+        cnt = cnt + this.getOtherDevCnt(transForm.getProtocolAddress(),transForm.getOperationsTeam());
         if(cnt>0){
             return ResponseUtils.errorJson("通讯地址已经存在！",transForm);
         }
@@ -173,10 +178,25 @@ public class TransFormController extends BaseController<TransForm> {
             return ResponseUtils.errorJson("汇聚单元地址已经存在！",transForm);
         }
         cnt = transFormRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,transForm.getProtocolAddress(),transForm.getOperationsTeam());
+        cnt = cnt + this.getOtherDevCnt(transForm.getProtocolAddress(),transForm.getOperationsTeam());
         if(cnt>0){
             return ResponseUtils.errorJson("通讯地址已经存在！",transForm);
         }
         return super.add(request, transForm);
+    }
+
+    /**
+     * 根据设备通讯地址及班组获取其他设备的数量
+     * @param protocolAddress
+     * @param operationsTeam
+     * @return
+     */
+    private int getOtherDevCnt(String protocolAddress,long operationsTeam){
+        int cnt = 0;
+        cnt = cnt + branchBoxRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,protocolAddress,operationsTeam);
+        cnt = cnt + meterBoxRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,protocolAddress,operationsTeam);
+        cnt = cnt + meterRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,protocolAddress,operationsTeam);
+        return  cnt ;
     }
 
     @Override

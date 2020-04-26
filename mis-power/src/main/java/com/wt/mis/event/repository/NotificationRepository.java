@@ -20,7 +20,7 @@ public interface NotificationRepository extends BaseRepository<Notification,Long
      * 获取所有主站发送的已经成功执行的事件列表
      * @return
      */
-    @Query("from Notification where del =0 and eventReceiver = 2 and eventStatus in (3,4) and dealStatus = 0")
+    @Query("from Notification where del =0 and eventReceiver = 2 and eventStatus in (2,3) and dealStatus = 0")
     List<Notification> findAllSendNodificationList();
 
     @Query("from Notification where del =0 and eventReceiver = 1 and eventStatus =0 and dealStatus = 0")

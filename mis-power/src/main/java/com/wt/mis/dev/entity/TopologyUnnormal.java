@@ -3,6 +3,7 @@ package com.wt.mis.dev.entity;
 import com.wt.mis.core.entity.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.Proxy;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +13,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "dev_topology_unnormal")
 @EqualsAndHashCode(callSuper = true)
+@Proxy(lazy = false)
 public class TopologyUnnormal extends BaseEntity {
 
     /**

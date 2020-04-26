@@ -3,6 +3,7 @@ package com.wt.mis.dev.entity;
 import com.wt.mis.core.entity.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.Proxy;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,6 +15,7 @@ import java.util.List;
 @Entity
 @Table(name = "dev_topology")
 @EqualsAndHashCode(callSuper = true)
+@Proxy(lazy = false)
 public class Topology extends BaseEntity {
 
     /**

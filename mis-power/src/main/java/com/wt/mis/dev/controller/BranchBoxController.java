@@ -9,8 +9,7 @@ import com.wt.mis.core.util.ResponseUtils;
 import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.dev.entity.BranchBox;
 import com.wt.mis.dev.entity.Topology;
-import com.wt.mis.dev.repository.BranchBoxRepository;
-import com.wt.mis.dev.repository.TopologyRepository;
+import com.wt.mis.dev.repository.*;
 import com.wt.mis.dev.service.DevService;
 import com.wt.mis.sys.entity.Dep;
 import com.wt.mis.sys.repository.DepRespository;
@@ -33,6 +32,12 @@ public class BranchBoxController extends BaseController<BranchBox> {
 
     @Autowired
     BranchBoxRepository branchBoxRepository;
+    @Autowired
+    MeterBoxRepository meterBoxRepository;
+    @Autowired
+    MeterRepository meterRepository;
+    @Autowired
+    TransFormRepository transFormRepository;
 
     @Autowired
     DepRespository depRespository;
@@ -88,6 +93,7 @@ public class BranchBoxController extends BaseController<BranchBox> {
     @ResponseBody
     protected String add(HttpServletRequest request, BranchBox branchBox) {
         int cnt = branchBoxRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,branchBox.getProtocolAddress(),branchBox.getOperationsTeam());
+        cnt = cnt + this.getOtherDevCnt(branchBox.getProtocolAddress(),branchBox.getOperationsTeam());
         if(cnt>0){
             return ResponseUtils.errorJson("通讯地址已经存在！",branchBox);
         }
@@ -99,6 +105,7 @@ public class BranchBoxController extends BaseController<BranchBox> {
     @PostMapping("/edit")
     protected String edit(HttpServletRequest request, BranchBox branchBox) {
         int cnt = branchBoxRepository.countAllByDelAndProtocolAddressAndOperationsTeamAndIdNot(0,branchBox.getProtocolAddress(),branchBox.getOperationsTeam(),branchBox.getId());
+        cnt = cnt + this.getOtherDevCnt(branchBox.getProtocolAddress(),branchBox.getOperationsTeam());
         if(cnt>0){
             return ResponseUtils.errorJson("通讯地址已经存在！",branchBox);
         }
@@ -107,6 +114,20 @@ public class BranchBoxController extends BaseController<BranchBox> {
             topology.setDevName(branchBox.getBranchBoxName());
         }
         return super.edit(request, branchBox);
+    }
+
+    /**
+     * 根据设备通讯地址及班组获取其他设备的数量
+     * @param protocolAddress
+     * @param operationsTeam
+     * @return
+     */
+    private int getOtherDevCnt(String protocolAddress,long operationsTeam){
+        int cnt = 0;
+        cnt = cnt + meterBoxRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,protocolAddress,operationsTeam);
+        cnt = cnt + meterRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,protocolAddress,operationsTeam);
+        cnt = cnt + transFormRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,protocolAddress,operationsTeam);
+        return  cnt ;
     }
 
     @ApiOperation("打开查看页面")

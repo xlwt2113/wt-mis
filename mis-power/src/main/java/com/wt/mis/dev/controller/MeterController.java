@@ -9,8 +9,7 @@ import com.wt.mis.core.util.ResponseUtils;
 import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.dev.entity.Meter;
 import com.wt.mis.dev.entity.Topology;
-import com.wt.mis.dev.repository.MeterRepository;
-import com.wt.mis.dev.repository.TopologyRepository;
+import com.wt.mis.dev.repository.*;
 import com.wt.mis.dev.service.DevService;
 import com.wt.mis.sys.entity.Dep;
 import com.wt.mis.sys.repository.DepRespository;
@@ -34,7 +33,13 @@ import java.util.List;
 public class MeterController extends BaseController<Meter> {
 
     @Autowired
+    BranchBoxRepository branchBoxRepository;
+    @Autowired
+    MeterBoxRepository meterBoxRepository;
+    @Autowired
     MeterRepository meterRepository;
+    @Autowired
+    TransFormRepository transFormRepository;
 
     @Autowired
     DepRespository depRespository;
@@ -115,6 +120,7 @@ public class MeterController extends BaseController<Meter> {
     @ResponseBody
     protected String add(HttpServletRequest request, Meter meterBox) {
         int cnt = meterRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,meterBox.getProtocolAddress(),meterBox.getOperationsTeam());
+        cnt = cnt + this.getOtherDevCnt(meterBox.getProtocolAddress(),meterBox.getOperationsTeam());
         if(cnt>0){
             return ResponseUtils.errorJson("通讯地址已经存在！",meterBox);
         }
@@ -126,6 +132,7 @@ public class MeterController extends BaseController<Meter> {
     @PostMapping("/edit")
     protected String edit(HttpServletRequest request, Meter meterBox) {
         int cnt = meterRepository.countAllByDelAndProtocolAddressAndOperationsTeamAndIdNot(0,meterBox.getProtocolAddress(),meterBox.getOperationsTeam(),meterBox.getId());
+        cnt = cnt + this.getOtherDevCnt(meterBox.getProtocolAddress(),meterBox.getOperationsTeam());
         if(cnt>0){
             return ResponseUtils.errorJson("通讯地址已经存在！",meterBox);
         }
@@ -143,6 +150,20 @@ public class MeterController extends BaseController<Meter> {
             topology.setDevName(meterBox.getOwnerName());
         }
         return super.edit(request, meterBox);
+    }
+
+    /**
+     * 根据设备通讯地址及班组获取其他设备的数量
+     * @param protocolAddress
+     * @param operationsTeam
+     * @return
+     */
+    private int getOtherDevCnt(String protocolAddress,long operationsTeam){
+        int cnt = 0;
+        cnt = cnt + branchBoxRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,protocolAddress,operationsTeam);
+        cnt = cnt + meterBoxRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,protocolAddress,operationsTeam);
+        cnt = cnt + transFormRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,protocolAddress,operationsTeam);
+        return  cnt ;
     }
 
     @Override

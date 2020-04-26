@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.util.Date;
 
 @Data
 @Entity
@@ -17,18 +18,18 @@ public class PowerOutage extends BaseEntity {
     /**
     * 设备ID
     */
-    @Column(columnDefinition = " varchar(100) COMMENT '设备ID'")
-    private String devId;
+    @Column(columnDefinition = " int(11) COMMENT '设备ID'")
+    private long devId;
     /**
     * 设备类型
     */
-    @Column(columnDefinition = " varchar(100) COMMENT '设备类型'")
-    private String devType;
+    @Column(columnDefinition = " int COMMENT '设备类型'")
+    private int devType;
     /**
     * 事件发生时间
     */
-    @Column(columnDefinition = " varchar(100) COMMENT '事件发生时间'")
-    private String occurTime;
+    @Column(columnDefinition = " DATETIME COMMENT '事件发生时间'")
+    private Date occurTime;
     /**
     * 停电状态
     */

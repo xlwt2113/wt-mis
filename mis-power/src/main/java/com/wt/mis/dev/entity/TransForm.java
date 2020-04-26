@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wt.mis.core.entity.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.Proxy;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
@@ -15,6 +16,7 @@ import java.util.Date;
 @Entity
 @Table(name = "dev_transform")
 @EqualsAndHashCode(callSuper = true)
+@Proxy(lazy = false)
 public class TransForm extends BaseEntity {
 
     /**

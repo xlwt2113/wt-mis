@@ -3,6 +3,7 @@ package com.wt.mis.sys.entity;
 import com.wt.mis.core.entity.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.Proxy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -20,6 +21,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "sys_account")
+@Proxy(lazy = false)
 public class Account extends BaseEntity implements UserDetails {
 
     @Column(columnDefinition = " varchar(20) COMMENT '账号名'")
