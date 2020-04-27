@@ -64,22 +64,33 @@ public class TopologyController {
     @ResponseBody
     public Map<String,List<Topology>> getLineViewData(){
         Map<String,List<Topology>> resultMap = new HashMap();
-//        List<Line> lineList = lineRepository.findAllByDel(0);
         List<Line> lineList = lineRepository.findAllByOperationsTeam(LoginUser.getCurrentUser().getDepId());
         List<Topology> topologyLineList = new ArrayList<>();
-        List<Topology> transformList = topologyRepository.findAllByDelAndDevType(0,2);
         for(Line line :lineList){
             Topology topologyLine = new Topology();
             topologyLine.setDevId(line.getId());
             topologyLine.setDevName(line.getLineName());
             topologyLine.setDevType(1);
             List<Topology> newTransformList = new ArrayList<>();
-            for(Topology transform :transformList){
-                TransForm temp = transFormRepository.getOne(transform.getDevId());
-                if(temp!=null && temp.getLineId()!=null && temp.getLineId().longValue() == line.getId().longValue()){
-                    newTransformList.add(transform);
+            //获取该线路下的台区
+            List<TransForm> transformList = transFormRepository.findAllByDelAndLineId(0,line.getId());
+            //将台区对象转换成拓扑对象，方便前台展示
+            for(TransForm transForm : transformList){
+                List<Topology> tempList = topologyRepository.findAllByDelAndDevIdAndDevType(0,transForm.getId(),2);
+                //判断台区是否在拓扑表
+                if(tempList!=null&&tempList.size()>0){
+                    newTransformList.add(tempList.get(0));
+                }else{
+                    Topology topology = new Topology();
+                    topology.setDevId(transForm.getId());
+                    topology.setDevType(2);
+                    topology.setDevName(transForm.getTransformName());
+//                    设备在拓扑表不存在，状态默认为不在线
+                    topology.setDevOnline(1);
+                    newTransformList.add(topology);
                 }
             }
+
             topologyLine.setTransfromList(newTransformList);
             topologyLineList.add(topologyLine);
         }

@@ -15,6 +15,8 @@ public interface TransFormRepository extends BaseRepository<TransForm,Long> {
 
     int countAllByDelAndLineId(int del,long lineId);
 
+    List<TransForm> findAllByDelAndLineId(int del,long lineId);
+
     //获取某个班组下汇聚单元地址的设备数量
     int countAllByDelAndDevAddressAndOperationsTeam(int del,String devAddress,long operationsTeam);
 

@@ -107,22 +107,20 @@ public class MobileController extends BaseController<Mobile> {
     public List lineTree(){
         List<Line> lineList = lineRepository.findAllByOperationsTeam(LoginUser.getCurrentUser().getDepId());
         List<JsonTreeModel> treeData = new ArrayList<>();
-        List<Topology> transformList = topologyRepository.findAllByDelAndDevType(0,2);
         for(Line line :lineList){
             JsonTreeModel jsonLine = new JsonTreeModel();
             jsonLine.setId("line_"+line.getId());
             jsonLine.setTitle(line.getLineName());
             jsonLine.setType(1);
             List<JsonTreeModel> childrens = new ArrayList<>();
-            for(Topology transform :transformList){
-                TransForm temp = transFormRepository.getOne(transform.getDevId());
-                if(temp!=null && temp.getLineId()!=null && temp.getLineId().longValue() == line.getId().longValue()){
-                    JsonTreeModel children = new JsonTreeModel();
-                    children.setTitle(temp.getTransformName());
-                    children.setId(String.valueOf(temp.getId()));
-                    children.setType(2);
-                    childrens.add(children);
-                }
+            //获取该线路下的台区
+            List<TransForm> transformList = transFormRepository.findAllByDelAndLineId(0,line.getId());
+            for(TransForm transForm : transformList){
+                JsonTreeModel children = new JsonTreeModel();
+                children.setTitle(transForm.getTransformName());
+                children.setId(String.valueOf(transForm.getId()));
+                children.setType(2);
+                childrens.add(children);
             }
             jsonLine.setChildren(childrens);
             treeData.add(jsonLine);

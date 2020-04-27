@@ -114,15 +114,32 @@ public class EventTaskRun {
                     List<PowerOutage> powerList = powerOutageRepository.findAllByDelAndDevIdAndDevTypeAndHistoryOrderByCreateTimeDesc(0,dev.getDevId(),dev.getDevType(),0);
                     List<SmsserverOut> sendList = new ArrayList<>();
                     StringBuffer sendMsg = new StringBuffer();
-                    sendMsg.append("{"+transForm.getTransformName()+"} {"+DictUtils.getDictItemValue("设备类型",String.valueOf(dev.getDevType()))+"} {"+dev.getDevName()+"} " +
+                    sendMsg.append("{"+transForm.getTransformName()+"} {"+DictUtils.getDictItemKey("设备类型",String.valueOf(dev.getDevType()))+"} {"+dev.getDevName()+"} " +
                             "{"+ DateUtils.dateFormat(notification.getCreateTime(),"yyyy/MM/dd HH:mm:ss") +"}报警。");
                     if(powerList!=null&&powerList.size()>0){
                         PowerOutage power = powerList.get(0);
-                        sendMsg.append("停电状态：{"+DictUtils.getDictItemKey("停电/相序状态",String.valueOf(power.getPowerStatus()))+"}；" +
-                                "相序状态：{"+DictUtils.getDictItemKey("停电/相序状态",String.valueOf(power.getPhaseStatus()))+"}；" +
-                                "A相电压：{"+DictUtils.getDictItemKey("停电/相序状态",String.valueOf(power.getVoltageStatusA()))+"}；" +
-                                "B相电压：{"+DictUtils.getDictItemKey("停电/相序状态",String.valueOf(power.getVoltageStatusB()))+"}；" +
-                                "C相电压：{"+DictUtils.getDictItemKey("停电/相序状态",String.valueOf(power.getVoltageStatusC()))+"}");
+                        if(power.getPowerStatus()==0&&power.getPhaseStatus()==0&&power.getVoltageStatusA()==0&&power.getVoltageStatusB()==0&&power.getVoltageStatusC()==0){
+                            //复电报警
+                            sendMsg.append(transForm.getTransformName()+" 【"+DictUtils.getDictItemKey("设备类型",String.valueOf(dev.getDevType()))+"】 "+dev.getDevName()+" 于 "+DateUtils.dateFormat(notification.getCreateTime(),"yyyy/MM/dd HH:mm:ss")+" 复电，报警解除。");
+                        }else{
+                            //停电报警
+                            sendMsg.append(transForm.getTransformName()+" 【"+DictUtils.getDictItemKey("设备类型",String.valueOf(dev.getDevType()))+"】 "+dev.getDevName()+" 于 "+DateUtils.dateFormat(notification.getCreateTime(),"yyyy/MM/dd HH:mm:ss")+" 报警。");
+                            if(power.getPowerStatus()!=0){
+                                sendMsg.append("停电状态："+DictUtils.getDictItemKey("停电/相序状态",String.valueOf(power.getPowerStatus()))+"；");
+                            }
+                            if(power.getPhaseStatus()!=0){
+                                sendMsg.append("相序状态："+DictUtils.getDictItemKey("停电/相序状态",String.valueOf(power.getPhaseStatus()))+"；");
+                            }
+                            if(power.getVoltageStatusA()!=0){
+                                sendMsg.append("A相电压："+DictUtils.getDictItemKey("电压状态",String.valueOf(power.getVoltageStatusA()))+"；");
+                            }
+                            if(power.getVoltageStatusB()!=0){
+                                sendMsg.append("B相电压："+DictUtils.getDictItemKey("电压状态",String.valueOf(power.getVoltageStatusB()))+"；");
+                            }
+                            if(power.getVoltageStatusC()!=0){
+                                sendMsg.append("C相电压："+DictUtils.getDictItemKey("电压状态",String.valueOf(power.getVoltageStatusC()))+"；");
+                            }
+                        }
                     }
 
                     for(Mobile mobile:mobileList){
