@@ -33,6 +33,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        enable_lazy_load_no_trans: true
   thymeleaf:
     #指定资源位置
     prefix: classpath:/templates/

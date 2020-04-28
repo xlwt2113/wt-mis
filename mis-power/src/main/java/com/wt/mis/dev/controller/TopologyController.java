@@ -148,7 +148,11 @@ public class TopologyController {
         List<Topology> transFormList = topologyRepository.findAllByDelAndDevIdAndDevType(0,id,2);
         List<Topology> topologyList = topologyRepository.findAllByDelAndTransformId(0,id);
         resultMap.put("topologyList",topologyList);
-        resultMap.put("transForm",transFormList.get(0));
+        if(transFormList!=null&&transFormList.size()>0){
+            resultMap.put("transForm",transFormList.get(0));
+        }else{
+            resultMap.put("transForm",null);
+        }
         return resultMap;
     }
 

@@ -84,8 +84,16 @@
 
             //页面打开后初始化所有数据
             $.getJSON("/dev/topology/transform_view_data/"+transformId,function (data) {
+
                 rootNodeInfo = data.transForm;
                 topologyList = data.topologyList;
+
+                if(rootNodeInfo==null){
+                    layer.msg('该台区没有拓扑！', {icon: 2});
+                    return ;
+                }
+
+
                 let rootNode = addNode(rootNodeInfo);
                 for(let i=0; i<topologyList.length;i++){
                     if(topologyList[i].devParentId == rootNodeInfo.devId && topologyList[i].devParentType == rootNodeInfo.devType){
