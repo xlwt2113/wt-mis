@@ -232,7 +232,7 @@
             },
             //将返回的列表数据格式化成layui的格式
             parseData: function (res) { //res 即为原始返回的数据
-                console.log(res);
+                //console.log(res);
                 return {
                     "code": res.code, //解析接口状态
                     "msg": res.message, //解析提示文本
@@ -306,7 +306,7 @@
         $.getJSON("/dev/api/dev_list?devType=2",function (json) {
             let html = '<option value="">请选择台区</option>';
             for(var i=0;i<json.length;i++){
-                console.log(json[i].name);
+                //console.log(json[i].name);
                 html = html + "<option value='"+json[i].value+"'>"+json[i].name+"</option>";
             }
             $('#transFormId').append(html);

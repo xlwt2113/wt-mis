@@ -121,7 +121,7 @@
                 chartLineB = [] ;
                 chartLineC = [] ;
                 if(res.data != null){
-                    console.log(res.data.length);
+                    //console.log(res.data.length);
                     for(let i = 0 ;i<res.data.length;i++){
                         chartTimes[i] = res.data[i].freezeTimeStr;
                         chartLineA[i] = res.data[i].freezeDataA;
@@ -154,7 +154,7 @@
         form.on('select(devType)',function (data) {
             let devType = data.value;
             let transFormId = $('#transFormId').val();
-            console.log(devType + "====" + transFormId);
+            //console.log(devType + "====" + transFormId);
             if(devType!="" && transFormId !=""){
                 getDevListForSelect(devType,transFormId);
             }
@@ -164,7 +164,7 @@
         form.on('select(transFormId)',function (data) {
             let devType = $('#devType').val();
             let transFormId = data.value;
-            console.log(devType + "====" + transFormId);
+            //console.log(devType + "====" + transFormId);
             if(devType!="" && transFormId !=""){
                 getDevListForSelect(devType,transFormId);
             }

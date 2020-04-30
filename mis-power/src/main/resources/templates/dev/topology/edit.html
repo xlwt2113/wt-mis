@@ -48,8 +48,11 @@
             <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event9">添加设备</button></div>
             <div class="layui-col-md1">
                 <select class="layui-select" name="event9val1" id="event9val1">
+                    <option value="">设备类型</option>
                 <each th:each="item:${T(com.wt.mis.sys.util.DictUtils).getDictItems('设备类型')}">
+                    <if th:if="${item.itemValue!='2'}">
                     <option th:value="${item.itemValue}" th:text="${item.itemKey}"></option>
+                    </if>
                 </each>
                </select>
             </div>
@@ -70,7 +73,7 @@
             <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event11"> 设置台区号 </button></div>
             <div class="layui-col-md1"><input type="number" autocomplete="off" class="layui-input" id="event11val" name="event11val" placeholder="台区号"></div>
             <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event10">删除设备</button></div>
-            <div class="layui-col-md1"><input type="text" autocomplete="off" class="layui-input" placeholder="设备地址"  id="event10val" name="event10val"></div>
+            <div class="layui-col-md1"> &nbsp;&nbsp;&nbsp;&nbsp; <!--<input type="text" autocomplete="off" class="layui-input" placeholder="设备地址"  id="event10val" name="event10val">--></div>
         </div>
 
         <div class="layui-row" style="padding-top: 25px">
@@ -187,13 +190,18 @@
         $('#event2').click(function(){
             let selectRows = table.checkStatus('searchListTable');
             if(selectRows.data.length==0){
-                layer.msg("请选择设备！", alertMsgCfg);
+                layer.msg("请选择台区！", alertMsgCfg);
                 return false;
             }else{
                 let selectRow = selectRows.data[0];
-                $.getJSON("/event/notification/send_event/2", {devId:selectRow.dev_id,devType:selectRow.dev_type}, function (data) {
-                    layer.msg(data.message);
-                });
+                if(selectRow.dev_type != 2){
+                    layer.msg("只能对台区召测拓扑！", alertMsgCfg);
+                    return false;
+                }else{
+                    $.getJSON("/event/notification/send_event/2", {devId:selectRow.dev_id,devType:selectRow.dev_type}, function (data) {
+                        layer.msg(data.message);
+                    });
+                }
             }
         });
 
@@ -201,12 +209,12 @@
         $('#event9').click(function(){
             let selectRows = table.checkStatus('searchListTable');
             if(selectRows.data.length==0){
-                layer.msg("请选择台区设备！", alertMsgCfg);
+                layer.msg("请选择台区！", alertMsgCfg);
                 return false;
             }else{
                 let selectRow = selectRows.data[0];
                 if(selectRow.dev_type != 2){
-                    layer.msg("请选择台区设备！", alertMsgCfg);
+                    layer.msg("请选择台区！", alertMsgCfg);
                     return false;
                 }else{
                     if($('#event9val1').val()==''||$('#event9val2').val()==''||$('#event9val3').val()==''||$('#event9val4').val()==''){
@@ -230,27 +238,17 @@
         $('#event10').click(function(){
             let selectRows = table.checkStatus('searchListTable');
             if(selectRows.data.length==0){
-                layer.msg("请选择台区设备！", alertMsgCfg);
+                layer.msg("请选择台区下的设备！", alertMsgCfg);
                 return false;
             }else{
                 let selectRow = selectRows.data[0];
-                if(selectRow.dev_type != 2){
-                    layer.msg("请选择台区设备！", alertMsgCfg);
+                if(selectRow.dev_type == 2){
+                    layer.msg("不能在拓扑中删除汇聚单元,请选择其他设备！", alertMsgCfg);
                     return false;
                 }else{
-                    if($('#event10val').val()==''){
-                        layer.msg("请录入删除设备的通讯地址！", alertMsgCfg);
-                        return false;
-                    }else{
-                        var pattern = /^[A-Z0-9]{12}$/;
-                        if (!pattern.test($('#event10val').val())) {
-                            layer.msg("通讯地址必须由12位的数字或大写字母组成！", alertMsgCfg);
-                            return ;
-                        }
-                        $.getJSON("/event/notification/send_event/10", { devId:selectRow.dev_id,devType:selectRow.dev_type,eventValue:$('#event10val').val()}, function (data) {
-                            layer.msg(data.message);
-                        });
-                    }
+                    $.getJSON("/event/notification/send_event/10", { devId:selectRow.dev_id,devType:selectRow.dev_type,eventValue: selectRow.dev_address}, function (data) {
+                        layer.msg(data.message);
+                    });
                 }
 
             }

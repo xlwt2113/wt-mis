@@ -151,7 +151,7 @@ public class TransFormController extends BaseController<TransForm> {
     @PostMapping("/edit")
     protected String edit(HttpServletRequest request, TransForm transForm) {
         //验证是否有汇聚单元地址相同的台区，有的话不允许添加
-        int cnt = transFormRepository.countAllByDelAndDevAddressAndOperationsTeamAndIdNot(0,transForm.getDevAddress(),transForm.getOperationsTeam(),transForm.getId());
+        int cnt = transFormRepository.countAllByDelAndDevAddressAndIdNot(0,transForm.getDevAddress(),transForm.getId());
         if(cnt>0){
             return ResponseUtils.errorJson("汇聚单元地址已经存在！",transForm);
         }
@@ -173,7 +173,7 @@ public class TransFormController extends BaseController<TransForm> {
     @ResponseBody
     protected String add(HttpServletRequest request, TransForm transForm) {
         //验证是否有汇聚单元地址相同的台区，有的话不允许添加
-        int cnt = transFormRepository.countAllByDelAndDevAddressAndOperationsTeam(0,transForm.getDevAddress(),transForm.getOperationsTeam());
+        int cnt = transFormRepository.countAllByDelAndDevAddress(0,transForm.getDevAddress());
         if(cnt>0){
             return ResponseUtils.errorJson("汇聚单元地址已经存在！",transForm);
         }

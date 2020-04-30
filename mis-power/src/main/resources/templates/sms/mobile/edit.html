@@ -101,13 +101,13 @@
 
         //监听提交
         form.on('submit(saveBtn)', function (data) {
-            console.log("点击提交");
+            //console.log("点击提交");
             let selectRows = table.checkStatus('searchListTable');
             if(selectRows.data.length==0){
                 layer.msg("请选择设备！");
                 return false;
             }else{
-                console.log(selectRows.data);
+                //console.log(selectRows.data);
                 var chooseAccountId = "";
                 for(var i=0;i<selectRows.data.length;i++){
                     chooseAccountId = chooseAccountId + selectRows.data[i].id + ",";

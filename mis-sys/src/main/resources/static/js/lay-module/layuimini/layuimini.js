@@ -141,15 +141,15 @@ layui.define(["element", "jquery"], function (exports) {
                 headerMenuCheckDefault = 'layui-this',
                 leftMenuCheckDefault = 'layui-this';
             window.menuParameId = 1;
-            console.log(data);
+            //console.log(data);
             $.each(data, function (key, val) {
-                console.log(val);
+                //console.log(val);
                 headerMenuHtml += '<li class="layui-nav-item ' + headerMenuCheckDefault + '" id="' + key + 'HeaderId" data-menu="' + key + '"> <a href="javascript:;"><i class="fa ' + val.icon + '"></i> ' + val.title + '</a> </li>\n';
                 headerMobileMenuHtml += '<dd><a href="javascript:;" id="' + key + 'HeaderId" data-menu="' + key + '"><i class="fa ' + val.icon + '"></i> ' + val.title + '</a></dd>\n';
                 leftMenuHtml += '<ul class="layui-nav layui-nav-tree layui-left-nav-tree ' + leftMenuCheckDefault + '" id="' + key + '">\n';
                 var menuList = val.children;
                 $.each(menuList, function (index, menu) {
-                    console.log(menu.name);
+                    //console.log(menu.name);
                     leftMenuHtml += '<li class="layui-nav-item">\n';
                     if (menu.children != undefined && menu.children != []) {
                         leftMenuHtml += '<a href="javascript:;" class="layui-menu-tips" ><i class="fa ' + menu.icon + '"></i><span class="layui-left-nav"> ' + menu.title + '</span> </a>';
@@ -900,7 +900,7 @@ layui.define(["element", "jquery"], function (exports) {
             try {
                 layer.close(openTips);
             } catch (e) {
-                console.log(e.message);
+                //console.log(e.message);
             }
         }
     });

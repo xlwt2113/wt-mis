@@ -116,7 +116,7 @@
                             for(let i=0;i<allNodes.length;i++){
                                 for(let j=0;j<data.length;j++){
                                     if(allNodes[i].info.devId ==data[j].devId && allNodes[i].info.devType == data[j].devType){
-                                        console.log("报警！！！");
+                                        //console.log("报警！！！");
                                         allNodes[i].alarmColor = '255,0,0';
                                         allNodes[i].alarmAlpha = 1;
                                         allNodes[i].alarm == '设备报警'? allNodes[i].alarm = null : allNodes[i].alarm = '设备报警';
@@ -199,8 +199,8 @@
                 node.setImage('/images/'+nodeInfo.devType+'_'+nodeInfo.devOnline+'.png', true);
                 node.alarm = null;
                 node.dbclick(function(event){
-                    console.log(this.info.devId);
-                    console.log(this.info.devName);
+                    //console.log(this.info.devId);
+                    //console.log(this.info.devName);
                     layer.open({
                         type: 2,
                         content: '/dev/topology/dev_info/'+node.info.devId+'/'+node.info.devType

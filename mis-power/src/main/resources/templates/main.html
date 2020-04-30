@@ -137,8 +137,10 @@
         //点击查看命令运行状态
         $('#showEventBtn').click(function(){
 
-            // 打开新的窗口
-            layuimini.addTab('notification_tab',"/event/notification/list", "命令执行状态",false);
+            if(!layuimini.checkTab('notification_tab',true)){
+                // 打开新的窗口
+                layuimini.addTab('notification_tab',"/event/notification/list", "命令执行状态",false);
+            }
             layuimini.changeTab('notification_tab');
 
 
