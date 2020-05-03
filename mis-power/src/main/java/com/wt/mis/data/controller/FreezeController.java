@@ -61,7 +61,7 @@ public class FreezeController{
             Date endSearchDate = DateUtils.dayAddNum(DateUtils.parse(freezeTime,"yyyy-MM-dd"),1);
             String endFreezeTime = DateUtils.dateFormat(endSearchDate) + " 00:00:00";
             freezeTime = freezeTime + " 00:00:00";
-            StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from data_freeze t1  ");
+            StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from data_freeze_1 t1  ");
             sql.append(" LEFT JOIN dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
             sql.append(" LEFT JOIN dev_transform t3 on t3.id = t2.transform_id where t1.del = 0");
             sql.append(" and t1.dev_type = "+request.getParameter("devType")+" and t1.dev_id = " + request.getParameter("devId"));
@@ -91,18 +91,9 @@ public class FreezeController{
             String freezeTimeStr = DateUtils.dateTimeFormat((Date)map.get("freeze_time"));
             view.setFreezeTime((Date)map.get("freeze_time"));
             view.setFreezeTimeStr(DateUtils.timeFormat(view.getFreezeTime()));
-            if(rowMap.get(freezeTimeStr)!=null){
-                view = rowMap.get(freezeTimeStr);
-            }
-            if("1".equals(String.valueOf(map.get("data_type")))){
-                view.setFreezeDataA(Double.parseDouble(String.valueOf(map.get("freeze_data"))));
-            }
-            if("2".equals(String.valueOf(map.get("data_type")))){
-                view.setFreezeDataB(Double.parseDouble(String.valueOf(map.get("freeze_data"))));
-            }
-            if("3".equals(String.valueOf(map.get("data_type")))){
-                view.setFreezeDataC(Double.parseDouble(String.valueOf(map.get("freeze_data"))));
-            }
+            view.setFreezeDataA(Double.parseDouble(String.valueOf(map.get("freeze_data_1"))));
+            view.setFreezeDataB(Double.parseDouble(String.valueOf(map.get("freeze_data_2"))));
+            view.setFreezeDataC(Double.parseDouble(String.valueOf(map.get("freeze_data_3"))));
             view.setCallTime((Date)map.get("call_time"));
             view.setDevType(DictUtils.getDictItemKey("设备类型", String.valueOf(map.get("dev_type"))));
             view.setDevParentType(DictUtils.getDictItemKey("设备类型", String.valueOf(map.get("dev_parent_type"))));

@@ -2,7 +2,6 @@ package com.wt.mis.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wt.mis.core.entity.BaseEntity;
-import com.wt.mis.core.util.FileUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,7 +13,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "data_real_time")
+@Table(name = "data_real_time_1")
 @EqualsAndHashCode(callSuper = true)
 public class RealTime extends BaseEntity {
 
@@ -44,6 +43,36 @@ public class RealTime extends BaseEntity {
     * 召测数据
     */
     @Column(columnDefinition = " double COMMENT '召测数据'")
-    private double callData;
+    private double callData1;
+
+    /**
+     * 召测数据
+     */
+    @Column(columnDefinition = " double COMMENT '召测数据'")
+    private double callData2;
+
+    /**
+     * 召测数据
+     */
+    @Column(columnDefinition = " double COMMENT '召测数据'")
+    private double callData3;
+
+    /**
+     * 召测数据
+     */
+    @Column(columnDefinition = " double COMMENT '召测数据'")
+    private double callData4;
+
+    /**
+     * 召测数据
+     */
+    @Column(columnDefinition = " double COMMENT '召测数据'")
+    private double callData5;
+
+    /**
+     * 召测数据
+     */
+    @Column(columnDefinition = " double COMMENT '召测数据'")
+    private double callData6;
 
 }

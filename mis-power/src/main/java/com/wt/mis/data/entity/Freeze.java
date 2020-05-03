@@ -13,7 +13,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "data_freeze")
+@Table(name = "data_freeze_1")
 @EqualsAndHashCode(callSuper = true)
 public class Freeze extends BaseEntity {
 
@@ -49,7 +49,38 @@ public class Freeze extends BaseEntity {
     /**
     * 冻结数据
     */
-    @Column(columnDefinition = " double COMMENT '冻结数据'")
-    private double freezeData;
+    @Column(columnDefinition = " double COMMENT '冻结A相电压'")
+    private double freezeData1;
+
+    /**
+     * 冻结数据
+     */
+    @Column(columnDefinition = " double COMMENT '冻结B相电压'")
+    private double freezeData2;
+
+    /**
+     * 冻结数据
+     */
+    @Column(columnDefinition = " double COMMENT '冻结C相电压'")
+    private double freezeData3;
+
+    /**
+     * 冻结数据
+     */
+    @Column(columnDefinition = " double COMMENT '冻结A相电流'")
+    private double freezeData4;
+
+    /**
+     * 冻结数据
+     */
+    @Column(columnDefinition = " double COMMENT '冻结B相电流'")
+    private double freezeData5;
+
+    /**
+     * 冻结数据
+     */
+    @Column(columnDefinition = " double COMMENT '冻结C相电流'")
+    private double freezeData6;
+
 
 }

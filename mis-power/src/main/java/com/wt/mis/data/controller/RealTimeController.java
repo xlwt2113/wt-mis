@@ -48,7 +48,7 @@ public class RealTimeController{
         if(StringUtils.isEmpty(devId)||StringUtils.isEmpty(devType)||StringUtils.isEmpty(callTime)){
             return ResponseUtils.ok("没有参数，不查询数据",null);
         }else{
-            StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from data_real_time t1  ");
+            StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from data_real_time_1 t1  ");
             sql.append(" LEFT JOIN dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
             sql.append(" LEFT JOIN dev_transform t3 on t3.id = t2.transform_id where t1.del = 0");
             sql.append(" and t1.dev_type = "+devType+" and t1.dev_id = " + devId);
@@ -78,27 +78,12 @@ public class RealTimeController{
             String freezeTimeStr = DateUtils.dateTimeFormat((Date)map.get("call_time"));
             view.setCallTime((Date)map.get("call_time"));
             view.setCallTimeStr(DateUtils.timeFormat(view.getCallTime()));
-            if(rowMap.get(freezeTimeStr)!=null){
-                view = rowMap.get(freezeTimeStr);
-            }
-            if("1".equals(String.valueOf(map.get("data_type")))){
-                view.setRealDyDataA(Double.parseDouble(String.valueOf(map.get("call_data"))));
-            }
-            if("2".equals(String.valueOf(map.get("data_type")))){
-                view.setRealDyDataB(Double.parseDouble(String.valueOf(map.get("call_data"))));
-            }
-            if("3".equals(String.valueOf(map.get("data_type")))){
-                view.setRealDyDataC(Double.parseDouble(String.valueOf(map.get("call_data"))));
-            }
-            if("4".equals(String.valueOf(map.get("data_type")))){
-                view.setRealDlDataA(Double.parseDouble(String.valueOf(map.get("call_data"))));
-            }
-            if("5".equals(String.valueOf(map.get("data_type")))){
-                view.setRealDlDataB(Double.parseDouble(String.valueOf(map.get("call_data"))));
-            }
-            if("6".equals(String.valueOf(map.get("data_type")))){
-                view.setRealDlDataC(Double.parseDouble(String.valueOf(map.get("call_data"))));
-            }
+            view.setRealDyDataA(Double.parseDouble(String.valueOf(map.get("call_data_1"))));
+            view.setRealDyDataB(Double.parseDouble(String.valueOf(map.get("call_data_2"))));
+            view.setRealDyDataC(Double.parseDouble(String.valueOf(map.get("call_data_3"))));
+            view.setRealDlDataA(Double.parseDouble(String.valueOf(map.get("call_data_4"))));
+            view.setRealDlDataB(Double.parseDouble(String.valueOf(map.get("call_data_5"))));
+            view.setRealDlDataC(Double.parseDouble(String.valueOf(map.get("call_data_6"))));
             view.setCallTime((Date)map.get("call_time"));
             view.setDevType(DictUtils.getDictItemKey("设备类型", String.valueOf(map.get("dev_type"))));
             view.setDevParentType(DictUtils.getDictItemKey("设备类型", String.valueOf(map.get("dev_parent_type"))));

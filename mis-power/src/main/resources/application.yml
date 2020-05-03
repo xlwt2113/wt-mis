@@ -29,11 +29,13 @@ spring:
     show-sql: true
     open-in-view: true
     hibernate:
+      # 配置开启自动更新表结构
       ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
         enable_lazy_load_no_trans: true
+        format_sql: true
   thymeleaf:
     #指定资源位置
     prefix: classpath:/templates/
