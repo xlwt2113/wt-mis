@@ -10,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.Date;
 
 @Data
@@ -78,5 +79,8 @@ public class TransForm extends BaseEntity {
      */
     @Column(columnDefinition = " int(11) default 0 COMMENT '注册设备数'")
     private int devNum;
+
+    @Transient
+    private  String lineName;
 
 }

@@ -42,37 +42,37 @@ public class RealTime extends BaseEntity {
     /**
     * 召测数据
     */
-    @Column(columnDefinition = " double COMMENT '召测数据'")
+    @Column(name = "call_data_1",columnDefinition = " double COMMENT '召测数据'")
     private double callData1;
 
     /**
      * 召测数据
      */
-    @Column(columnDefinition = " double COMMENT '召测数据'")
+    @Column(name = "call_data_2",columnDefinition = " double COMMENT '召测数据'")
     private double callData2;
 
     /**
      * 召测数据
      */
-    @Column(columnDefinition = " double COMMENT '召测数据'")
+    @Column(name = "call_data_3",columnDefinition = " double COMMENT '召测数据'")
     private double callData3;
 
     /**
      * 召测数据
      */
-    @Column(columnDefinition = " double COMMENT '召测数据'")
+    @Column(name = "call_data_4",columnDefinition = " double COMMENT '召测数据'")
     private double callData4;
 
     /**
      * 召测数据
      */
-    @Column(columnDefinition = " double COMMENT '召测数据'")
+    @Column(name = "call_data_5",columnDefinition = " double COMMENT '召测数据'")
     private double callData5;
 
     /**
      * 召测数据
      */
-    @Column(columnDefinition = " double COMMENT '召测数据'")
+    @Column(name = "call_data_6",columnDefinition = " double COMMENT '召测数据'")
     private double callData6;
 
 }

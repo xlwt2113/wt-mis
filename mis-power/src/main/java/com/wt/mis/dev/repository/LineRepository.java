@@ -19,4 +19,7 @@ public interface LineRepository extends BaseRepository<Line,Long> {
      */
     @Query("SELECT t FROM Line t left join Dep d on t.operationsTeam = d.id where t.del = 0 and (d.level  LIKE CONCAT('%_',?1,'%') or t.operationsTeam = ?1 )")
     List<Line> findAllByOperationsTeam(long depId);
+
+    @Query("FROM Line where lineName = ?1 and del = 0")
+    List<Line> getAllByLineName(String lineName);
 }

@@ -5,33 +5,45 @@ import com.wt.mis.core.controller.BaseController;
 import com.wt.mis.core.exception.AppException;
 import com.wt.mis.core.repository.BaseRepository;
 import com.wt.mis.core.service.SearchService;
-import com.wt.mis.core.util.LoginUser;
-import com.wt.mis.core.util.ResponseUtils;
-import com.wt.mis.core.util.StringUtils;
+import com.wt.mis.core.util.*;
+import com.wt.mis.dev.entity.Line;
 import com.wt.mis.dev.entity.Topology;
 import com.wt.mis.dev.entity.TransForm;
 import com.wt.mis.dev.repository.*;
 import com.wt.mis.dev.service.DevService;
 import com.wt.mis.sys.entity.Dep;
 import com.wt.mis.sys.repository.DepRespository;
+import com.wt.mis.sys.util.ExcelUtil;
 import io.swagger.annotations.ApiOperation;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Slf4j
 @Controller
 @RequestMapping("/dev/transform")
 public class TransFormController extends BaseController<TransForm> {
 
+    @Value("${web_upload_file_path}")
+    private String baseUploadPath;
     @Autowired
     BranchBoxRepository branchBoxRepository;
     @Autowired
@@ -224,5 +236,116 @@ public class TransFormController extends BaseController<TransForm> {
             return ResponseUtils.errorJson(e.getMessage().toString(),ids);
         }
     }
+
+    @PostMapping("/import")
+    @ResponseBody
+    public String importExcel(@RequestParam("file") MultipartFile upload_file){
+        List resultList = new ArrayList();
+        if (upload_file.isEmpty()) {
+            resultList.add("上传失败，请选择文件！");
+        }
+        try{
+            //原始文件名
+            String sourceName = upload_file.getOriginalFilename();
+            //新文件名
+            String fileName = upload_file.getOriginalFilename();
+            try {
+                fileName = UUID.randomUUID().toString() + sourceName.substring(sourceName.lastIndexOf("."));
+            } catch (Exception e) {
+                e.printStackTrace();
+                resultList.add("上传文件没有后缀名，请检查！");
+            }
+            LocalDateTime currentTime = LocalDateTime.now();
+            String filePath = "/" + currentTime.getYear() + "/" + currentTime.getMonthValue() + "/" + currentTime.getDayOfMonth() + "/";
+            //==============存本地===============================
+            File folderPath = new File(baseUploadPath + filePath);
+            if (!folderPath.exists()) {
+                log.info("====建立目录====");
+                FileUtil.makeDirectory(new File(baseUploadPath + filePath));
+            }
+            File dstFile = new File(baseUploadPath + filePath + fileName);
+            resultList.addAll(this.dealExcel(dstFile));
+        }catch (Exception e){
+            resultList.add("上传失败:"+e.getMessage());
+        }
+        return ResponseUtils.okJson("上传完毕:",resultList);
+    }
+
+
+    /**
+     * 处理上传的excel
+     * @param excelFile
+     * @return
+     */
+    public  List<String> dealExcel(File excelFile){
+        List result = new ArrayList();
+        try{
+            Workbook wb = ExcelUtil.getWorkbok(excelFile);
+            Sheet sheet = wb.getSheetAt(0);
+            if(!ExcelUtil.checkTitle("台区名称,通讯地址,变压器安装位置,台区编号,变压器厂家,变压器出厂编号,变压器出厂日期,汇聚终端地址,归属线路",sheet.getRow(0))){
+                result.add("导入的表格格式不正确,请核对标题列是否与列表导出的Excel文件一致！");
+            }else{
+                // 第一行从0开始算,先获取总行数
+                int rowNumber = sheet.getLastRowNum();
+                List<TransForm> transFormList = new ArrayList();
+                Map<String,String> protocolAddressMap = new HashMap<>();
+                Map<String,String> devAddressMap = new HashMap<>();
+                for(int rowNum = 1;rowNum<=rowNumber;rowNum++){
+                    Row row = sheet.getRow(rowNum);
+                    TransForm transForm = new TransForm();
+                    try {
+                        transForm.setTransformName(row.getCell(0)!=null?row.getCell(0).getStringCellValue().trim():null);
+                        transForm.setProtocolAddress(row.getCell(1)!=null?row.getCell(1).toString().trim():null);
+                        transForm.setInstallationLocation(row.getCell(2)!=null?row.getCell(2).getStringCellValue().trim():null);
+                        transForm.setTransformNum(row.getCell(3)!=null?row.getCell(3).toString().trim():null);
+                        transForm.setTransformFactory(row.getCell(4)!=null?row.getCell(4).getStringCellValue().trim():null);
+                        transForm.setSerialNumber(row.getCell(5)!=null?row.getCell(5).getStringCellValue().trim():null);
+                        transForm.setManufacturingDate(row.getCell(6)!=null?row.getCell(6).getDateCellValue():null);
+                        transForm.setDevAddress(row.getCell(7)!=null?row.getCell(7).toString().trim():null);
+                        transForm.setLineName(row.getCell(8)!=null?row.getCell(8).getStringCellValue().trim():null);
+                        transForm.setOperationsTeam(LoginUser.getCurrentUser().getDepId());
+                        List<Line> lineList = lineRepository.getAllByLineName(row.getCell(9).getStringCellValue());
+                        if(lineList==null||lineList.size()<=0){
+                            result.add("表格第"+(rowNum + 1)+"行线路名称："+row.getCell(9).getStringCellValue()+"不存在！");
+                        }else{
+                            transForm.setLineId(lineList.get(0).getId());
+                        }
+
+                        int cnt = transFormRepository.countAllByDelAndDevAddress(0,transForm.getDevAddress());
+                        if(cnt>0){
+                            result.add("表格第"+(rowNum + 1)+"行汇聚单元地址["+transForm.getDevAddress()+"]已经存在！");
+                        }
+                        cnt = transFormRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,transForm.getProtocolAddress(),transForm.getOperationsTeam());
+                        cnt = cnt + this.getOtherDevCnt(transForm.getProtocolAddress(),transForm.getOperationsTeam());
+                        if(cnt>0){
+                            result.add("表格第"+(rowNum + 1)+"行通讯地址["+transForm.getProtocolAddress()+"]已经存在！");
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        result.add("表格第"+(rowNum + 1)+"行有内容格式错误的列，请检查！");
+                    }
+                    transFormList.add(transForm);
+                    protocolAddressMap.put(transForm.getProtocolAddress(),transForm.getProtocolAddress());
+                    devAddressMap.put(transForm.getDevAddress(),transForm.getDevAddress());
+                }
+                if(protocolAddressMap.size()!=transFormList.size()){
+                    result.add("表格中通讯地址存在重复值，请检查！");
+                }
+                if(devAddressMap.size()!=transFormList.size()){
+                    result.add("表格中汇聚终端地址存在重复值，请检查！");
+                }
+                if(result.size()<=0){
+                    transFormRepository.saveAll(transFormList);
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+
+
 }
 

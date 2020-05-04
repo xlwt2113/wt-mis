@@ -27,9 +27,9 @@ public class BranchBox extends BaseEntity {
     @Column(columnDefinition = " varchar(100) COMMENT '设备安装位置'")
     private String installationLocation;
     /**
-    * 协议通信地址
+    * 协议通讯地址
     */
-    @Column(columnDefinition = " varchar(100) COMMENT '协议通信地址'")
+    @Column(columnDefinition = " varchar(100) COMMENT '协议通讯地址'")
     private String protocolAddress;
     /**
     * 运维班组编号

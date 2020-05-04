@@ -39,9 +39,9 @@ public class Topology extends BaseEntity {
     @Column(columnDefinition = " varchar(100) COMMENT '设备显示名称'")
     private String devName;
     /**
-    * 设备通信地址
+    * 设备通讯地址
     */
-    @Column(columnDefinition = " varchar(100) COMMENT '设备通信地址'")
+    @Column(columnDefinition = " varchar(100) COMMENT '设备通讯地址'")
     private String devAddress;
     /**
     * 设备在线状态
@@ -79,9 +79,9 @@ public class Topology extends BaseEntity {
     @Column(columnDefinition = " varchar(100) COMMENT '父节点设备显示名称'")
     private String devParentName;
     /**
-    * 父节点设备通信地址
+    * 父节点设备通讯地址
     */
-    @Column(columnDefinition = " varchar(100) COMMENT '父节点设备通信地址'")
+    @Column(columnDefinition = " varchar(100) COMMENT '父节点设备通讯地址'")
     private String devParentAddress;
     /**
     * 设备是否存在
