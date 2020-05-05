@@ -13,7 +13,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "data_real_time_1")
+@Table(name = "data_real_time")
 @EqualsAndHashCode(callSuper = true)
 public class RealTime extends BaseEntity {
 
