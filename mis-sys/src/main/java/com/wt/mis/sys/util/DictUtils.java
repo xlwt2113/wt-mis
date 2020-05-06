@@ -73,14 +73,14 @@ public class DictUtils {
     /**
      * 根据字典项名称及键名获取对应的键值
      * @param dictName
-     * @param dictItemName
+     * @param dictItemKey
      * @return
      */
-    public static String getDictItemValue(String dictName,String dictItemName){
+    public static String getDictItemValue(String dictName,String dictItemKey){
         List<DictItem> dictItemList =  getDictItems(dictName);
         String key = "";
         for(DictItem item:dictItemList){
-            if(item.getItemValue().equals(dictItemName)){
+            if(item.getItemKey().equals(dictItemKey)){
                 key = item.getItemValue();
                 break;
             }

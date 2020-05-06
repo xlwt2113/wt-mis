@@ -15,11 +15,13 @@ import com.wt.mis.dev.repository.*;
 import com.wt.mis.dev.service.DevService;
 import com.wt.mis.sys.entity.Dep;
 import com.wt.mis.sys.repository.DepRespository;
+import com.wt.mis.sys.service.SysService;
 import com.wt.mis.sys.util.DictUtils;
 import com.wt.mis.sys.util.ExcelUtil;
 import io.swagger.annotations.ApiOperation;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.poifs.filesystem.NotOLE2FileException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -35,14 +37,15 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Controller
 @RequestMapping("/dev/meter")
 public class MeterController extends BaseController<Meter> {
 
-    @Value("${web_upload_file_path}")
-    private String baseUploadPath;
+    @Autowired
+    SysService sysService;
     @Autowired
     BranchBoxRepository branchBoxRepository;
     @Autowired
@@ -206,6 +209,7 @@ public class MeterController extends BaseController<Meter> {
     @PostMapping("/import")
     @ResponseBody
     public String importExcel(@RequestParam("file") MultipartFile upload_file){
+        String baseUploadPath = sysService.getRegisterValue("UPLOAD_FILE_PATH");
         List resultList = new ArrayList();
         if (upload_file.isEmpty()) {
             resultList.add("上传失败，请选择文件！");
@@ -230,6 +234,7 @@ public class MeterController extends BaseController<Meter> {
                 FileUtil.makeDirectory(new File(baseUploadPath + filePath));
             }
             File dstFile = new File(baseUploadPath + filePath + fileName);
+            upload_file.transferTo(dstFile);
             resultList.addAll(this.dealExcel(dstFile));
         }catch (Exception e){
             resultList.add("上传失败:"+e.getMessage());
@@ -261,19 +266,22 @@ public class MeterController extends BaseController<Meter> {
                     try {
                         meter.setOwnerName(row.getCell(0)!=null?row.getCell(0).getStringCellValue().trim():null);
                         meter.setProtocolAddress(row.getCell(1)!=null?row.getCell(1).toString().trim():null);
+                        if(!Pattern.matches("^[A-Z0-9]{12}$", meter.getProtocolAddress())){
+                            result.add("表格第"+(rowNum + 1)+"行通讯地址格式不正确！");
+                        }
                         meter.setInstallationLocation(row.getCell(2)!=null?row.getCell(2).getStringCellValue().trim():null);
-                        meter.setMeterBarcode(row.getCell(3)!=null?row.getCell(3).getStringCellValue().trim():null);
-                        meter.setSerialNumber(row.getCell(4)!=null?row.getCell(4).getStringCellValue().trim():null);
-                        String key = DictUtils.getDictItemKey("单/三相",row.getCell(5).getStringCellValue().trim());
+                        meter.setMeterBarcode(row.getCell(3)!=null?row.getCell(3).toString().trim():null);
+                        meter.setSerialNumber(row.getCell(4)!=null?row.getCell(4).toString().trim():null);
+                        String key = DictUtils.getDictItemValue("单/三相",row.getCell(5).getStringCellValue().trim());
                         if(StringUtils.isNotEmpty(key)){
                             meter.setThreePhase(Integer.parseInt(key));
                         }else{
                             result.add("表格第"+(rowNum + 1)+"行单/三相属性不正确！");
                         }
-                        meter.setReferenceVoltage(row.getCell(6)!=null?row.getCell(6).getStringCellValue().trim():null);
-                        meter.setReferenceCurrent(row.getCell(7)!=null?row.getCell(7).getStringCellValue().trim():null);
-                        meter.setMeterConstant(row.getCell(8)!=null?row.getCell(7).getStringCellValue().trim():null);
-                        meter.setMeterAccuracy(row.getCell(8)!=null?row.getCell(7).getStringCellValue().trim():null);
+                        meter.setReferenceVoltage(row.getCell(6)!=null?row.getCell(6).toString().trim():null);
+                        meter.setReferenceCurrent(row.getCell(7)!=null?row.getCell(7).toString().trim():null);
+                        meter.setMeterConstant(row.getCell(8)!=null?row.getCell(8).toString().trim():null);
+                        meter.setMeterAccuracy(row.getCell(9)!=null?row.getCell(9).toString().trim():null);
 
                         meter.setOperationsTeam(LoginUser.getCurrentUser().getDepId());
 
@@ -285,7 +293,7 @@ public class MeterController extends BaseController<Meter> {
 
                     } catch (Exception e) {
                         e.printStackTrace();
-                        result.add("表格第"+(rowNum + 1)+"行有内容格式错误的列，请检查！");
+                        result.add("表格第"+(rowNum + 1)+"行数据存在格式问题，请检查或将内容为数字的列转为文本格式后再试！");
                     }
                     meterList.add(meter);
                     protocolAddressMap.put(meter.getProtocolAddress(),meter.getProtocolAddress());
@@ -297,8 +305,13 @@ public class MeterController extends BaseController<Meter> {
                     meterRepository.saveAll(meterList);
                 }
             }
+        }catch (NullPointerException e1){
+            result.add("上传文件非标准Excel格式");
+        }catch (NotOLE2FileException e1){
+            result.add("上传文件非标准Excel格式");
         }catch (Exception e){
             e.printStackTrace();
+            result.add("上传出现错误：" + e.getMessage());
         }
         return result;
     }

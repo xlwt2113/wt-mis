@@ -78,12 +78,24 @@ public class RealTimeController{
             String freezeTimeStr = DateUtils.dateTimeFormat((Date)map.get("call_time"));
             view.setCallTime((Date)map.get("call_time"));
             view.setCallTimeStr(DateUtils.timeFormat(view.getCallTime()));
-            view.setRealDyDataA(Double.parseDouble(String.valueOf(map.get("call_data_1"))));
-            view.setRealDyDataB(Double.parseDouble(String.valueOf(map.get("call_data_2"))));
-            view.setRealDyDataC(Double.parseDouble(String.valueOf(map.get("call_data_3"))));
-            view.setRealDlDataA(Double.parseDouble(String.valueOf(map.get("call_data_4"))));
-            view.setRealDlDataB(Double.parseDouble(String.valueOf(map.get("call_data_5"))));
-            view.setRealDlDataC(Double.parseDouble(String.valueOf(map.get("call_data_6"))));
+            if(map.get("call_data_1")!=null){
+                view.setRealDyDataA(Double.parseDouble(String.valueOf(map.get("call_data_1"))));
+            }
+            if(map.get("call_data_2")!=null){
+                view.setRealDyDataB(Double.parseDouble(String.valueOf(map.get("call_data_2"))));
+            }
+            if(map.get("call_data_3")!=null){
+                view.setRealDyDataC(Double.parseDouble(String.valueOf(map.get("call_data_3"))));
+            }
+            if(map.get("call_data_4")!=null){
+                view.setRealDlDataA(Double.parseDouble(String.valueOf(map.get("call_data_4"))));
+            }
+            if(map.get("call_data_5")!=null){
+                view.setRealDlDataB(Double.parseDouble(String.valueOf(map.get("call_data_5"))));
+            }
+            if(map.get("call_data_6")!=null){
+                view.setRealDlDataC(Double.parseDouble(String.valueOf(map.get("call_data_6"))));
+            }
             view.setCallTime((Date)map.get("call_time"));
             view.setDevType(DictUtils.getDictItemKey("设备类型", String.valueOf(map.get("dev_type"))));
             view.setDevParentType(DictUtils.getDictItemKey("设备类型", String.valueOf(map.get("dev_parent_type"))));

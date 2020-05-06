@@ -15,8 +15,8 @@ public class FreezeView {
     private String devParentType;
     private String devParentName;
     private String transformName;
-    private double freezeDataA;
-    private double freezeDataB;
-    private double freezeDataC;
+    private Double freezeDataA;
+    private Double freezeDataB;
+    private Double freezeDataC;
     private String operationsTeamName;
 }

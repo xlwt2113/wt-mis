@@ -91,9 +91,15 @@ public class FreezeController{
             String freezeTimeStr = DateUtils.dateTimeFormat((Date)map.get("freeze_time"));
             view.setFreezeTime((Date)map.get("freeze_time"));
             view.setFreezeTimeStr(DateUtils.timeFormat(view.getFreezeTime()));
-            view.setFreezeDataA(Double.parseDouble(String.valueOf(map.get("freeze_data_1"))));
-            view.setFreezeDataB(Double.parseDouble(String.valueOf(map.get("freeze_data_2"))));
-            view.setFreezeDataC(Double.parseDouble(String.valueOf(map.get("freeze_data_3"))));
+            if(map.get("freeze_data_1")!=null){
+                view.setFreezeDataA(Double.parseDouble(String.valueOf(map.get("freeze_data_1"))));
+            }
+            if(map.get("freeze_data_2")!=null){
+                view.setFreezeDataB(Double.parseDouble(String.valueOf(map.get("freeze_data_2"))));
+            }
+            if(map.get("freeze_data_3")!=null){
+                view.setFreezeDataC(Double.parseDouble(String.valueOf(map.get("freeze_data_3"))));
+            }
             view.setCallTime((Date)map.get("call_time"));
             view.setDevType(DictUtils.getDictItemKey("设备类型", String.valueOf(map.get("dev_type"))));
             view.setDevParentType(DictUtils.getDictItemKey("设备类型", String.valueOf(map.get("dev_parent_type"))));

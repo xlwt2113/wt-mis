@@ -13,11 +13,11 @@ public class RealTimeView {
     private String devParentType;
     private String devParentName;
     private String transformName;
-    private double realDyDataA;
-    private double realDyDataB;
-    private double realDyDataC;
-    private double realDlDataA;
-    private double realDlDataB;
-    private double realDlDataC;
+    private Double realDyDataA;
+    private Double realDyDataB;
+    private Double realDyDataC;
+    private Double realDlDataA;
+    private Double realDlDataB;
+    private Double realDlDataC;
     private String operationsTeamName;
 }

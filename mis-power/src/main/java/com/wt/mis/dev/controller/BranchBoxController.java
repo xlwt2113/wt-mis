@@ -16,10 +16,12 @@ import com.wt.mis.dev.repository.*;
 import com.wt.mis.dev.service.DevService;
 import com.wt.mis.sys.entity.Dep;
 import com.wt.mis.sys.repository.DepRespository;
+import com.wt.mis.sys.service.SysService;
 import com.wt.mis.sys.util.ExcelUtil;
 import io.swagger.annotations.ApiOperation;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.poifs.filesystem.NotOLE2FileException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -35,18 +37,21 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Controller
 @RequestMapping("/dev/branchbox")
 public class BranchBoxController extends BaseController<BranchBox> {
 
-    @Value("${web_upload_file_path}")
-    private String baseUploadPath;
+    @Autowired
+    SysService sysService;
     @Autowired
     BranchBoxRepository branchBoxRepository;
     @Autowired
     MeterBoxRepository meterBoxRepository;
+    @Autowired
+    TransFormRepository transFormRepository;
     @Autowired
     MeterRepository meterRepository;
     @Autowired
@@ -134,7 +139,7 @@ public class BranchBoxController extends BaseController<BranchBox> {
         int cnt = 0;
         cnt = cnt + meterBoxRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,protocolAddress,operationsTeam);
         cnt = cnt + meterRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,protocolAddress,operationsTeam);
-        cnt = cnt + branchBoxRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,protocolAddress,operationsTeam);
+        cnt = cnt + transFormRepository.countAllByDelAndProtocolAddressAndOperationsTeam(0,protocolAddress,operationsTeam);
         return  cnt ;
     }
 
@@ -178,6 +183,7 @@ public class BranchBoxController extends BaseController<BranchBox> {
     @PostMapping("/import")
     @ResponseBody
     public String importExcel(@RequestParam("file") MultipartFile upload_file){
+        String baseUploadPath = sysService.getRegisterValue("UPLOAD_FILE_PATH");
         List resultList = new ArrayList();
         if (upload_file.isEmpty()) {
             resultList.add("上传失败，请选择文件！");
@@ -202,6 +208,8 @@ public class BranchBoxController extends BaseController<BranchBox> {
                 FileUtil.makeDirectory(new File(baseUploadPath + filePath));
             }
             File dstFile = new File(baseUploadPath + filePath + fileName);
+            upload_file.transferTo(dstFile);
+
             resultList.addAll(this.dealExcel(dstFile));
         }catch (Exception e){
             resultList.add("上传失败:"+e.getMessage());
@@ -233,6 +241,9 @@ public class BranchBoxController extends BaseController<BranchBox> {
                     try {
                         branchBox.setBranchBoxName(row.getCell(0)!=null?row.getCell(0).getStringCellValue().trim():null);
                         branchBox.setProtocolAddress(row.getCell(1)!=null?row.getCell(1).toString().trim():null);
+                        if(!Pattern.matches("^[A-Z0-9]{12}$", branchBox.getProtocolAddress())){
+                            result.add("表格第"+(rowNum + 1)+"行通讯地址格式不正确！");
+                        }
                         branchBox.setInstallationLocation(row.getCell(2)!=null?row.getCell(2).getStringCellValue().trim():null);
                         branchBox.setOperationsTeam(LoginUser.getCurrentUser().getDepId());
 
@@ -244,7 +255,7 @@ public class BranchBoxController extends BaseController<BranchBox> {
 
                     } catch (Exception e) {
                         e.printStackTrace();
-                        result.add("表格第"+(rowNum + 1)+"行有内容格式错误的列，请检查！");
+                        result.add("表格第"+(rowNum + 1)+"行数据存在格式问题，请检查或将内容为数字的列转为文本格式后再试！");
                     }
                     branchBoxList.add(branchBox);
                     protocolAddressMap.put(branchBox.getProtocolAddress(),branchBox.getProtocolAddress());
@@ -256,8 +267,13 @@ public class BranchBoxController extends BaseController<BranchBox> {
                     branchBoxRepository.saveAll(branchBoxList);
                 }
             }
+        }catch (NullPointerException e1){
+            result.add("上传文件非标准Excel格式");
+        }catch (NotOLE2FileException e1){
+            result.add("上传文件非标准Excel格式");
         }catch (Exception e){
             e.printStackTrace();
+            result.add("上传出现错误：" + e.getMessage());
         }
         return result;
     }

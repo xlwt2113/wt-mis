@@ -13,11 +13,13 @@ import com.wt.mis.dev.repository.*;
 import com.wt.mis.dev.service.DevService;
 import com.wt.mis.sys.entity.Dep;
 import com.wt.mis.sys.repository.DepRespository;
+import com.wt.mis.sys.service.SysService;
 import com.wt.mis.sys.util.ExcelUtil;
 import io.swagger.annotations.ApiOperation;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.NotOLE2FileException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -36,14 +38,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Controller
 @RequestMapping("/dev/transform")
 public class TransFormController extends BaseController<TransForm> {
 
-    @Value("${web_upload_file_path}")
-    private String baseUploadPath;
     @Autowired
     BranchBoxRepository branchBoxRepository;
     @Autowired
@@ -67,6 +68,9 @@ public class TransFormController extends BaseController<TransForm> {
 
     @Autowired
     DevService devService;
+
+    @Autowired
+    SysService sysService;
 
     @Override
     public BaseRepository<TransForm, Long> repository() {
@@ -240,6 +244,7 @@ public class TransFormController extends BaseController<TransForm> {
     @PostMapping("/import")
     @ResponseBody
     public String importExcel(@RequestParam("file") MultipartFile upload_file){
+        String baseUploadPath = sysService.getRegisterValue("UPLOAD_FILE_PATH");
         List resultList = new ArrayList();
         if (upload_file.isEmpty()) {
             resultList.add("上传失败，请选择文件！");
@@ -264,6 +269,8 @@ public class TransFormController extends BaseController<TransForm> {
                 FileUtil.makeDirectory(new File(baseUploadPath + filePath));
             }
             File dstFile = new File(baseUploadPath + filePath + fileName);
+            upload_file.transferTo(dstFile);
+
             resultList.addAll(this.dealExcel(dstFile));
         }catch (Exception e){
             resultList.add("上传失败:"+e.getMessage());
@@ -296,20 +303,30 @@ public class TransFormController extends BaseController<TransForm> {
                     try {
                         transForm.setTransformName(row.getCell(0)!=null?row.getCell(0).getStringCellValue().trim():null);
                         transForm.setProtocolAddress(row.getCell(1)!=null?row.getCell(1).toString().trim():null);
+                        if(!Pattern.matches("^[A-Z0-9]{12}$", transForm.getProtocolAddress())){
+                            result.add("表格第"+(rowNum + 1)+"行通讯地址格式不正确！");
+                        }
                         transForm.setInstallationLocation(row.getCell(2)!=null?row.getCell(2).getStringCellValue().trim():null);
                         transForm.setTransformNum(row.getCell(3)!=null?row.getCell(3).toString().trim():null);
                         transForm.setTransformFactory(row.getCell(4)!=null?row.getCell(4).getStringCellValue().trim():null);
-                        transForm.setSerialNumber(row.getCell(5)!=null?row.getCell(5).getStringCellValue().trim():null);
+                        transForm.setSerialNumber(row.getCell(5)!=null?row.getCell(5).toString().trim():null);
                         transForm.setManufacturingDate(row.getCell(6)!=null?row.getCell(6).getDateCellValue():null);
                         transForm.setDevAddress(row.getCell(7)!=null?row.getCell(7).toString().trim():null);
-                        transForm.setLineName(row.getCell(8)!=null?row.getCell(8).getStringCellValue().trim():null);
-                        transForm.setOperationsTeam(LoginUser.getCurrentUser().getDepId());
-                        List<Line> lineList = lineRepository.getAllByLineName(row.getCell(9).getStringCellValue());
-                        if(lineList==null||lineList.size()<=0){
-                            result.add("表格第"+(rowNum + 1)+"行线路名称："+row.getCell(9).getStringCellValue()+"不存在！");
-                        }else{
-                            transForm.setLineId(lineList.get(0).getId());
+                        if(!Pattern.matches("^[A-Z0-9]{8}$", transForm.getDevAddress())){
+                            result.add("表格第"+(rowNum + 1)+"行汇聚终端地址格式不正确！");
                         }
+                        transForm.setOperationsTeam(LoginUser.getCurrentUser().getDepId());
+                        if(row.getCell(8)!=null){
+                            List<Line> lineList = lineRepository.getAllByLineName(row.getCell(8).getStringCellValue().trim());
+                            if(lineList==null||lineList.size()<=0){
+                                result.add("表格第"+(rowNum + 1)+"行线路名称："+row.getCell(8).getStringCellValue()+"不存在！");
+                            }else{
+                                transForm.setLineId(lineList.get(0).getId());
+                            }
+                        }else{
+                            result.add("表格第"+(rowNum + 1)+"行线路名称为空！");
+                        }
+
 
                         int cnt = transFormRepository.countAllByDelAndDevAddress(0,transForm.getDevAddress());
                         if(cnt>0){
@@ -323,7 +340,7 @@ public class TransFormController extends BaseController<TransForm> {
 
                     } catch (Exception e) {
                         e.printStackTrace();
-                        result.add("表格第"+(rowNum + 1)+"行有内容格式错误的列，请检查！");
+                        result.add("表格第"+(rowNum + 1)+"行数据存在格式问题，请检查或将内容为数字的列转为文本格式后再试！");
                     }
                     transFormList.add(transForm);
                     protocolAddressMap.put(transForm.getProtocolAddress(),transForm.getProtocolAddress());
@@ -339,13 +356,21 @@ public class TransFormController extends BaseController<TransForm> {
                     transFormRepository.saveAll(transFormList);
                 }
             }
+        }catch (NullPointerException e1){
+            result.add("上传文件非标准Excel格式");
+        }catch (NotOLE2FileException e1){
+            result.add("上传文件非标准Excel格式");
         }catch (Exception e){
             e.printStackTrace();
+            result.add("上传出现错误：" + e.getMessage());
         }
         return result;
     }
 
 
+    public static void main(String[] s){
+        System.out.println(Pattern.matches("^[A-Z0-9]{8}$", "1122A3745"));
+    }
 
 }
 
