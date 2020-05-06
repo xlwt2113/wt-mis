@@ -101,6 +101,8 @@
                     }else{
                         layer.msg("导入完毕,请点击查询按钮加载导入数据！");
                     }
+                }else if(res.code == 403){
+                    layer.msg(res.message);
                 }
             }
         });
