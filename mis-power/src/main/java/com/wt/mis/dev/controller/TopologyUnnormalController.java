@@ -35,8 +35,8 @@ public class TopologyUnnormalController extends BaseController<TopologyUnnormal>
 
     @Override
     protected String generateSearchSql(TopologyUnnormal topologyUnnormal, HttpServletRequest request) {
-        StringBuffer sql  = new StringBuffer("select t1.*,t2.transform_name from dev_topology_unnormal t1 " +
-                " LEFT JOIN dev_transform t2 on t2.id = t1.transform_id where t1.del = 0 and t2.del = 0 " +
+        StringBuffer sql  = new StringBuffer("select t1.*,t2.transform_name from transform_dev_topology_unnormal t1 " +
+                " LEFT JOIN transform_dev_transform t2 on t2.id = t1.transform_id where t1.del = 0 and t2.del = 0 " +
                 " and t1.transform_id = " + request.getParameter("transformId"));
         return sql.toString();
     }

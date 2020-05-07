@@ -67,9 +67,9 @@ public class PowerOutageController{
             //设置map，避免前台页面js错误
             return ResponseUtils.ok("请选择台区后再查询数据！",resultMap);
         }else{
-            StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from event_power_outage t1  ");
-            sql.append(" LEFT JOIN dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
-            sql.append(" LEFT JOIN dev_transform t3 on t3.id = t2.transform_id where t1.del = 0 ");
+            StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from transform_event_power_outage t1  ");
+            sql.append(" LEFT JOIN transform_dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
+            sql.append(" LEFT JOIN transform_dev_transform t3 on t3.id = t2.transform_id where t1.del = 0 ");
             sql.append(" and t2.transform_id = " + transFormId);
             if(StringUtils.isNotEmpty(devType)){
                 sql.append(" and t1.dev_type = " + devType);
@@ -98,9 +98,9 @@ public class PowerOutageController{
      * @return
      */
     private List getCurrentPowerByDep(){
-        StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from event_power_outage t1  ");
-        sql.append(" LEFT JOIN dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
-        sql.append(" LEFT JOIN dev_transform t3 on t3.id = t2.transform_id ");
+        StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from transform_event_power_outage t1  ");
+        sql.append(" LEFT JOIN transform_dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
+        sql.append(" LEFT JOIN transform_dev_transform t3 on t3.id = t2.transform_id ");
         sql.append(" inner join sys_dep t4 on t3.operations_team = t4.id and (t4.level like '%_"+ LoginUser.getCurrentUser().getDepId() +"%' or t4.id = "+LoginUser.getCurrentUser().getDepId()+")");
         sql.append(" where t1.del = 0 and t1.power_status = 1 and t1.history = 0  and t2.del = 0");
         sql.append(" order by  t1.occur_time desc ");
@@ -130,9 +130,9 @@ public class PowerOutageController{
     @PostMapping("/power_log_list/{devId}/{devType}/{occurTime}")
     @ResponseBody
     public ResponseEntity power_list(@PathVariable long devId,@PathVariable int devType,@PathVariable String  occurTime) {
-        StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from event_power_outage t1  ");
-        sql.append(" LEFT JOIN dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
-        sql.append(" LEFT JOIN dev_transform t3 on t3.id = t2.transform_id where t1.del = 0 ");
+        StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from transform_event_power_outage t1  ");
+        sql.append(" LEFT JOIN transform_dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
+        sql.append(" LEFT JOIN transform_dev_transform t3 on t3.id = t2.transform_id where t1.del = 0 ");
         sql.append(" and t1.dev_id = " + devId);
         sql.append(" and t1.dev_type = " + devType);
         sql.append(" and DATE_FORMAT(t1.occur_time,'%Y-%m-%d') = '"+occurTime+"'");
@@ -146,9 +146,9 @@ public class PowerOutageController{
     @PostMapping("/power_log_list/{devId}/{devType}")
     @ResponseBody
     public ResponseEntity all_power_list(@PathVariable long devId,@PathVariable int devType) {
-        StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from event_power_outage t1  ");
-        sql.append(" LEFT JOIN dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
-        sql.append(" LEFT JOIN dev_transform t3 on t3.id = t2.transform_id where t1.del = 0 ");
+        StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from transform_event_power_outage t1  ");
+        sql.append(" LEFT JOIN transform_dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
+        sql.append(" LEFT JOIN transform_dev_transform t3 on t3.id = t2.transform_id where t1.del = 0 ");
         sql.append(" and t1.dev_id = " + devId);
         sql.append(" and t1.dev_type = " + devType);
         sql.append(" order by  t1.occur_time desc limit 50");

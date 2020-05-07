@@ -15,7 +15,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "dev_transform")
+@Table(name = "transform_dev_transform")
 @EqualsAndHashCode(callSuper = true)
 @Proxy(lazy = false)
 public class TransForm extends BaseEntity {

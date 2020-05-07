@@ -11,7 +11,7 @@ import javax.persistence.Table;
 
 @Data
 @Entity
-@Table(name = "dev_branch_box")
+@Table(name = "transform_dev_branch_box")
 @EqualsAndHashCode(callSuper = true)
 @Proxy(lazy = false)
 public class BranchBox extends BaseEntity {

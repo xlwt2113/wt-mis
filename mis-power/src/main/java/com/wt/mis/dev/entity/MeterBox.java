@@ -11,7 +11,7 @@ import javax.persistence.Table;
 
 @Data
 @Entity
-@Table(name = "dev_meter_box")
+@Table(name = "transform_dev_meter_box")
 @EqualsAndHashCode(callSuper = true)
 @Proxy(lazy = false)
 public class MeterBox extends BaseEntity {

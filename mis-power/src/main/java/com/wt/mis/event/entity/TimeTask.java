@@ -14,7 +14,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "time_task")
+@Table(name = "transform_time_task")
 @EqualsAndHashCode(callSuper = true)
 public class TimeTask extends BaseEntity {
 

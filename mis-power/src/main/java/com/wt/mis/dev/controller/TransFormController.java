@@ -101,9 +101,9 @@ public class TransFormController extends BaseController<TransForm> {
         }else{
             dep = depRespository.getOne(Long.valueOf(transForm.getOperationsTeam()));
         }
-        StringBuffer sql = new StringBuffer("select t1.*,t2.name as operations_team_name ,t3.line_name from dev_transform as t1 " +
+        StringBuffer sql = new StringBuffer("select t1.*,t2.name as operations_team_name ,t3.line_name from transform_dev_transform as t1 " +
                 " left join  sys_dep as t2 on t1.operations_team = t2.id " +
-                " left join dev_line as t3 on t1.line_id = t3.id where t1.del = 0 ");
+                " left join transform_dev_line as t3 on t1.line_id = t3.id where t1.del = 0 ");
         if (StringUtils.isNotEmpty(transForm.getTransformName())) {
             sql.append(" and t1.transform_name like '%" + transForm.getTransformName() + "%'");
         }
@@ -151,8 +151,8 @@ public class TransFormController extends BaseController<TransForm> {
         List onLineList = topologyRepository.findAllByDelAndDevOnlineAndTransformId(0,0,dev.getId());
         mv.addObject("onLine",((onLineList.size()*100/allDevList.size()))+ "%" );
         //改台区报警设备数
-        List list = searchService.findAllBySql("select count(*) as cnt from dev_topology where del = 0 and transform_id = "+dev.getId()+" and CONCAT_WS('-',dev_id,dev_type) in (" +
-                "SELECT CONCAT_WS('-',dev_id,dev_type) FROM event_power_outage where del = 0 and history = 0 and power_status = 1 " +
+        List list = searchService.findAllBySql("select count(*) as cnt from transform_dev_topology where del = 0 and transform_id = "+dev.getId()+" and CONCAT_WS('-',dev_id,dev_type) in (" +
+                "SELECT CONCAT_WS('-',dev_id,dev_type) FROM transform_event_power_outage where del = 0 and history = 0 and power_status = 1 " +
                 ")");
         mv.addObject("alarmCnt",((HashMap) list.get(0)).get("cnt"));
 
@@ -365,11 +365,6 @@ public class TransFormController extends BaseController<TransForm> {
             result.add("上传出现错误：" + e.getMessage());
         }
         return result;
-    }
-
-
-    public static void main(String[] s){
-        System.out.println(Pattern.matches("^[A-Z0-9]{8}$", "1122A3745"));
     }
 
 }

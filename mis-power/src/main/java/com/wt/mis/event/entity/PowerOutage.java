@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "event_power_outage")
+@Table(name = "transform_event_power_outage")
 @EqualsAndHashCode(callSuper = true)
 public class PowerOutage extends BaseEntity {
 

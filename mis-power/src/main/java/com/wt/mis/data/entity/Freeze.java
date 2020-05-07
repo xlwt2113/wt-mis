@@ -13,7 +13,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "data_freeze")
+@Table(name = "transform_data_freeze")
 @EqualsAndHashCode(callSuper = true)
 public class Freeze extends BaseEntity {
 

@@ -11,7 +11,7 @@ import javax.persistence.Table;
 
 @Data
 @Entity
-@Table(name = "dev_line")
+@Table(name = "transform_dev_line")
 @EqualsAndHashCode(callSuper = true)
 @Proxy(lazy = false)
 public class Line extends BaseEntity {

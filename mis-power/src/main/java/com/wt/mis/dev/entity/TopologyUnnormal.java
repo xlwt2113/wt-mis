@@ -11,7 +11,7 @@ import javax.persistence.Table;
 
 @Data
 @Entity
-@Table(name = "dev_topology_unnormal")
+@Table(name = "transform_dev_topology_unnormal")
 @EqualsAndHashCode(callSuper = true)
 @Proxy(lazy = false)
 public class TopologyUnnormal extends BaseEntity {

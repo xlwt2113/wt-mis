@@ -10,7 +10,7 @@ import javax.persistence.Table;
 
 @Data
 @Entity
-@Table(name = "event_notification")
+@Table(name = "transform_event_notification")
 @EqualsAndHashCode(callSuper = true)
 public class Notification extends BaseEntity {
 

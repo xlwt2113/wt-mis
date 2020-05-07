@@ -92,7 +92,7 @@ public class MeterController extends BaseController<Meter> {
         }else{
             dep = depRespository.getOne(Long.valueOf(meter.getOperationsTeam()));
         }
-        StringBuffer sql = new StringBuffer("select t1.*,t2.name as operations_team_name from dev_meter as t1  left join  sys_dep t2 on t1.operations_team = t2.id  where t1.del = 0 ");
+        StringBuffer sql = new StringBuffer("select t1.*,t2.name as operations_team_name from transform_dev_meter as t1  left join  sys_dep t2 on t1.operations_team = t2.id  where t1.del = 0 ");
         if (StringUtils.isNotEmpty(meter.getInstallationLocation())) {
             sql.append(" and t1.installation_location like '%" + meter.getInstallationLocation() + "%'");
         }

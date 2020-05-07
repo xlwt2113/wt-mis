@@ -89,7 +89,7 @@ public class BranchBoxController extends BaseController<BranchBox> {
         }else{
             dep = depRespository.getOne(Long.valueOf(branchBox.getOperationsTeam()));
         }
-        StringBuffer sql = new StringBuffer("select t1.*,t2.name as operations_team_name from dev_branch_box as t1 left join  sys_dep t2 on t1.operations_team = t2.id  where t1.del = 0 ");
+        StringBuffer sql = new StringBuffer("select t1.*,t2.name as operations_team_name from transform_dev_branch_box as t1 left join  sys_dep t2 on t1.operations_team = t2.id  where t1.del = 0 ");
         if (StringUtils.isNotEmpty(branchBox.getBranchBoxName())) {
             sql.append(" and t1.branch_box_name like '%" + branchBox.getBranchBoxName() + "%'");
         }

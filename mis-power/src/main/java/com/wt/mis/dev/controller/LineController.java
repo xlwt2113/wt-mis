@@ -69,7 +69,7 @@ public class LineController extends BaseController<Line> {
         }else{
             dep = depRespository.getOne(Long.valueOf(line.getOperationsTeam()));
         }
-        StringBuffer sql = new StringBuffer("select t1.*,t2.name as operations_team_name from dev_line as t1  left join  sys_dep t2 on t1.operations_team = t2.id  where t1.del = 0 ");
+        StringBuffer sql = new StringBuffer("select t1.*,t2.name as operations_team_name from transform_dev_line as t1  left join  sys_dep t2 on t1.operations_team = t2.id  where t1.del = 0 ");
         if (StringUtils.isNotEmpty(line.getLineName())) {
             sql.append(" and t1.line_name like '%" + line.getLineName() + "%'");
         }

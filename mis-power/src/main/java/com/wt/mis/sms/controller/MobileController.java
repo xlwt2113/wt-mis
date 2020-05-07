@@ -66,7 +66,7 @@ public class MobileController extends BaseController<Mobile> {
 
     @Override
     protected String generateSearchSql(Mobile mobile, HttpServletRequest request) {
-        StringBuffer sql = new StringBuffer(" select t1.*,t2.mobile,t2.real_name,t3.transform_name from sms_mobile as t1  left join sys_account t2 on t1.account_id = t2.id left join dev_transform t3 on t1.transform_id = t3.id where t1.del = 0 ");
+        StringBuffer sql = new StringBuffer(" select t1.*,t2.mobile,t2.real_name,t3.transform_name from sms_mobile as t1  left join sys_account t2 on t1.account_id = t2.id left join transform_dev_transform t3 on t1.transform_id = t3.id where t1.del = 0 ");
         if (StringUtils.isNotEmpty(mobile.getMobile())) {
             sql.append(" and t2.mobile like '%" + mobile.getMobile() + "%'");
         }

@@ -51,7 +51,7 @@ public class EevntTaskController extends BaseController<EventTask> {
 
     @Override
     protected String generateSearchSql(EventTask eventTask, HttpServletRequest request) {
-        StringBuffer sql = new StringBuffer("select t1.* from event_task as t1  where t1.del = 0  and t1.account_id = "+ LoginUser.getCurrentUser().getId());
+        StringBuffer sql = new StringBuffer("select t1.* from transform_event_task as t1  where t1.del = 0  and t1.account_id = "+ LoginUser.getCurrentUser().getId());
         return sql.toString();
     }
 

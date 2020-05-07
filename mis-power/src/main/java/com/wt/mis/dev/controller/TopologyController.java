@@ -188,7 +188,7 @@ public class TopologyController {
                                   @RequestParam(value = "limit", required = false, defaultValue = "15") Integer pageSize,
                                   @RequestParam(value = "pageSort", required = false, defaultValue = "id") String pageSort,
                                   @RequestParam(value = "pageDirection", required = false, defaultValue = "DESC") String pageDirection) {
-        StringBuffer sql  = new StringBuffer("select t1.*,t2.transform_name from dev_topology t1 LEFT JOIN dev_transform t2 on t2.id = t1.transform_id where t1.del = 0 and t2.del = 0 ");
+        StringBuffer sql  = new StringBuffer("select t1.*,t2.transform_name from transform_dev_topology t1 LEFT JOIN transform_dev_transform t2 on t2.id = t1.transform_id where t1.del = 0 and t2.del = 0 ");
         if(topology.getDevType()!=null){
             sql.append(" and t1.dev_type = " + topology.getDevType().toString());
         }

@@ -75,8 +75,8 @@ public class TimeTaskController extends BaseController<TimeTask> {
 
         Dep dep = depRespository.getOne(LoginUser.getCurrentUser().getDepId());
 
-        StringBuffer sql = new StringBuffer("select t1.*,t2.transform_name, date_format(t1.task_time,'%H:%i:%s') as task_time_str,t3.name as dep_name from time_task as t1 " +
-                " left join dev_transform t2 on t1.transform_id = t2.id" +
+        StringBuffer sql = new StringBuffer("select t1.*,t2.transform_name, date_format(t1.task_time,'%H:%i:%s') as task_time_str,t3.name as dep_name from transform_time_task as t1 " +
+                " left join transform_dev_transform t2 on t1.transform_id = t2.id" +
                 " left join  sys_dep t3 on t3.id = t1.dep_id  where t1.del = 0  and t3.level like '" + dep.getLevel() + "%' ");
         if (timeTask.getTaskType() != null) {
             sql.append(" and t1.task_type = " + timeTask.getTaskType());

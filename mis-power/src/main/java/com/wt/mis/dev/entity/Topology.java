@@ -13,7 +13,7 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "dev_topology")
+@Table(name = "transform_dev_topology")
 @EqualsAndHashCode(callSuper = true)
 @Proxy(lazy = false)
 public class Topology extends BaseEntity {
