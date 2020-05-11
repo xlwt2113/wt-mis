@@ -83,6 +83,13 @@
             <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event8">刷新相位</button></div>
             <div class="layui-col-md1"></div>
         </div>
+
+        <div class="layui-row" style="padding-top: 25px">
+            <div class="layui-col-md1"><button type="button" class="layui-btn layui-btn-normal" id="event21">读取设备数量</button></div>
+            <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event22">删除所有设备</button></div>
+            <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event23">广播清除台区号</button></div>
+            <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event16">查询停电状态</button></div>
+        </div>
     </div>
 
 </div>
@@ -166,9 +173,17 @@
                 return false;
             }else{
                 let selectRow = selectRows.data[0];
-                $.getJSON("/event/notification/send_event/7", {devId:selectRow.dev_id,devType:selectRow.dev_type}, function (data) {
-                    layer.msg(data.message);
-                });
+                if(selectRow.dev_type==2){
+                    layer.msg("将会刷线台区所有设备的拓扑，耗时较长，请耐心等待！", alertMsgCfg);
+                    $.getJSON("/event/notification/send_event/19", {devId:selectRow.dev_id,devType:selectRow.dev_type}, function (data) {
+                        layer.msg(data.message);
+                    });
+                }else{
+                    $.getJSON("/event/notification/send_event/7", {devId:selectRow.dev_id,devType:selectRow.dev_type}, function (data) {
+                        layer.msg(data.message);
+                    });
+                }
+
             }
         });
 
@@ -180,9 +195,17 @@
                 return false;
             }else{
                 let selectRow = selectRows.data[0];
-                $.getJSON("/event/notification/send_event/8", {devId:selectRow.dev_id,devType:selectRow.dev_type}, function (data) {
-                    layer.msg(data.message);
-                });
+                if(selectRow.dev_type ==  2){
+                    layer.msg("将会刷线台区所有设备的相位，耗时较长，请耐心等待！", alertMsgCfg);
+                    $.getJSON("/event/notification/send_event/20", {devId:selectRow.dev_id,devType:selectRow.dev_type}, function (data) {
+                        layer.msg(data.message);
+                    });
+                }else{
+                    $.getJSON("/event/notification/send_event/8", {devId:selectRow.dev_id,devType:selectRow.dev_type}, function (data) {
+                        layer.msg(data.message);
+                    });
+                }
+
             }
         });
 
@@ -326,6 +349,74 @@
                     });
                 }
 
+            }
+        });
+
+        //读取设备数量
+        $('#event21').click(function(){
+            let selectRows = table.checkStatus('searchListTable');
+            if(selectRows.data.length==0){
+                layer.msg("请选择台区设备！", alertMsgCfg);
+                return false;
+            }else{
+                let selectRow = selectRows.data[0];
+                if(selectRow.dev_type == 2){
+                    $.getJSON("/event/notification/send_event/21", {devId:selectRow.dev_id,devType:selectRow.dev_type}, function (data) {
+                        layer.msg(data.message);
+                    });
+                }else{
+                    layer.msg("请选择台区设备！", alertMsgCfg);
+                }
+            }
+        });
+
+        //删除所有设备
+        $('#event22').click(function(){
+            let selectRows = table.checkStatus('searchListTable');
+            if(selectRows.data.length==0){
+                layer.msg("请选择台区设备！", alertMsgCfg);
+                return false;
+            }else{
+                let selectRow = selectRows.data[0];
+                if(selectRow.dev_type == 2){
+                    $.getJSON("/event/notification/send_event/22", {devId:selectRow.dev_id,devType:selectRow.dev_type}, function (data) {
+                        layer.msg(data.message);
+                    });
+                }else{
+                    layer.msg("请选择台区设备！", alertMsgCfg);
+                }
+            }
+        });
+
+        //广播清除台区号
+        $('#event23').click(function(){
+            let selectRows = table.checkStatus('searchListTable');
+            if(selectRows.data.length==0){
+                layer.msg("请选择台区设备！", alertMsgCfg);
+                return false;
+            }else{
+                let selectRow = selectRows.data[0];
+                if(selectRow.dev_type == 2){
+                    $.getJSON("/event/notification/send_event/23", {devId:selectRow.dev_id,devType:selectRow.dev_type}, function (data) {
+                        layer.msg(data.message);
+                    });
+                }else{
+                    layer.msg("请选择台区设备！", alertMsgCfg);
+                }
+            }
+        });
+
+        //读取停电状态
+        $('#event16').click(function(){
+            let selectRows = table.checkStatus('searchListTable');
+            if(selectRows.data.length==0){
+                layer.msg("请选择设备！", alertMsgCfg);
+                return false;
+            }else{
+                let selectRow = selectRows.data[0];
+                $.getJSON("/event/notification/send_event/16", {devId:selectRow.dev_id,devType:selectRow.dev_type}, function (data) {
+                    layer.msg(data.message);
+                });
             }
         });
 

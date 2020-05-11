@@ -139,32 +139,34 @@ public class DevServiceImpl implements DevService{
 
     @Override
     public void deleteDev(long devId, int devType) throws AppException {
-        List<Topology> topologyList = topologyRepository.findAllByDelAndDevIdAndDevType(0,devId,devType);
-        if(topologyList != null && topologyList.size() > 0 && devType !=1){
-            throw  new  AppException("所选设备正在运行状态，不允许删除");
+        if(devType == 1){
+            //删除线路
+            int cnt = transFormRepository.countAllByDelAndLineId(0,devId);
+            if(cnt>0){
+                throw  new  AppException("所选线路上有台区，不允许删除！");
+            }else{
+                lineRepository.deleteByIdOnLogic(devId);
+            }
         }else{
-            if(devType == 2){
-                transFormRepository.deleteByIdOnLogic(devId);
-            }
-            if(devType == 3){
-                branchBoxRepository.deleteByIdOnLogic(devId);
-            }
-            if(devType == 4 || devType == 5){
-                meterBoxRepository.deleteByIdOnLogic(devId);
-            }
-            if(devType == 6 || devType == 7){
-                meterRepository.deleteByIdOnLogic(devId);
-            }
-            if(devType == 1){
-                //删除线路
-                int cnt = transFormRepository.countAllByDelAndLineId(0,devId);
-                if(cnt>0){
-                    throw  new  AppException("所选线路上有台区，不允许删除");
-                }else{
-                    lineRepository.deleteByIdOnLogic(devId);
+            List<Topology> topologyList = topologyRepository.findAllByDelAndDevIdAndDevType(0,devId,devType);
+            if(topologyList!=null || topologyList.size()>0){
+                throw  new  AppException("设备存在于台区拓扑中，请先从拓扑中删除后再删除台账！");
+            }else{
+                if(devType == 2){
+                    transFormRepository.deleteByIdOnLogic(devId);
+                }
+                if(devType == 3){
+                    branchBoxRepository.deleteByIdOnLogic(devId);
+                }
+                if(devType == 4 || devType == 5){
+                    meterBoxRepository.deleteByIdOnLogic(devId);
+                }
+                if(devType == 6 || devType == 7){
+                    meterRepository.deleteByIdOnLogic(devId);
                 }
             }
         }
+
     }
 
     @Override
