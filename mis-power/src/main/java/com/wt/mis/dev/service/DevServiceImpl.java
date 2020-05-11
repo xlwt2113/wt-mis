@@ -149,8 +149,8 @@ public class DevServiceImpl implements DevService{
             }
         }else{
             List<Topology> topologyList = topologyRepository.findAllByDelAndDevIdAndDevType(0,devId,devType);
-            if(topologyList!=null || topologyList.size()>0){
-                throw  new  AppException("设备存在于台区拓扑中，请先从拓扑中删除后再删除台账！");
+            if(topologyList != null && topologyList.size()>0){
+                throw  new  AppException("所选设备存在于台区拓扑中，请先从拓扑中删除后再删除台账！");
             }else{
                 if(devType == 2){
                     transFormRepository.deleteByIdOnLogic(devId);
