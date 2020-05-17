@@ -73,9 +73,9 @@ public class EevntTaskController extends BaseController<EventTask> {
      * @return
      */
     private int  getCurrentPowerCntByDep(){
-        StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from event_power_outage t1  ");
-        sql.append(" LEFT JOIN dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
-        sql.append(" LEFT JOIN dev_transform t3 on t3.id = t2.transform_id ");
+        StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from transform_event_power_outage t1  ");
+        sql.append(" LEFT JOIN transform_dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
+        sql.append(" LEFT JOIN transform_dev_transform t3 on t3.id = t2.transform_id ");
         sql.append(" inner join sys_dep t4 on t3.operations_team = t4.id and (t4.level like '%_"+ LoginUser.getCurrentUser().getDepId() +"%' or t4.id = "+LoginUser.getCurrentUser().getDepId()+")");
         sql.append(" where t1.del = 0 and t1.power_status = 1 and t1.history = 0  and t2.del = 0");
         sql.append(" order by  t1.occur_time desc ");

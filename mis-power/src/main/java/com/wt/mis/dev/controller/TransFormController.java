@@ -110,6 +110,12 @@ public class TransFormController extends BaseController<TransForm> {
         if (StringUtils.isNotEmpty(transForm.getTransformNum())) {
             sql.append(" and t1.transform_num like '%" + transForm.getTransformNum() + "%'");
         }
+        if (StringUtils.isNotEmpty(transForm.getDevAddress())) {
+            sql.append(" and t1.dev_address like '%" + transForm.getDevAddress().toUpperCase() + "%'");
+        }
+        if (StringUtils.isNotEmpty(transForm.getProtocolAddress())) {
+            sql.append(" and t1.protocol_address like '%" + transForm.getProtocolAddress().toLowerCase() + "%'");
+        }
         sql.append(" and (t2.level like '" + dep.getLevel() + "%' or t1.operations_team is null )" );
         return sql.toString();
     }

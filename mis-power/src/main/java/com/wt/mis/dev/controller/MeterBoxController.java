@@ -99,6 +99,9 @@ public class MeterBoxController extends BaseController<MeterBox> {
         if (StringUtils.isNotEmpty(meterBox.getInstallationLocation())) {
             sql.append(" and t1.installation_location like '%" + meterBox.getInstallationLocation() + "%'");
         }
+        if (StringUtils.isNotEmpty(meterBox.getProtocolAddress())) {
+            sql.append(" and t1.protocol_address like '%" + meterBox.getProtocolAddress().toLowerCase() + "%'");
+        }
         sql.append(" and (t2.level like '" + dep.getLevel() + "%' or t1.operations_team is null )" );
         return sql.toString();
     }

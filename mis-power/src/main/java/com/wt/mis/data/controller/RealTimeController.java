@@ -5,18 +5,22 @@ import com.wt.mis.core.service.SearchService;
 import com.wt.mis.core.util.DateUtils;
 import com.wt.mis.core.util.ResponseUtils;
 import com.wt.mis.core.util.StringUtils;
+import com.wt.mis.data.entity.RealTime;
 import com.wt.mis.data.view.RealTimeView;
 import com.wt.mis.dev.service.DevService;
 import com.wt.mis.dev.view.DevModel;
 import com.wt.mis.sys.util.DictUtils;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -37,6 +41,12 @@ public class RealTimeController{
         return "data/realtime";
     }
 
+    @GetMapping("/list")
+    protected ModelAndView listPage(RealTime realTime) {
+        ModelAndView mv = new ModelAndView(this.getUrlPrefix() + "/list");
+        mv.addObject("search", realTime);
+        return mv;
+    }
 
     @ApiOperation("根据对象的属性查询所有对象")
     @PostMapping("/list")

@@ -17,10 +17,29 @@
                     <div style="display: none"><input type="text" name="test" value=""></div>
                     <div class="layui-form-item">
                         <div class="layui-inline">
+                            <select class="layui-select" name="transFormId" id="transFormId" lay-filter="transFormId" lay-search></select>
+                        </div>
+                        <div class="layui-inline">
+                            <select class="layui-select" name="devType" id="devType" lay-filter="devType" lay-search>
+                                <option value="">请选择设备类型</option>
+                                <each th:each="item:${T(com.wt.mis.sys.util.DictUtils).getDictItems('设备类型')}">
+                                    <option th:value="${item.itemValue}" th:text="${item.itemKey}"></option>
+                                </each>
+                            </select>
+                        </div>
+                        <div class="layui-inline">
+                            <select class="layui-select" name="devId" id="devId" lay-filter="devId" lay-search >
+                                <option value="">请选择设备名称</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline">
+                            <input type="text" name="callTime" id="callTime" autocomplete="off" class="layui-input" placeholder="召测时间">
+                        </div>
+                        <div class="layui-inline">
                             <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>查询</a>
                         </div>
                         <div class="layui-inline">
-                            <a class="layui-btn layui-btn-warm data-reset-btn" lay-button=""><i class="layui-icon">&#xe666;</i>重置</a>
+                            <a class="layui-btn layui-btn-warm data-reset-btn" lay-button="" id="restBtn"><i class="layui-icon">&#xe666;</i>重置</a>
                         </div>
                     </div>
                 </form>
@@ -31,9 +50,7 @@
         <!--顶部工具按钮-->
         <script type="text/html" id="TopTableBar">
             <div class="layui-btn-group">
-                <button class="layui-btn data-add-btn layui-btn-sm" lay-event="add"><i class="layui-icon">&#xe654;</i>添加</button>
-                <button class="layui-btn layui-btn-danger data-delete-btn layui-btn-sm" lay-event="deleteAll"><i class="layui-icon">&#xe640;</i>删除
-                </button>
+
             </div>
         </script>
 
@@ -50,100 +67,124 @@
 <script th:inline="none">
 
 
-    // config.initQueryCondition();
 
     layui.use(['form', 'table','laydate','treeSelect'], function () {
         var $ = layui.jquery,
-                form = layui.form,
-                laydate = layui.laydate,
-                treeSelect = layui.treeSelect,
-                table = layui.table;
+            form = layui.form,
+            laydate = layui.laydate,
+            treeSelect = layui.treeSelect,
+            table = layui.table;
 
         // 默认的操作地址
         var list_url = '/data/realtime/list';
-        var delete_url = '/data/realtime/delete';
-        var add_page_url = '/data/realtime/add';
-        var edit_page_url = '/data/realtime/edit';
-        var view_page_url = '/data/realtime/view';
 
-
+        laydate.render({elem: '#callTime'});
         table.render($.extend(config.searchListTable, {
             url: list_url,
             //表格列
             cols: [[
-                {type: "checkbox", width: 50, fixed: "left"},
-                {field: 'dev_id', width: 200, title: '设备ID'},
-                {field: 'dev_type', width: 200, title: '设备类型'},
-                {field: 'call_time', width: 200, title: '召测时间'},
-                {field: 'data_type', width: 200, title: '数据类型'},
-                {field: 'call_data', width: 200, title: '召测数据'},
-                {title: '操作', width: 220, templet: '#currentTableBar', fixed: "right", align: "center"}
-            ]]
+                {field: 'devName', width: 200, title: '设备名称'},
+                {field: 'devType', width: 120, title: '设备类型'},
+                {field: 'callTime', width: 200, title: '召测时间',sort:true},
+                {field: 'realDyDataA', width: 100, title: 'A相电压'},
+                {field: 'realDyDataB', width: 100, title: 'B相电压'},
+                {field: 'realDyDataC', width: 100, title: 'C相电压'},
+                {field: 'realDlDataA', width: 100, title: 'A相电流'},
+                {field: 'realDlDataB', width: 100, title: 'B相电流'},
+                {field: 'realDlDataC', width: 100, title: 'C相电流'},
+                {field: 'devParentName', width: 200, title: '上级设备名称'},
+                {field: 'devParentType', width: 120, title: '上级设备类型'},
+                {field: 'transformName', width: 200, title: '所属台区'},
+                {field: 'operationsTeamName', width: 300, title: '所属班组'}
+            ]],
+            //将返回的列表数据格式化成layui的格式
+            parseData: function (res) { //res 即为原始返回的数据
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.message, //解析提示文本
+                    "data": res.data //解析数据列表
+                };
+            },
+            page: false
         }));
 
         // 监听搜索操作
         form.on('submit(data-search-btn)', function (data) {
-            //执行搜索重载
-            table.reload('searchListTable', {
-                page: {
-                    curr: 1  //重新加载后默认为第一页
-                }
-                , where: {
-                 "test" : ""  //为了js不出错而加，
-                }
-            });
-            return false;
+            if(data.field.devType==''||data.field.devId==''||data.field.callTime == ''){
+                layer.alert("请选择所有查询条件后再点击查询！",{icon: 2});
+                return false;
+            }else{
+                //执行搜索重载
+                table.reload('searchListTable', {
+                    where: {
+                        "devType": data.field.devType,
+                        "callTime": data.field.callTime,
+                        "devId": data.field.devId
+                    }
+                });
+                return false;
+            }
+        });
+
+        //监听设备类型下拉框选择
+        form.on('select(devType)',function (data) {
+            let devType = data.value;
+            let transFormId = $('#transFormId').val();
+            //console.log(devType + "====" + transFormId);
+            if(devType!="" && transFormId !=""){
+                getDevListForSelect(devType,transFormId);
+            }
+        });
+
+        //监听台区类型下拉框选择
+        form.on('select(transFormId)',function (data) {
+            let devType = $('#devType').val();
+            let transFormId = data.value;
+            //console.log(devType + "====" + transFormId);
+            if(devType!="" && transFormId !=""){
+                getDevListForSelect(devType,transFormId);
+            }
         });
 
 
         //重置按钮操作
-        $(".data-reset-btn").on('click', function () {
+        $("#restBtn").on('click', function () {
             //清空表单
             $("#searchForm")[0].reset();
             //重新加载
             table.reload('searchListTable',{
-                page: {curr: 1},
+                page: false,
                 where: {
-                        "test" : ""
+                    "devType": "",
+                    "devId": "",
+                    "callTime": ""
                 }
             });
         });
 
-        //监听表格右侧的操作按钮
-        table.on('tool(searchListTable)', function (obj) {
-            event(obj);
-        });
-
-        //监听表格工具栏操作按钮
-        table.on('toolbar(searchListTable)', function (obj) {
-            event(obj);
-        });
-
-        //各种事件处理
-        function event(obj) {
-            var data = obj.data;
-            switch (obj.event) {
-                    //==============勾选后删除按钮事件============================
-                case "deleteAll":
-                    config.deleteAll(table,delete_url);
-                    break;
-                    //==============添加按钮点击事件============================
-                case "add":
-                    config.add(add_page_url);
-                    break;
-                    //==============查看按钮点击事件============================
-                case "view":
-                    config.view(obj,view_page_url);
-                    break;
-                    //==============删除单行按钮事件============================
-                case "delete":
-                    config.delete(obj,delete_url);
-                    break;
-                    //==============编辑按钮点击事件============================
-                case "edit":
-                    config.edit(obj,edit_page_url);
-                    break;
+        $.getJSON("/dev/api/dev_list?devType=2",function (json) {
+            let html = '<option value="">请选择台区</option>';
+            for(var i=0;i<json.length;i++){
+                html = html + "<option value='"+json[i].value+"'>"+json[i].name+"</option>";
             }
+            $('#transFormId').append(html);
+            form.render();
+        });
+
+
+
+
+        function getDevListForSelect(devType,transFormId) {
+            $('#devId').empty();
+            $.getJSON("/dev/api/dev_list?showByq=true&transFormId="+transFormId+"&devType="+devType,function (json) {
+                let html = "<option value=''>请选择设备名称</option>";
+                for(var i=0;i<json.length;i++){
+                    // console.log(json[i].name);
+                    html = html + "<option value='"+json[i].value+"'>"+json[i].name+"</option>";
+                }
+                $('#devId').append(html);
+                form.render();
+            });
         }
     });
 </script>

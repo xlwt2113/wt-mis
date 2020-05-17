@@ -99,6 +99,9 @@ public class MeterController extends BaseController<Meter> {
         if (StringUtils.isNotEmpty(meter.getMeterBarcode())) {
             sql.append(" and t1.meter_barcode like '%" + meter.getMeterBarcode() + "%'");
         }
+        if (StringUtils.isNotEmpty(meter.getProtocolAddress())) {
+            sql.append(" and t1.protocol_address like '%" + meter.getProtocolAddress().toLowerCase() + "%'");
+        }
         sql.append(" and (t2.level like '" + dep.getLevel() + "%' or t1.operations_team is null )" );
         return sql.toString();
     }

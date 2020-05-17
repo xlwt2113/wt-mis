@@ -22,6 +22,9 @@
                    <div class="layui-inline">
                        <input type="text" name="meterBarcode" autocomplete="off" class="layui-input" placeholder="资产编号">
                    </div>
+                        <div class="layui-inline">
+                            <input type="text" name="protocolAddress" autocomplete="off" class="layui-input" placeholder="通讯地址">
+                        </div>
                    <div class="layui-inline">
                        <input type="text"  th:value="${session.loginUser.getDepId()}" id="operationsTeam" name="operationsTeam" autocomplete="off" class="layui-input"  lay-filter="depTree">
                    </div>
@@ -151,6 +154,7 @@
                 "installationLocation": data.field.installationLocation,
                 "meterBarcode": data.field.meterBarcode,
                 "operationsTeam": data.field.operationsTeam,
+                    "protocolAddress":data.field.protocolAddress,
                  "test" : ""  //为了js不出错而加，
                 }
             });
@@ -169,6 +173,7 @@
                         "installationLocation": "",
                         "meterBarcode": "",
                         "operationsTeam": "",
+                    "protocolAddress":"",
                         "test" : ""
                 }
             });

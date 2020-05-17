@@ -96,6 +96,9 @@ public class BranchBoxController extends BaseController<BranchBox> {
         if (StringUtils.isNotEmpty(branchBox.getInstallationLocation())) {
             sql.append(" and t1.installation_location like '%" + branchBox.getInstallationLocation() + "%'");
         }
+        if (StringUtils.isNotEmpty(branchBox.getProtocolAddress())) {
+            sql.append(" and t1.protocol_address like '%" + branchBox.getProtocolAddress().toLowerCase() + "%'");
+        }
         sql.append(" and (t2.level like '" + dep.getLevel() + "%' or t1.operations_team is null )" );
         return sql.toString();
     }

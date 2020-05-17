@@ -77,6 +77,12 @@
         </div>
 
         <div class="layui-row" style="padding-top: 25px">
+            <div class="layui-col-md1"><button type="button" class="layui-btn layui-btn-normal" id="event3">召测实时数据</button></div>
+            <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event4">召测冻结数据</button></div>
+            <div class="layui-col-md1"><input type="text" name="freezeTime" id="freezeTime" autocomplete="off" class="layui-input" placeholder="冻结日期"></div>
+        </div>
+
+        <div class="layui-row" style="padding-top: 25px">
             <div class="layui-col-md1"><button type="button" class="layui-btn layui-btn-normal" id="event2">召测拓扑</button></div>
             <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event7">刷新拓扑</button></div>
             <div class="layui-col-md1"> &nbsp;&nbsp;&nbsp;&nbsp; <!--<input type="number" autocomplete="off" class="layui-input" placeholder="" id="event13Val" name="event13Val" >--></div>
@@ -90,6 +96,7 @@
             <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event23">广播清除台区号</button></div>
             <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event16">查询停电状态</button></div>
         </div>
+
     </div>
 
 </div>
@@ -109,8 +116,8 @@
             table = layui.table;
 
         // 默认的操作地址
-        var list_url = '/dev/topology/list';
-
+        var list_url = '/dev/topologyunnormal/list_for_topology_manage';
+        laydate.render({elem: '#freezeTime'});
 
         table.render($.extend(config.searchListTable, {
             url: list_url,
@@ -123,7 +130,7 @@
                 {field: 'dev_address', width: 150, title: '通讯地址'},
                 {field: 'dev_online', width: 130, title: '是否在线'},
                 {field: 'dev_exist', width: 130, title: '是否存在'},
-                {field: 'transform_name', width: 250, title: '所属台区'},
+                {field: 'transform_name', width: 250, title: '所属台区'}
             ]],
             elem: '#searchListTable',  //默认的查询列表页面中table的ID
             toolbar: null,  //顶部工具栏的默认ID
@@ -413,6 +420,37 @@
             }else{
                 let selectRow = selectRows.data[0];
                 $.getJSON("/event/notification/send_event/16", {devId:selectRow.dev_id,devType:selectRow.dev_type}, function (data) {
+                    layer.msg(data.message);
+                });
+            }
+        });
+
+        //召测实时数据
+        $('#event3').click(function (data) {
+            let selectRows = table.checkStatus('searchListTable');
+            if(selectRows.data.length==0){
+                layer.msg("请选择设备！", alertMsgCfg);
+                return false;
+            }else{
+                let selectRow = selectRows.data[0];
+                $.getJSON("/event/notification/send_event/3", {devId:selectRow.dev_id,devType:selectRow.dev_type}, function (data) {
+                    layer.msg(data.message);
+                });
+            }
+        });
+        //召测冻结数据
+        $('#event4').click(function (data) {
+
+            let selectRows = table.checkStatus('searchListTable');
+            if($('#freezeTime').val()==''){
+                layer.msg("请选择冻结日期！", alertMsgCfg);
+                return false;
+            }else if(selectRows.data.length==0){
+                layer.msg("请选择设备！", alertMsgCfg);
+                return false;
+            }else{
+                let selectRow = selectRows.data[0];
+                $.getJSON("/event/notification/send_event/4", {devId:selectRow.dev_id,devType:selectRow.dev_type,freezeTime:$('#freezeTime').val()}, function (data) {
                     layer.msg(data.message);
                 });
             }

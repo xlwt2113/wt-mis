@@ -22,6 +22,12 @@
                    <div class="layui-inline">
                        <input type="text" name="transformNum" autocomplete="off" class="layui-input" placeholder="台区编号">
                    </div>
+                        <div class="layui-inline">
+                            <input type="text" name="protocolAddress" autocomplete="off" class="layui-input" placeholder="通讯地址">
+                        </div>
+                        <div class="layui-inline">
+                            <input type="text" name="devAddress" autocomplete="off" class="layui-input" placeholder="汇聚单元">
+                        </div>
                    <div class="layui-inline">
                        <input type="text"  th:value="${session.loginUser.getDepId()}" id="operationsTeam" name="operationsTeam" autocomplete="off" class="layui-input"  lay-filter="depTree">
                    </div>
@@ -151,6 +157,8 @@
                 "transformName": data.field.transformName,
                 "transformNum": data.field.transformNum,
                 "operationsTeam": data.field.operationsTeam,
+                    "protocolAddress":data.field.protocolAddress,
+                    "devAddress":data.field.devAddress,
                  "test" : ""  //为了js不出错而加，
                 }
             });
@@ -169,6 +177,8 @@
                         "transformName": "",
                         "transformNum": "",
                         "operationsTeam": "",
+                    "protocolAddress":"",
+                    "devAddress":"",
                         "test" : ""
                 }
             });
