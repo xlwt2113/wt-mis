@@ -84,8 +84,7 @@ public class TopologyUnnormalController extends BaseController<TopologyUnnormal>
     @ApiOperation("根据对象的属性查询所有对象")
     @PostMapping("/list_for_topology_manage")
     @ResponseBody
-    @Override
-    protected ResponseEntity list(HttpServletRequest request,
+    protected ResponseEntity ListForTopologyManage(HttpServletRequest request,
                                   TopologyUnnormal topology,
                                   @RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNumber,
                                   @RequestParam(value = "limit", required = false, defaultValue = "15") Integer pageSize,

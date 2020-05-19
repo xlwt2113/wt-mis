@@ -116,7 +116,7 @@ public class DevServiceImpl implements DevService{
         if(devType==4 || devType==5){devTableName = "transform_dev_meter_box";}
         if(devType==6 || devType ==7){devTableName = "transform_dev_meter";}
 
-        String sql = "SELECT t1.* FROM transform_dev_topology t1 LEFT JOIN "+devTableName+" t2 ON t1.dev_id = t2.id left join sys_dep t3 on t2.operations_team = t3.id WHERE t1.del = 0 ";
+        String sql = "SELECT t1.* FROM (select * from transform_dev_topology_unnormal union select * from transform_dev_topology)  t1 LEFT JOIN "+devTableName+" t2 ON t1.dev_id = t2.id left join sys_dep t3 on t2.operations_team = t3.id WHERE t1.del = 0 ";
         sql = sql + " and t1.dev_type = "+devType ;
 
         if(StringUtils.isNotEmpty(depLevel)){

@@ -62,6 +62,7 @@
                 window.location.href = "/dev/topology/view";
             });
             showJTopoToobar(stage);
+            stage.eagleEye.visible = true;
 
             form.on('checkbox(zoomCheckbox)',function (data) {
                 if(data.elem.checked){
@@ -104,7 +105,7 @@
                 }
 
                 // 树形布局
-                scene.doLayout(JTopo.layout.TreeLayout('down', 180, 120)); //180为图表间隔
+                scene.doLayout(JTopo.layout.TreeLayout('down', 30, 120)); //40为图表间隔
                 //获取所有节点
                 allNodes = scene.getDisplayedNodes();
                 //获取停电报警数据

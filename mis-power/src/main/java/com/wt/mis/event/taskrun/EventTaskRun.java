@@ -82,15 +82,20 @@ public class EventTaskRun {
         for(Notification notification:list){
             log.info("======获取到了发出的命令"+notification.getEventStatus().toString());
             //根据设备所属台区，将通知信息逐一发送给管理该台区的每个人
-            DevModel dev = devService.getDevModel(notification.getDevId(),notification.getDevType());
-            if(dev!=null&&notification.getAccountId()!=null){
-                EventTask task = this.generateTask(notification,dev);
-                task.setAccountId(notification.getAccountId());
-                eeventTaskRepository.save(task);
+            try{
+                DevModel dev = devService.getDevModel(notification.getDevId(),notification.getDevType());
+                if(dev!=null&&notification.getAccountId()!=null){
+                    EventTask task = this.generateTask(notification,dev);
+                    task.setAccountId(notification.getAccountId());
+                    eeventTaskRepository.save(task);
+                }
+                //事件通知已经处理
+                notification.setDealStatus(1);
+                notificationRepository.save(notification);
+            }catch (Exception e){
+                e.printStackTrace();
             }
-            //事件通知已经处理
-            notification.setDealStatus(1);
-            notificationRepository.save(notification);
+
         }
     }
 

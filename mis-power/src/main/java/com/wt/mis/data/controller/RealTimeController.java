@@ -59,7 +59,7 @@ public class RealTimeController{
             return ResponseUtils.ok("没有参数，不查询数据",null);
         }else{
             StringBuffer sql = new StringBuffer(" SELECT t1.*,t2.dev_name,t2.dev_parent_type,t2.dev_parent_name,  t3.transform_name,t2.transform_id from transform_data_real_time t1  ");
-            sql.append(" LEFT JOIN transform_dev_topology t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
+            sql.append(" LEFT JOIN (select * from transform_dev_topology_unnormal union select * from transform_dev_topology) t2 on t1.dev_id = t2.dev_id and t1.dev_type = t2.dev_type ");
             sql.append(" LEFT JOIN transform_dev_transform t3 on t3.id = t2.transform_id where t1.del = 0");
             sql.append(" and t1.dev_type = "+devType+" and t1.dev_id = " + devId);
             sql.append(" and DATE_FORMAT(t1.call_time,'%Y-%m-%d') = '"+ callTime +"'");
