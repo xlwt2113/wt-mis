@@ -28,6 +28,9 @@
                             <input type="text" name="devName" autocomplete="off" class="layui-input" placeholder="设备名称">
                         </div>
                         <div class="layui-inline">
+                            <input type="text" name="devAddress" autocomplete="off" class="layui-input" placeholder="通讯地址">
+                        </div>
+                        <div class="layui-inline">
                             <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>查询</a>
                         </div>
                         <div class="layui-inline">
@@ -148,6 +151,7 @@
                 , where: {
                     "devType": data.field.devType,
                     "devName": data.field.devName,
+                    "devAddress": data.field.devAddress,
                     "test" : ""  //为了js不出错而加，
                 }
             });
@@ -165,6 +169,7 @@
                 where: {
                     "devType": "",
                     "devName": "",
+                    "devAddress": "",
                     "test" : ""
                 }
             });

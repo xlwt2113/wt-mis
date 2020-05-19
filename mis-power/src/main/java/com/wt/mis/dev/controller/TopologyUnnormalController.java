@@ -6,6 +6,7 @@ import com.wt.mis.core.dao.PageResult;
 import com.wt.mis.core.repository.BaseRepository;
 import com.wt.mis.core.service.SearchService;
 import com.wt.mis.core.util.ResponseUtils;
+import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.dev.entity.TopologyUnnormal;
 import com.wt.mis.dev.repository.TopologyUnnormalRepository;
 import com.wt.mis.sys.util.DictUtils;
@@ -83,14 +84,25 @@ public class TopologyUnnormalController extends BaseController<TopologyUnnormal>
     @ApiOperation("根据对象的属性查询所有对象")
     @PostMapping("/list_for_topology_manage")
     @ResponseBody
+    @Override
     protected ResponseEntity list(HttpServletRequest request,
-                                  T t,
+                                  TopologyUnnormal topology,
                                   @RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNumber,
                                   @RequestParam(value = "limit", required = false, defaultValue = "15") Integer pageSize,
                                   @RequestParam(value = "pageSort", required = false, defaultValue = "id") String pageSort,
                                   @RequestParam(value = "pageDirection", required = false, defaultValue = "DESC") String pageDirection) {
-        StringBuffer sql  = new StringBuffer("select t1.*,t2.transform_name from transform_dev_topology_unnormal t1 " +
+        StringBuffer sql  = new StringBuffer("select t1.*,t2.transform_name from (select * from transform_dev_topology_unnormal union select * from transform_dev_topology) t1 " +
                 " LEFT JOIN transform_dev_transform t2 on t2.id = t1.transform_id where t1.del = 0 and t2.del = 0 " );
+
+        if(topology.getDevType()!=null){
+            sql.append(" and t1.dev_type = " + topology.getDevType().toString());
+        }
+        if(StringUtils.isNotEmpty(topology.getDevName())){
+            sql.append(" and t1.dev_name like '%"+topology.getDevName()+"%'");
+        }
+        if(StringUtils.isNotEmpty(topology.getDevAddress())){
+            sql.append(" and t1.dev_address like '%"+topology.getDevAddress().toUpperCase()+"%'");
+        }
         PageResult page = searchService.findBySql(sql.toString(), pageNumber, pageSize);
         dealSearchList(page.getContent());
         return ResponseUtils.ok("", page);
