@@ -66,7 +66,7 @@ public class EventTaskRun {
     /**
      * 定时任务执行方法
      */
-    @Scheduled(cron = "0/10 * * * * ?")
+    @Scheduled(cron = "0/5 * * * * ?")
     private void configureTasks() {
         log.info("========定时任务启动...");
         this.dealNotificationSend();
