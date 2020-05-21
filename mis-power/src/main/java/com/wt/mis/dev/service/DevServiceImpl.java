@@ -80,7 +80,7 @@ public class DevServiceImpl implements DevService{
             Meter meter = meterRepository.getOne(devId);
             if(meter!=null){
                 dev = new DevModel();
-                dev.setDevName(meter.getMeterBarcode());
+                dev.setDevName(meter.getOwnerName());
                 dev.setOperationsTeam(meter.getOperationsTeam());
                 dev.setDevType(devType);
             }
