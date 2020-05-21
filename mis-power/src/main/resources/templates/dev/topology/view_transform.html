@@ -30,7 +30,10 @@
                 <input type="checkbox" id="zoomCheckbox" title="鼠标缩放" lay-filter="zoomCheckbox">
             </div>
             <div class="layui-inline">
-                <input type="text" name="findText" id="findText" autocomplete="off" class="layui-input" placeholder="输入节点设备名称">
+                <select class="layui-select" name="findText" id="findText"  lay-search>
+                    <option value="">输入或选择设备名称</option>
+                </select>
+
             </div>
             <div class="layui-inline">
                 <a class="layui-btn" id="findButton"><i class="layui-icon">&#xe615;</i>查询</a>
@@ -102,7 +105,10 @@
                         addLink(rootNode,tempNode);
                         addChildNodes(tempNode,topologyList);
                     }
+                    $('#findText').append("<option value=\""+topologyList[i].devName+"\" >"+topologyList[i].devName+"</option>");
+                    console.log("<option value=\""+topologyList[i].devName+"\" >"+topologyList[i].devName+"</option>");
                 }
+                form.render();
 
                 // 树形布局
                 scene.doLayout(JTopo.layout.TreeLayout('down', 30, 120)); //40为图表间隔
