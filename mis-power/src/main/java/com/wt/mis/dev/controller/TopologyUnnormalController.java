@@ -67,6 +67,9 @@ public class TopologyUnnormalController extends BaseController<TopologyUnnormal>
             String key = DictUtils.getDictItemKey("设备类型",String.valueOf(map.get("dev_type")));
             map.put("dev_type_name",key);
 
+            key = DictUtils.getDictItemKey("设备类型",String.valueOf(map.get("dev_parent_type")));
+            map.put("dev_parent_type_name",key);
+
             if("0".equals(String.valueOf(map.get("dev_online")))){
                 map.replace("dev_online","在线");
             }else{

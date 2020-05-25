@@ -89,7 +89,7 @@ layui.define(["element", "jquery"], function (exports) {
          */
         this.initLogo = function (data) {
             var html = '<a href="' + data.href + '">\n' +
-                '<font style="color:#FFFFFF;font-size:12px">' + data.title + '</font>\n' +
+                '<font style="color:#FFFFFF;font-size:18px">' + data.title + '</font>\n' +
                 '</a>';
 
             if(data.title.length<=5){
@@ -288,11 +288,11 @@ layui.define(["element", "jquery"], function (exports) {
         this.bgColorConfig = function (bgcolorId) {
             var bgColorConfig = [
                 {
-                    headerRight: '#1aa094',
+                    headerRight: '#1EB1A4',
                     headerRightThis: '#197971',
-                    headerLogo: '#243346',
+                    headerLogo: '#1EB1A4',
                     menuLeft: '#2f4056',
-                    menuLeftThis: '#1aa094',
+                    menuLeftThis: '#1EB1A4',
                     menuLeftHover: '#3b3f4b',
                 },
                 {

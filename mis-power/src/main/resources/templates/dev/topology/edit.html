@@ -100,6 +100,14 @@
             <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event16">查询停电状态</button></div>
         </div>
 
+        <div class="layui-row" style="padding-top: 25px">
+            <div class="layui-col-md1"><button type="button" class="layui-btn layui-btn-normal" id="event24">刷新冻结数据库</button></div>
+            <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event17">查询停电记录总条数</button></div>
+            <div class="layui-col-md1 layui-col-md-offset1"><button type="button" class="layui-btn layui-btn-normal" id="event18">查询停电记录</button></div>
+            <div class="layui-col-md1" style="padding-left: 10px"><input type="number" min="1" value="1" step="1"  class="layui-input" id="event18val1" name="event18val1" placeholder="起始序号"/></div>
+            <div class="layui-col-md1" style="padding-left: 10px"><input type="number" min="1" value="1" step="1" class="layui-input" id="event18val2" name="event18val2" placeholder="记录数"/></div>
+        </div>
+
     </div>
 
 </div>
@@ -456,6 +464,48 @@
             }else{
                 let selectRow = selectRows.data[0];
                 $.getJSON("/event/notification/send_event/4", {devId:selectRow.dev_id,devType:selectRow.dev_type,freezeTime:$('#freezeTime').val()}, function (data) {
+                    layer.msg(data.message);
+                });
+            }
+        });
+
+        //刷新冻结数据
+        $('#event24').click(function(){
+            let selectRows = table.checkStatus('searchListTable');
+            if(selectRows.data.length==0){
+                layer.msg("请选择设备！", alertMsgCfg);
+                return false;
+            }else{
+                let selectRow = selectRows.data[0];
+                $.getJSON("/event/notification/send_event/24", {devId:selectRow.dev_id,devType:selectRow.dev_type}, function (data) {
+                    layer.msg(data.message);
+                });
+            }
+        });
+
+        //查询停电记录条数
+        $('#event17').click(function(){
+            let selectRows = table.checkStatus('searchListTable');
+            if(selectRows.data.length==0){
+                layer.msg("请选择设备！", alertMsgCfg);
+                return false;
+            }else{
+                let selectRow = selectRows.data[0];
+                $.getJSON("/event/notification/send_event/17", {devId:selectRow.dev_id,devType:selectRow.dev_type}, function (data) {
+                    layer.msg(data.message);
+                });
+            }
+        });
+
+        //查询停电记录条数
+        $('#event18').click(function(){
+            let selectRows = table.checkStatus('searchListTable');
+            if(selectRows.data.length==0){
+                layer.msg("请选择设备！", alertMsgCfg);
+                return false;
+            }else{
+                let selectRow = selectRows.data[0];
+                $.getJSON("/event/notification/send_event/18", {devId:selectRow.dev_id,devType:selectRow.dev_type,eventValue:$('#event18val1').val()+","+$('#event18val2').val()}, function (data) {
                     layer.msg(data.message);
                 });
             }

@@ -2,7 +2,7 @@
 配色方案（如有需要，请自行配置）
  */
 /**头部-配色*/
-.layui-layout-admin .layui-header{background-color:#1aa094!important;}
+.layui-layout-admin .layui-header{background-color:#1EB1A4!important;}
 .layui-header>ul>.layui-nav-item.layui-this,.layuimini-tool i:hover{background-color:#197971!important;}
 /**logo-配色*/
 .layui-layout-admin .layui-logo {background-color:#243346!important;}
@@ -11,7 +11,7 @@
 .layui-left-menu .layui-nav .layui-nav-child a:hover:not(.layui-this) {background-color:#3b3f4b;}
 /**左侧菜单选中-配色*/
 .layui-layout-admin .layui-nav-tree .layui-this, .layui-layout-admin .layui-nav-tree .layui-this>a, .layui-layout-admin .layui-nav-tree .layui-nav-child dd.layui-this, .layui-layout-admin .layui-nav-tree .layui-nav-child dd.layui-this a {
-    background-color: #1aa094 !important;
+    background-color: #1EB1A4 !important;
 }
 
 
@@ -47,7 +47,7 @@
 #top_tabs_box>.layui-tab-title li:hover {color:#000000;background-color:#e7ebed;}
 #top_tabs_box .layui-tab-close {font-size:12px!important;width:14px!important;height:14px!important;line-height:16px!important;}
 #top_tabs_box .layui-tab-close:hover {border-radius:4em;background:#ff5722;}
-#top_tabs_box>.layui-tab-title>.layui-this>i:first-child {color:#009688;}
+#top_tabs_box>.layui-tab-title>.layui-this>i:first-child {color:#1EB1A4;}
 #top_tabs_box>.layui-tab-title li {border-right:1px solid #e2e2e2;font-size: 12.5px!important;}
 #top_tabs_box>.layui-tab-title .layui-this {color:#000000;}
 #top_tabs_box>.layui-tab-title .layui-this:after {margin-top:33px;width: 100%;border: none;height: 2px;background-color: #243346;}
