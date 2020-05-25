@@ -11,7 +11,7 @@
     <script th:src="@{/js/jtopo-0.4.8-min.js}" charset="utf-8"></script>
     <script th:src="@{/js/toolbar.js}" charset="utf-8"></script>
 </head>
-<body style="background-color: #9F9F9F">
+<body style="background-color: #FFFFFF">
 
 <!--工具栏-->
 <div style="margin: 10px 10px 10px 10px">
@@ -132,6 +132,7 @@
                 node.setImage('/images/'+nodeInfo.devType+'_'+nodeInfo.devOnline+'.png', true);
                 node.textOffsetY = 10; // 文本偏移量（向下3个像素）
                 node.info = nodeInfo;
+                node.fontColor = '0,0,0'
                 node.dragable = false;
                 node.click(function(event){
                     // console.log(this.info.devId);
@@ -150,8 +151,8 @@
                 link.bundleGap = 20; // 线条之间的间隔
                 link.textOffsetY = -25; // 文本偏移量（向下3个像素）
                 link.textOffsetX = -200; // 文本偏移量（向下3个像素）
-                link.strokeColor = '255,255,0';
-                link.fontColor = '255,255,0';
+                link.strokeColor = '83,190,224';
+                link.fontColor = '83,190,224';
                 link.font = "16px Consolas";
                 link.info = lineInfo;
                 link.click(function (event) {

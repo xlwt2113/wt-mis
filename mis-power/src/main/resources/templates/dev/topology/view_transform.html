@@ -11,7 +11,7 @@
     <script th:src="@{/js/jtopo-0.4.8-min.js}" charset="utf-8"></script>
     <script th:src="@{/js/toolbar.js}" charset="utf-8"></script>
 </head>
-<body style="background-color: #9F9F9F">
+<body style="background-color: #FFFFFF">
 <input type="hidden" id="transformId" th:value="${id}">
 <!--工具栏-->
 <div style="margin: 10px 10px 10px 10px">
@@ -205,6 +205,7 @@
                 node.info = nodeInfo;
                 node.setImage('/images/'+nodeInfo.devType+'_'+nodeInfo.devOnline+'.png', true);
                 node.alarm = null;
+                node.fontColor = '0,0,0'
                 node.dbclick(function(event){
                     //console.log(this.info.devId);
                     //console.log(this.info.devName);
@@ -229,8 +230,9 @@
             //添加连接线
             function addLink(nodeA, nodeZ){
                 var link = new JTopo.FlexionalLink(nodeA, nodeZ);
-                link.strokeColor = '204,204,204';
                 link.lineWidth = 1;
+                link.strokeColor = '83,190,224';
+                link.fontColor = '83,190,224';
                 scene.add(link);
                 return link;
             }
