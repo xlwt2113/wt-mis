@@ -82,9 +82,11 @@
             //拓扑数据
             var topologyList;
             //画布上的所有节点
-            var allNodes;
+            var allNodes = new Array();
             //报警定时
             var alarm;
+            //节点map对象
+            var nodeMap = new Map();
 
             //页面打开后初始化所有数据
             $.getJSON("/dev/topology/transform_view_data/"+transformId,function (data) {
@@ -106,31 +108,49 @@
                         addChildNodes(tempNode,topologyList);
                     }
                     $('#findText').append("<option value=\""+topologyList[i].devName+"\" >"+topologyList[i].devName+"</option>");
-                    console.log("<option value=\""+topologyList[i].devName+"\" >"+topologyList[i].devName+"</option>");
                 }
                 form.render();
 
                 // 树形布局
                 scene.doLayout(JTopo.layout.TreeLayout('down', 30, 120)); //40为图表间隔
-                //获取所有节点
-                allNodes = scene.getDisplayedNodes();
+
+
+
                 //获取停电报警数据
                 setInterval(function () {
                     window.clearTimeout(alarm);
                     $.getJSON("/event/poweroutage/current_power_list",function (res) {
                         data = res.data;
+                        // console.log(data);
                         alarm = setInterval(function(){
-                            for(let i=0;i<allNodes.length;i++){
-                                for(let j=0;j<data.length;j++){
-                                    if(allNodes[i].info.devId ==data[j].devId && allNodes[i].info.devType == data[j].devType){
-                                        //console.log("报警！！！");
-                                        allNodes[i].alarmColor = '255,0,0';
-                                        allNodes[i].alarmAlpha = 1;
-                                        allNodes[i].alarm == '设备报警'? allNodes[i].alarm = null : allNodes[i].alarm = '设备报警';
+                            for(let j=0;j<data.length;j++){
+                                if(data[j].transformId==transformId){
+                                    let alarmNode = nodeMap.get(data[j].devId+"="+data[j].devType);
+                                    if(alarmNode!=undefined){
+                                        alarmNode.alarmColor = '255,0,0';
+                                        alarmNode.alarmAlpha = 1;
+                                        alarmNode.alarm == '设备报警'? alarmNode.alarm = null : alarmNode.alarm = '设备报警';
                                     }
                                 }
                             }
-                        },600);
+
+
+                            // console.log(allNodes);
+                            // for(let i=0;i<allNodes.length;i++){
+                            //     for(let j=0;j<data.length;j++){
+                            //         console.log(allNodes[i].info.devId + "==" + data[j].devId);
+                            //         console.log(allNodes[i].info.devType + "==" + data[j].devType);
+                            //         console.log("================================");
+                            //         if(allNodes[i].info.devId == data[j].devId && allNodes[i].info.devType == data[j].devType){
+                            //             console.log("报警！！！"+data[j].devName);
+                            //             allNodes[i].alarmColor = '255,0,0';
+                            //             allNodes[i].alarmAlpha = 1;
+                            //             allNodes[i].alarm == '设备报警'? allNodes[i].alarm = null : allNodes[i].alarm = '设备报警';
+                            //         }
+                            //     }
+                            //     console.log("****************************");
+                            // }
+                        },1000);
                     });
                     $.getJSON("/dev/topology/transform_view_data/"+transformId,function (data) {
                         topologyList = data.topologyList;
@@ -224,6 +244,8 @@
                     });
                 });
                 scene.add(node);
+                //获取所有添加的节点
+                nodeMap.set(nodeInfo.devId+"="+nodeInfo.devType,node);
                 return node;
             }
 

@@ -20,6 +20,7 @@ public class PowerOutageView {
     private String voltageStatusB;
     private String voltageStatusC;
     private String operationsTeamName;
+    private long transformId;
     private int devType;
     private long devId;
 }

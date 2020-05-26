@@ -186,6 +186,7 @@ public class PowerOutageController{
             view.setDevName(String.valueOf(map.get("dev_name")));
             view.setDevParentName(String.valueOf(map.get("dev_parent_name")));
             view.setTransformName(String.valueOf(map.get("transform_name")));
+            view.setTransformId(Long.valueOf(map.get("transform_id").toString()));
             result.add(view);
 
             PowerOutageSumView sumView = new PowerOutageSumView();
