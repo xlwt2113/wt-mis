@@ -5,10 +5,13 @@ import com.wt.mis.core.controller.BaseController;
 import com.wt.mis.core.dao.PageResult;
 import com.wt.mis.core.repository.BaseRepository;
 import com.wt.mis.core.service.SearchService;
+import com.wt.mis.core.util.LoginUser;
 import com.wt.mis.core.util.ResponseUtils;
 import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.dev.entity.TopologyUnnormal;
 import com.wt.mis.dev.repository.TopologyUnnormalRepository;
+import com.wt.mis.sys.entity.Dep;
+import com.wt.mis.sys.repository.DepRespository;
 import com.wt.mis.sys.util.DictUtils;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +38,9 @@ public class TopologyUnnormalController extends BaseController<TopologyUnnormal>
 
     @Autowired
     SearchService searchService;
+
+    @Autowired
+    DepRespository depRespository;
 
     @Override
     public BaseRepository<TopologyUnnormal, Long> repository() {
@@ -93,8 +99,11 @@ public class TopologyUnnormalController extends BaseController<TopologyUnnormal>
                                   @RequestParam(value = "limit", required = false, defaultValue = "15") Integer pageSize,
                                   @RequestParam(value = "pageSort", required = false, defaultValue = "id") String pageSort,
                                   @RequestParam(value = "pageDirection", required = false, defaultValue = "DESC") String pageDirection) {
+        Dep currDep = depRespository.getOne(LoginUser.getCurrentUser().getDepId());
         StringBuffer sql  = new StringBuffer("select t1.*,t2.transform_name from (select * from transform_dev_topology_unnormal union select * from transform_dev_topology) t1 " +
-                " LEFT JOIN transform_dev_transform t2 on t2.id = t1.transform_id where t1.del = 0 and t2.del = 0 " );
+                " LEFT JOIN transform_dev_transform t2 on t2.id = t1.transform_id " +
+                " left join sys_dep t3 on t2.operations_team = t3.id" +
+                " where t1.del = 0 and t2.del = 0  and t3.level like '"+currDep.getLevel()+"%'" );
 
         if(topology.getDevType()!=null){
             sql.append(" and t1.dev_type = " + topology.getDevType().toString());

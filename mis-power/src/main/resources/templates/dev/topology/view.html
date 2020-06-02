@@ -95,7 +95,7 @@
                     //线的说明文字显示
                     var textNode = new JTopo.TextNode(line[i].devName);
                     textNode.fontColor = '35,100,121';
-                    textNode.font = "20px Consolas";
+                    textNode.font = "20px 微软雅黑";
                     textNode.setLocation((baseX-80), (baseY - 50));
                     textNode.click(function (event) {
                         layer.open({
@@ -157,7 +157,7 @@
                 node.setImage('/images/'+nodeInfo.devType+'_'+nodeInfo.devOnline+'.png', true);
                 node.textOffsetY = 10; // 文本偏移量（向下3个像素）
                 node.info = nodeInfo;
-                node.font = '16px Consolas';
+                node.font = '16px  微软雅黑';
                 node.textPosition = 'Bottom_Right'; // 文本位置
                 node.textOffsetX = -50;
                 node.fontColor = '0,0,0'
