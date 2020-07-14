@@ -4,8 +4,8 @@ package com.wt.mis.fuse.controller;
 import com.wt.mis.core.controller.BaseController;
 import com.wt.mis.core.repository.BaseRepository;
 import com.wt.mis.core.util.StringUtils;
-import com.wt.mis.fuse.entity.RealDate;
-import com.wt.mis.fuse.repository.RealDateRepository;
+import com.wt.mis.fuse.entity.RealData;
+import com.wt.mis.fuse.repository.RealDataRepository;
 import com.wt.mis.sys.util.DictUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +19,14 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequestMapping("/fuse/realdata")
-public class RealDateController extends BaseController<RealDate> {
+public class RealDataController extends BaseController<RealData> {
 
     @Autowired
-    RealDateRepository realDateRepository;
+    RealDataRepository realDataRepository;
 
     @Override
-    public BaseRepository<RealDate, Long> repository() {
-        return realDateRepository;
+    public BaseRepository<RealData, Long> repository() {
+        return realDataRepository;
     }
 
     @Override
@@ -35,10 +35,10 @@ public class RealDateController extends BaseController<RealDate> {
     }
 
     @Override
-    protected String generateSearchSql(RealDate realDate, HttpServletRequest request) {
-        StringBuffer sql = new StringBuffer("select t1.*,t2.hub_name from fuse_real_date as t1 left join fuse_dev_hub as t2 on t1.hub_id = t2.id where t1.del = 0 ");
+    protected String generateSearchSql(RealData realDate, HttpServletRequest request) {
+        StringBuffer sql = new StringBuffer("select t1.*,t2.hub_name from fuse_real_data as t1 left join fuse_dev_hub as t2 on t1.hub_id = t2.id where t1.del = 0 ");
         if (realDate.getHubId() != null) {
-            sql.append(" and t1.hub_name like  '%" + realDate.getHubId() + "%'");
+            sql.append(" and t2.hub_name like  '%" + realDate.getHubId() + "%'");
         }
         if (StringUtils.isNotEmpty(realDate.getEventType())) {
             sql.append(" and t1.event_type = '"+ realDate.getEventType() + "'");
@@ -57,7 +57,7 @@ public class RealDateController extends BaseController<RealDate> {
         for (Object obj : searchResultlist) {
             HashMap<String, String> map = (HashMap) obj;
             String key = "";
-            key = DictUtils.getDictItemKey("熔断器事件类型", map.get("event_type"));
+            key = DictUtils.getDictItemKey("熔断器事件类型", String.valueOf(map.get("event_type")));
             map.replace("event_type", key);
         }
     }

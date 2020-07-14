@@ -14,9 +14,9 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "fuse_real_date")
+@Table(name = "fuse_real_data")
 @EqualsAndHashCode(callSuper = true)
-public class RealDate extends BaseEntity {
+public class RealData extends BaseEntity {
 
     /**
     * 汇集单元ID

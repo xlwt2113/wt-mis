@@ -20,7 +20,12 @@
                        <input type="text" name="hubId" autocomplete="off" class="layui-input" placeholder="汇集单元">
                    </div>
                    <div class="layui-inline">
-                       <input type="text" name="eventType" autocomplete="off" class="layui-input" placeholder="熔断器事件类型">
+                       <select name="eventType" autocomplete="off" class="layui-input" placeholder="熔断器事件类型">
+                           <option VALUE=""></option>
+                           <each th:each="item:${T(com.wt.mis.sys.util.DictUtils).getDictItems('熔断器事件类型')}">
+                               <option th:value="${item.itemValue}" th:text="${item.itemKey}"></option>
+                           </each>
+                       </select>
                    </div>
                         <div class="layui-inline">
                             <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>查询</a>
@@ -35,13 +40,13 @@
         <table class="layui-hide" id="searchListTable" lay-filter="searchListTable"></table>
 
         <!--顶部工具按钮-->
-        <script type="text/html" id="TopTableBar">
-            <div class="layui-btn-group">
-                <button class="layui-btn data-add-btn layui-btn-sm" lay-event="add"><i class="layui-icon">&#xe654;</i>添加</button>
-                <button class="layui-btn layui-btn-danger data-delete-btn layui-btn-sm" lay-event="deleteAll"><i class="layui-icon">&#xe640;</i>删除
-                </button>
-            </div>
-        </script>
+<!--        <script type="text/html" id="TopTableBar">-->
+<!--            <div class="layui-btn-group">-->
+<!--                <button class="layui-btn data-add-btn layui-btn-sm" lay-event="add"><i class="layui-icon">&#xe654;</i>添加</button>-->
+<!--                <button class="layui-btn layui-btn-danger data-delete-btn layui-btn-sm" lay-event="deleteAll"><i class="layui-icon">&#xe640;</i>删除-->
+<!--                </button>-->
+<!--            </div>-->
+<!--        </script>-->
 
         <!--表格中操作按钮-->
 <!--        <script type="text/html" id="currentTableBar">-->
@@ -78,7 +83,7 @@
             //表格列
             cols: [[
                 {type: "checkbox", width: 50, fixed: "left"},
-                {field: 'hub_id', width: 150, title: '汇集单元'},
+                {field: 'hub_name', width: 150, title: '汇集单元名称'},
                 {field: 'event_type', width: 150, title: '熔断器事件类型'},
                 {field: 'data_1', width: 200, title: '状态/接收数据组数'},
                 {field: 'data_2', width: 200, title: '异常点前数据采样间隔(秒)'},
@@ -89,8 +94,8 @@
                 {field: 'data_7', width: 200, title: '超级电容电压(V)'},
                 {field: 'data_8', width: 200, title: '电池电压(V)'},
                 {field: 'data_9', width: 200, title: '电场值'},
-                {field: 'data_10', width: 200, title: '线路电流(A)'},
-                {title: '操作', width: 220, templet: '#currentTableBar', fixed: "right", align: "center"}
+                {field: 'data_10', width: 200, title: '线路电流(A)'}
+                // {title: '操作', width: 220, templet: '#currentTableBar', fixed: "right", align: "center"}
             ]]
         }));
 
