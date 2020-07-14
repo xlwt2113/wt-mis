@@ -1,5 +1,6 @@
 package com.wt.mis.sys.service.impl;
 
+import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.sys.entity.*;
 import com.wt.mis.sys.repository.MenuRepository;
 import com.wt.mis.sys.repository.RoleAccountRepository;
@@ -70,18 +71,18 @@ public class RoleServiceImpl implements RoleService {
 
             String baseUrl = menu.getHref();
             //将菜单地址进行调整，使其可以符合路径对比
-            if (menu.getHref().split("/").length > 2) {
+            if (StringUtils.isNotEmpty(menu.getHref()) && menu.getHref().split("/").length > 2) {
                 baseUrl = menu.getHref().substring(0, menu.getHref().lastIndexOf("/"));
             }
             //更新菜单操作路径的URLPattern
             List<Menu> childMenuList = menuRepository.findAllByParIdAndDel(menu.getId(), 0);
             //如果该菜单有操作项目的话，只按照操作项目和菜单组成的路径进行认证，否则只按菜单的路径认证
-            if(childMenuList!=null&&childMenuList.size()>0){
+            if (childMenuList != null && childMenuList.size() > 0) {
                 for (Menu child : childMenuList) {
                     child.setHref(baseUrl + "/" + child.getHref());
                     resultMenuList.add(child);
                 }
-            }else{
+            } else {
                 //更新菜单路径的URLPattern
                 resultMenuList.add(menu);
             }
@@ -97,9 +98,9 @@ public class RoleServiceImpl implements RoleService {
         for (RoleMenu roleMenu : roleMenuList) {
             ids.add(roleMenu.getRoleId());
         }
-        if(ids.isEmpty()){
+        if (ids.isEmpty()) {
             return null;
-        }else{
+        } else {
             return roleRepository.findAllByIds(ids);
         }
 

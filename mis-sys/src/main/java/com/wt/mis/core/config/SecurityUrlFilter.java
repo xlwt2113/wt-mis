@@ -1,5 +1,6 @@
 package com.wt.mis.core.config;
 
+import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.sys.entity.Menu;
 import com.wt.mis.sys.entity.Role;
 import com.wt.mis.sys.service.RoleService;
@@ -38,7 +39,7 @@ public class SecurityUrlFilter implements FilterInvocationSecurityMetadataSource
         for(Menu menu : menuList){
 //            log.info("菜单路径："+menu.getHref());
 //            log.info("访问的路径："+requestUrl);
-            if(antPathMatcher.match(menu.getHref(),requestUrl)){
+            if(StringUtils.isNotEmpty(menu.getHref())&&antPathMatcher.match(menu.getHref(),requestUrl)){
                 log.info("匹配成功！");
                 List<Role> roleList = roleService.getAllRoleByMenuId(menu.getId());
                 if(roleList!=null){
