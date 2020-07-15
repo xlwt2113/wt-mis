@@ -26,8 +26,8 @@ public class FaultData extends BaseEntity {
     /**
     * 熔断器事件类型
     */
-    @Column(columnDefinition = " varchar(100) COMMENT '熔断器事件类型'")
-    private String eventType;
+    @Column(columnDefinition = " int COMMENT '熔断器事件类型'")
+    private Integer eventType;
     /**
     * 状态/接收数据组数
     */

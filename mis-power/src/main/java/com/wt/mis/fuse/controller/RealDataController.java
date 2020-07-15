@@ -37,11 +37,11 @@ public class RealDataController extends BaseController<RealData> {
     @Override
     protected String generateSearchSql(RealData realDate, HttpServletRequest request) {
         StringBuffer sql = new StringBuffer("select t1.*,t2.hub_name from fuse_real_data as t1 left join fuse_dev_hub as t2 on t1.hub_id = t2.id where t1.del = 0 ");
-        if (realDate.getHubId() != null) {
-            sql.append(" and t2.hub_name like  '%" + realDate.getHubId() + "%'");
+        if (StringUtils.isNotEmpty(request.getParameter("hubName"))) {
+            sql.append(" and t2.hub_name like '%" + request.getParameter("hubName") + "%'");
         }
-        if (StringUtils.isNotEmpty(realDate.getEventType())) {
-            sql.append(" and t1.event_type = '"+ realDate.getEventType() + "'");
+        if (StringUtils.isNotEmpty(request.getParameter("eventType"))) {
+            sql.append(" and t1.event_type = '"+ request.getParameter("eventType") + "'");
         }
         return sql.toString();
     }

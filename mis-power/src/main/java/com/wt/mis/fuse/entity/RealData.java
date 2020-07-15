@@ -26,8 +26,8 @@ public class RealData extends BaseEntity {
     /**
     * 熔断器事件类型
     */
-    @Column(columnDefinition = " varchar(100) COMMENT '熔断器事件类型'")
-    private String eventType;
+    @Column(columnDefinition = " int COMMENT '熔断器事件类型'")
+    private Integer eventType;
     /**
     * CT是否接入 0未接入 1接入
     */

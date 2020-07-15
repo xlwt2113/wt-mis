@@ -17,7 +17,7 @@
                     <div style="display: none"><input type="text" name="test" value=""></div>
                     <div class="layui-form-item">
                    <div class="layui-inline">
-                       <input type="text" name="hubId" autocomplete="off" class="layui-input" placeholder="汇集单元ID">
+                       <input type="text" name="hubName" autocomplete="off" class="layui-input" placeholder="汇集单元名称">
                    </div>
                    <div class="layui-inline">
                        <select name="eventType" autocomplete="off" class="layui-input" placeholder="熔断器事件类型">
@@ -84,8 +84,11 @@
             cols: [[
                 {type: "checkbox", width: 50, fixed: "left"},
                 {field: 'hub_name', width: 130, title: '汇集单元名称'},
+                {field: 'update_time', width: 150, title: '更新时间'},
                 {field: 'event_type', width: 140, title: '熔断器事件类型'},
-                {field: 'data_1', width: 120, title: 'CT是否接入'},
+                {field: 'data_1', width: 120, title: 'CT是否接入', templet:function (d) {
+                        return d.data_1 == 1 ? "<span class=\"layui-badge layui-bg-green\">CT接入</span>" : "<span class=\"layui-badge layui-bg-danger\">CT未接</span>";
+                    }},
                 {field: 'data_2', width: 150, title: '取电电压(V)'},
                 {field: 'data_3', width: 150, title: '超级电容电压(V)'},
                 {field: 'data_4', width: 150, title: '电池电压(V)'},
@@ -103,7 +106,7 @@
                     curr: 1  //重新加载后默认为第一页
                 }
                 , where: {
-                "hubId": data.field.hubId,
+                "hubName": data.field.hubName,
                 "eventType": data.field.eventType,
                  "test" : ""  //为了js不出错而加，
                 }
@@ -120,7 +123,7 @@
             table.reload('searchListTable',{
                 page: {curr: 1},
                 where: {
-                        "hubId": "",
+                        "hubName": "",
                         "eventType": "",
                         "test" : ""
                 }

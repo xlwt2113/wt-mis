@@ -37,11 +37,11 @@ public class FaultDataController extends BaseController<FaultData> {
     @Override
     protected String generateSearchSql(FaultData faultData, HttpServletRequest request) {
         StringBuffer sql = new StringBuffer("select t1.*,t2.hub_name from fuse_fault_data as t1 left join fuse_dev_hub as t2 on t1.hub_id = t2.id where t1.del = 0 ");
-        if (StringUtils.isNotEmpty(faultData.getHubId())) {
-            sql.append(" and t2.hub_name like '%" + faultData.getHubId() + "%'");
+        if (StringUtils.isNotEmpty(request.getParameter("hubName"))) {
+            sql.append(" and t2.hub_name like '%" + request.getParameter("hubName") + "%'");
         }
-        if (StringUtils.isNotEmpty(faultData.getEventType())) {
-            sql.append(" and t1.event_type = '" + faultData.getEventType() + "'");
+        if (StringUtils.isNotEmpty(request.getParameter("eventType"))) {
+            sql.append(" and t1.event_type = '" + request.getParameter("eventType") + "'");
         }
         return sql.toString();
     }
@@ -58,7 +58,7 @@ public class FaultDataController extends BaseController<FaultData> {
             HashMap<String, String> map = (HashMap) obj;
             String key = "";
             key = DictUtils.getDictItemKey("熔断器事件类型", String.valueOf(map.get("event_type")));
-            map.replace("event_type", key);
+            map.put("event_type_name", key);
         }
     }
 }
