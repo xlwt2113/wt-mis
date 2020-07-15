@@ -28,6 +28,13 @@
                        </select>
                    </div>
                         <div class="layui-inline">
+                            <input type="text" name="beginTime" id="beginTime" autocomplete="off" class="layui-input" placeholder="故障开始日期">
+                        </div>
+                        -
+                         <div class="layui-inline">
+                            <input type="text" name="endTime" id="endTime" autocomplete="off" class="layui-input" placeholder="故障结束日期">
+                        </div>
+                        <div class="layui-inline">
                             <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>查询</a>
                         </div>
                         <div class="layui-inline">
@@ -70,6 +77,9 @@
                 treeSelect = layui.treeSelect,
                 table = layui.table;
 
+        laydate.render({elem: '#beginTime'});
+        laydate.render({elem: '#endTime'});
+
         // 默认的操作地址
         var list_url = '/fuse/faultdata/list';
         var delete_url = '/fuse/faultdata/delete';
@@ -84,7 +94,7 @@
             cols: [[
                 {type: "checkbox", width: 50, fixed: "left"},
                 {field: 'hub_name', width: 150, title: '汇集单元名称'},
-                {field: 'update_time', width: 150, title: '故障发生时间'},
+                {field: 'update_time', width: 180, title: '故障发生时间'},
                 {field: 'event_type_name', width: 150, title: '熔断器事件类型'},
                 {field: 'data_1', width: 200, title: '状态/接收数据组数', templet:function (d) {
                         if(d.event_type==106||d.event_type==206||d.event_type==306){
@@ -122,8 +132,10 @@
                     curr: 1  //重新加载后默认为第一页
                 }
                 , where: {
-                "hubName": data.field.hubName,
-                "eventType": data.field.eventType,
+                    "hubName": data.field.hubName,
+                    "eventType": data.field.eventType,
+                    "beginTime": data.field.beginTime,
+                    "endTime": data.field.endTime,
                  "test" : ""  //为了js不出错而加，
                 }
             });
@@ -141,6 +153,8 @@
                 where: {
                         "hubName": "",
                         "eventType": "",
+                    "beginTime": "",
+                    "endTime": "",
                         "test" : ""
                 }
             });

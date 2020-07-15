@@ -28,6 +28,13 @@
                        </select>
                    </div>
                         <div class="layui-inline">
+                            <input type="text" name="beginTime" id="beginTime" autocomplete="off" class="layui-input" placeholder="更新开始日期">
+                        </div>
+                        -
+                        <div class="layui-inline">
+                            <input type="text" name="endTime" id="endTime" autocomplete="off" class="layui-input" placeholder="更新结束日期">
+                        </div>
+                        <div class="layui-inline">
                             <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>查询</a>
                         </div>
                         <div class="layui-inline">
@@ -70,6 +77,9 @@
                 treeSelect = layui.treeSelect,
                 table = layui.table;
 
+        laydate.render({elem: '#beginTime'});
+        laydate.render({elem: '#endTime'});
+
         // 默认的操作地址
         var list_url = '/fuse/realdata/list';
         var delete_url = '/fuse/realdata/delete';
@@ -84,7 +94,7 @@
             cols: [[
                 {type: "checkbox", width: 50, fixed: "left"},
                 {field: 'hub_name', width: 130, title: '汇集单元名称'},
-                {field: 'update_time', width: 150, title: '更新时间'},
+                {field: 'update_time', width: 180, title: '更新时间'},
                 {field: 'event_type', width: 140, title: '熔断器事件类型'},
                 {field: 'data_1', width: 120, title: 'CT是否接入', templet:function (d) {
                         return d.data_1 == 1 ? "<span class=\"layui-badge layui-bg-green\">CT接入</span>" : "<span class=\"layui-badge layui-bg-danger\">CT未接</span>";
@@ -108,6 +118,8 @@
                 , where: {
                 "hubName": data.field.hubName,
                 "eventType": data.field.eventType,
+                    "beginTime": data.field.beginTime,
+                    "endTime": data.field.endTime,
                  "test" : ""  //为了js不出错而加，
                 }
             });
@@ -125,6 +137,8 @@
                 where: {
                         "hubName": "",
                         "eventType": "",
+                    "beginTime": "",
+                    "endTime": "",
                         "test" : ""
                 }
             });

@@ -43,6 +43,14 @@ public class RealDataController extends BaseController<RealData> {
         if (StringUtils.isNotEmpty(request.getParameter("eventType"))) {
             sql.append(" and t1.event_type = '"+ request.getParameter("eventType") + "'");
         }
+        if(StringUtils.isNotEmpty(request.getParameter("beginTime"))){
+            String beginTime = request.getParameter("beginTime") + " 00:00:00";
+            sql.append(" and t1.update_time >= '"+beginTime+"'");
+        }
+        if(StringUtils.isNotEmpty(request.getParameter("endTime"))){
+            String endTime = request.getParameter("beginTime") + " 23:59:59";
+            sql.append(" and t1.update_time <= '"+endTime+"'");
+        }
         return sql.toString();
     }
 
