@@ -23,5 +23,6 @@ layui.config({
     wangEditor: 'wangEditor/wangEditor', // wangEditor富文本扩展
     treeTable: 'treeTable/treeTable', //树形表格（此为最新treeTable）
     treeSelect: 'treeSelect/treeSelect', //下拉树控件
+    selectM: 'select_ext/selectM', //多选
     notice: 'notice/notice'
 });

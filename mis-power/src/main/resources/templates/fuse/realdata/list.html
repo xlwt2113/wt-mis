@@ -17,15 +17,7 @@
                     <div style="display: none"><input type="text" name="test" value=""></div>
                     <div class="layui-form-item">
                    <div class="layui-inline">
-                       <input type="text" name="hubName" autocomplete="off" class="layui-input" placeholder="汇集单元名称">
-                   </div>
-                   <div class="layui-inline">
-                       <select name="eventType" autocomplete="off" class="layui-input" placeholder="熔断器事件类型">
-                           <option VALUE=""></option>
-                           <each th:each="item:${T(com.wt.mis.sys.util.DictUtils).getDictItems('熔断器事件类型')}">
-                               <option th:value="${item.itemValue}" th:text="${item.itemKey}"></option>
-                           </each>
-                       </select>
+                       <input type="text" name="hubName" autocomplete="off" class="layui-input" placeholder="汇集单元安装位置">
                    </div>
                         <div class="layui-inline">
                             <input type="text" name="beginTime" id="beginTime" autocomplete="off" class="layui-input" placeholder="更新开始日期">
@@ -34,6 +26,18 @@
                         <div class="layui-inline">
                             <input type="text" name="endTime" id="endTime" autocomplete="off" class="layui-input" placeholder="更新结束日期">
                         </div>
+                   <div class="layui-inline">
+<!--                       <select name="eventType" autocomplete="off" class="layui-input" multiple="multiple">-->
+<!--                           <option VALUE="">选择事件类型</option>-->
+<!--                           <each th:each="item:${T(com.wt.mis.sys.util.DictUtils).getDictItems('熔断器事件类型')}">-->
+<!--                               <if th:if="${item.itemValue == '105' || item.itemValue == '205' || item.itemValue == '305' }">-->
+<!--                               <option th:value="${item.itemValue}" th:text="${item.itemKey}"></option>-->
+<!--                               </if>-->
+<!--                           </each>-->
+<!--                       </select>-->
+
+                       <div id="eventTypes"></div>
+                   </div>
                         <div class="layui-inline">
                             <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>查询</a>
                         </div>
@@ -70,15 +74,28 @@
 
     // config.initQueryCondition();
 
-    layui.use(['form', 'table','laydate','treeSelect'], function () {
+    layui.use(['form', 'table','laydate','treeSelect','selectM'], function () {
         var $ = layui.jquery,
                 form = layui.form,
                 laydate = layui.laydate,
                 treeSelect = layui.treeSelect,
+                selectM = layui.selectM,
                 table = layui.table;
 
-        laydate.render({elem: '#beginTime'});
-        laydate.render({elem: '#endTime'});
+        laydate.render({elem: '#beginTime',type:"datetime"});
+        laydate.render({elem: '#endTime',type:"datetime"});
+
+        //多选标签-基本配置
+        var eventTypes = selectM({
+            //元素容器【必填】
+            elem: '#eventTypes'
+            //候选数据【必填】
+            // ,data: [{"id":"105","name":"A相定时上报"},{"id":"205","name":"B相定时上报"},{"id":"305","name":"C相定时上报"}]
+            ,data: "/fuse/realdata/event_types"
+            ,width:400
+            ,max:100
+            ,tips:"选择事件类型"
+        });
 
         // 默认的操作地址
         var list_url = '/fuse/realdata/list';
@@ -93,7 +110,8 @@
             //表格列
             cols: [[
                 {type: "checkbox", width: 50, fixed: "left"},
-                {field: 'hub_name', width: 130, title: '汇集单元名称'},
+                {field: 'hub_location', width: 150, title: '汇集单元安装位置'},
+                {field: 'hub_address', width: 150, title: '汇集单元地址'},
                 {field: 'update_time', width: 180, title: '更新时间'},
                 {field: 'event_type', width: 140, title: '熔断器事件类型'},
                 {field: 'data_1', width: 120, title: 'CT是否接入', templet:function (d) {
@@ -102,7 +120,7 @@
                 {field: 'data_2', width: 150, title: '取电电压(V)'},
                 {field: 'data_3', width: 150, title: '超级电容电压(V)'},
                 {field: 'data_4', width: 150, title: '电池电压(V)'},
-                {field: 'data_5', width: 150, title: '线路电压(kV)'},
+                {field: 'data_5', width: 150, title: '电场值'},
                 {field: 'data_6', width: 150, title: '线路电流(A)'}
                 // {title: '操作', width: 220, templet: '#currentTableBar', fixed: "right", align: "center"}
             ]]
@@ -117,7 +135,7 @@
                 }
                 , where: {
                 "hubName": data.field.hubName,
-                "eventType": data.field.eventType,
+                "eventTypes": eventTypes.values.join(","),
                     "beginTime": data.field.beginTime,
                     "endTime": data.field.endTime,
                  "test" : ""  //为了js不出错而加，
@@ -136,7 +154,7 @@
                 page: {curr: 1},
                 where: {
                         "hubName": "",
-                        "eventType": "",
+                        "eventTypes": "",
                     "beginTime": "",
                     "endTime": "",
                         "test" : ""

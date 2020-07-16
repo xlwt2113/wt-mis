@@ -23,9 +23,9 @@
 
 
         <div class="layui-form-item">
-            <label class="layui-form-label">名称</label>
+            <label class="layui-form-label">安装位置</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{hubName}" lay-verify="hubName" autocomplete="off" placeholder="请输入名称" class="layui-input">
+                        <input type="text" th:field="*{hubLocation}" lay-verify="hubLocation" autocomplete="off" placeholder="请输入安装位置" class="layui-input">
             </div>
         </div>
 
@@ -114,9 +114,9 @@
                         return '通讯地址必须由12位的数字或大写字母组成';
                     }
                 },
-                hubName:function (value) {
+                hubLocation:function (value) {
                     if (value == '') {
-                        return '必须输入名称';
+                        return '必须输入安装位置';
                     }
                 },
                 "test" :function(){}

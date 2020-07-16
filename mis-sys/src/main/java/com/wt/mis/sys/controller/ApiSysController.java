@@ -4,12 +4,18 @@ import com.wt.mis.core.repository.BaseRepository;
 import com.wt.mis.core.util.LoginUser;
 import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.sys.entity.Dep;
+import com.wt.mis.sys.entity.Dict;
+import com.wt.mis.sys.entity.DictItem;
 import com.wt.mis.sys.entity.Menu;
 import com.wt.mis.sys.repository.DepRespository;
+import com.wt.mis.sys.repository.DictItemRepository;
+import com.wt.mis.sys.repository.DictRepository;
 import com.wt.mis.sys.repository.MenuRepository;
 import io.swagger.annotations.ApiOperation;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,6 +39,53 @@ public class ApiSysController {
 
     @Autowired
     MenuRepository menuRepository;
+
+    @Autowired
+    DictRepository dictRepository;
+
+    @Autowired
+    DictItemRepository dictItemRepository;
+
+
+    @ApiOperation("获取字典项目的json数据")
+    @RequestMapping("/dict_json/{dictName}")
+    public List<Node> dictJson(@PathVariable String dictName){
+        Dict dict = dictRepository.getFirstByDictNameAndDel(dictName,0);
+        List<DictItem> list = dictItemRepository.getAllByDictAndDel(dict,0);
+        List nodeList = new ArrayList();
+        for(DictItem item:list){
+            Node node = new Node(item.getItemValue(),item.getItemKey());
+            nodeList.add(node);
+        }
+        return nodeList;
+    }
+
+    class Node{
+        private String id;
+        private String name;
+
+        Node(String id ,String name){
+            this.id = id;
+            this.name = name;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
 
     @ApiOperation("获取JSON格式的机构树")
     @RequestMapping("/dep_tree_json")

@@ -51,8 +51,8 @@ public class RealData extends BaseEntity {
     /**
     * 线路电压(kV)
     */
-    @Column(columnDefinition = " double COMMENT '线路电压(kV)'",name = "data_5")
-    private Double data5;
+    @Column(columnDefinition = " int COMMENT '线路电压(kV)'",name = "data_5")
+    private int data5;
     /**
     * 线路电流(A)
     */

@@ -26,8 +26,8 @@ public class DevHub extends BaseEntity {
     /**
     * 名称
     */
-    @Column(columnDefinition = " varchar(100) COMMENT '名称'")
-    private String hubName;
+    @Column(columnDefinition = " varchar(100) COMMENT '安装位置'")
+    private String hubLocation;
     /**
     * 是否在线
     */
