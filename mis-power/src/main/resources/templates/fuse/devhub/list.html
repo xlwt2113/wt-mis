@@ -17,10 +17,10 @@
                     <div style="display: none"><input type="text" name="test" value=""></div>
                     <div class="layui-form-item">
                    <div class="layui-inline">
-                       <input type="text" name="hubAddress" autocomplete="off" class="layui-input" placeholder="通信地址">
+                       <input type="text" name="hubAddress" autocomplete="off" class="layui-input" placeholder="汇集单元地址">
                    </div>
                    <div class="layui-inline">
-                       <input type="text" name="hubName" autocomplete="off" class="layui-input" placeholder="汇集单元名称">
+                       <input type="text" name="hubName" autocomplete="off" class="layui-input" placeholder="汇集单元安装位置">
                    </div>
                         <div class="layui-inline">
                             <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>查询</a>
@@ -78,8 +78,8 @@
             //表格列
             cols: [[
                 {type: "checkbox", width: 50, fixed: "left"},
-                {field: 'hub_address', width: 180, title: '通信地址'},
-                {field: 'hub_location', width: 120, title: '安装位置'},
+                {field: 'hub_address', width: 180, title: '汇集单元地址'},
+                {field: 'hub_location', width: 180, title: '汇集单元安装位置'},
                 {field: 'fuse_a_address', width: 150, title: 'A相熔断器地址'},
                 {field: 'fuse_a_name', width: 150, title: 'A相熔断器名称'},
                 {field: 'fuse_b_address', width: 150, title: 'B相熔断器地址'},

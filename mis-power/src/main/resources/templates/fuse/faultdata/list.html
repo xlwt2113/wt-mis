@@ -135,7 +135,13 @@
                         if(101<=d.event_type<=104||201<=d.event_type<=204||301<=d.event_type<=304){
                             return "";
                         }else{
-                            return d.data_5 == 1 ? "<span class=\"layui-badge layui-bg-green\">CT接入</span>" : "<span class=\"layui-badge layui-bg-danger\">CT未接</span>";
+                            if(d.data_5 == 1){
+                                return "<span class=\"layui-badge layui-bg-green\">CT接入</span>";
+                            }else  if(d.data_5 == 0){
+                                return "<span class=\"layui-badge layui-bg-danger\">CT未接</span>";
+                            }else{
+                                return "";
+                            }
                         }
                     }},
                 {field: 'data_6', width: 200, title: '取电电压(V)'},

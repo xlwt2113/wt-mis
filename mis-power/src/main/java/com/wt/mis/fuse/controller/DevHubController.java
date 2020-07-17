@@ -38,7 +38,7 @@ public class DevHubController extends BaseController<DevHub> {
             sql.append(" and t1.hub_address like '%" + devHub.getHubAddress() + "%'");
         }
         if (StringUtils.isNotEmpty(request.getParameter("hubName"))) {
-            sql.append(" and t1.hub_name like '%" + request.getParameter("hubName") + "%'");
+            sql.append(" and t1.hub_location like '%" + request.getParameter("hubName") + "%'");
         }
         return sql.toString();
     }

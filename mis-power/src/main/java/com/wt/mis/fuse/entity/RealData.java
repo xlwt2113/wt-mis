@@ -32,7 +32,7 @@ public class RealData extends BaseEntity {
     * CT是否接入 0未接入 1接入
     */
     @Column(columnDefinition = " int COMMENT 'CT是否接入 0未接入 1接入'",name = "data_1")
-    private int data1;
+    private Integer data1;
     /**
     * 取电电压(V)
     */

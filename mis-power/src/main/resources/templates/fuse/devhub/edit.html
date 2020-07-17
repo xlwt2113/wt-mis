@@ -17,7 +17,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">通信地址</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{hubAddress}" lay-verify="hubAddress" autocomplete="off" placeholder="请输入通信地址" class="layui-input">
+                        <input type="text" th:field="*{hubAddress}" lay-verify="hubAddress" autocomplete="off" placeholder="请输入汇集单元地址" class="layui-input">
             </div>
         </div>
 
@@ -25,7 +25,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">安装位置</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{hubLocation}" lay-verify="hubLocation" autocomplete="off" placeholder="请输入安装位置" class="layui-input">
+                        <input type="text" th:field="*{hubLocation}" lay-verify="hubLocation" autocomplete="off" placeholder="请输入汇集单元安装位置" class="layui-input">
             </div>
         </div>
 
@@ -108,7 +108,7 @@
                 hubAddress:function (value) {
                     var pattern = /^[A-Z0-9]{12}$/;
                     if(value == ''){
-                        return '必须输入通讯地址';
+                        return '必须输入汇集单元地址';
                     }
                     if (!pattern.test(value)) {
                         return '通讯地址必须由12位的数字或大写字母组成';
@@ -116,7 +116,7 @@
                 },
                 hubLocation:function (value) {
                     if (value == '') {
-                        return '必须输入安装位置';
+                        return '必须输入汇集单元安装位置';
                     }
                 },
                 "test" :function(){}

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -19,7 +20,16 @@ import java.util.List;
 public class LoginUser {
 
     @Autowired
-    private static SearchService searchService;
+    private SearchService searchService;
+
+    public static LoginUser loginUser;
+
+
+    @PostConstruct
+    public void init() {
+        loginUser = this;
+        loginUser.searchService = searchService;
+    }
 
     /**
      * 获取当前登陆用户
@@ -36,14 +46,20 @@ public class LoginUser {
 
     /**
      * 根据菜单判断当前用户是否有权限
-     * @param menu
+     * @param urlOrMenuName 菜单地址或菜单名称
+     * @param optName 功能操作名
      * @return
      */
-    public static boolean hasRole(String menu){
-        //SELECT * FROM sys_role_menu t1 LEFT JOIN sys_menu t2 ON t1.menu_id = t2.id LEFT JOIN sys_role_account t3 ON t1.role_id = t3.role_id
-        //WHERE t2.href = '/sys/account/list' AND t3.account_id = 91
-        String sql = "select * from sys_account";
-        List list = searchService.findAllBySql(sql);
+    public static boolean hasRole(String urlOrMenuName ,String optName){
+        HttpServletRequest request =((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        Account account = (Account) request.getSession().getAttribute("loginUser");
+        String sql = "SELECT t1.* from " +
+                " sys_role_menu t1" +
+                " LEFT JOIN ( SELECT * FROM sys_menu WHERE par_id = ( SELECT id FROM sys_menu  WHERE href = '"+urlOrMenuName+"' or title = '"+urlOrMenuName+"' ) ) t2 ON t1.menu_id = t2.id" +
+                " LEFT JOIN sys_role_account t3 ON t1.role_id = t3.role_id " +
+                " WHERE" +
+                " t2.href = '"+optName+"' AND t3.account_id = " + account.getId();
+        List list = loginUser.searchService.findAllBySql(sql);
         if(list.isEmpty()){
             return false;
         }

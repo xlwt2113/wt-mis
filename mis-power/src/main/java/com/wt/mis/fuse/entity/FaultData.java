@@ -52,7 +52,7 @@ public class FaultData extends BaseEntity {
     * CT是否接入
     */
     @Column(columnDefinition = " double COMMENT 'CT是否接入'",name = "data_5")
-    private Double data5;
+    private Integer data5;
     /**
     * 取电电压(V)
     */
