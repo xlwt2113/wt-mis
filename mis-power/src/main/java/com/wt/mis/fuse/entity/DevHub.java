@@ -19,9 +19,9 @@ import java.util.Date;
 public class DevHub extends BaseEntity {
 
     /**
-    * 通信地址
+    * 汇集单元地址
     */
-    @Column(columnDefinition = " varchar(100) COMMENT '通信地址'")
+    @Column(columnDefinition = " varchar(100) COMMENT '汇集单元地址'")
     private String hubAddress;
     /**
     * 名称

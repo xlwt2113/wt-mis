@@ -28,6 +28,9 @@
                         <div class="layui-inline">
                             <a class="layui-btn layui-btn-warm data-reset-btn" lay-button=""><i class="layui-icon">&#xe666;</i>重置</a>
                         </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-normal data-import-btn" id="importBtn"><i class="layui-icon">&#xe67c;</i>导入Excel</a>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -58,11 +61,12 @@
 
     // config.initQueryCondition();
 
-    layui.use(['form', 'table','laydate','treeSelect'], function () {
+    layui.use(['form', 'table','laydate','treeSelect', 'upload'], function () {
         var $ = layui.jquery,
                 form = layui.form,
                 laydate = layui.laydate,
                 treeSelect = layui.treeSelect,
+            upload = layui.upload,
                 table = layui.table;
 
         // 默认的操作地址
@@ -71,6 +75,34 @@
         var add_page_url = '/fuse/devhub/add';
         var edit_page_url = '/fuse/devhub/edit';
         var view_page_url = '/fuse/devhub/view';
+        var import_page_url = '/fuse/devhub/import';
+
+        //上传文件
+        var uploadFileId = upload.render({
+            elem: '#importBtn' //绑定元素
+            , url: import_page_url //上传接口
+            , multiple: false //多选
+            , accept: 'file' //允许上传的文件类型
+            //,size: 50 //最大允许上传的文件大小
+            , done: function (res) {
+                if (res.code == 200) {
+                    if(res.data.length>0){
+                        var msg = "";
+                        for(var i=0;i<res.data.length;i++){
+                            msg = msg + res.data[i] + "<br>";
+                        }
+                        layer.open({
+                            title: '导入失败'
+                            ,content: msg
+                        });
+                    }else{
+                        layer.msg("导入完毕,请点击查询按钮加载导入数据！");
+                    }
+                }else if(res.code == 403){
+                    layer.msg(res.message);
+                }
+            }
+        });
 
 
         table.render($.extend(config.searchListTable, {
@@ -81,11 +113,11 @@
                 {field: 'hub_address', width: 180, title: '汇集单元地址'},
                 {field: 'hub_location', width: 180, title: '汇集单元安装位置'},
                 {field: 'fuse_a_address', width: 150, title: 'A相熔断器地址'},
-                {field: 'fuse_a_name', width: 150, title: 'A相熔断器名称'},
+                // {field: 'fuse_a_name', width: 150, title: 'A相熔断器名称'},
                 {field: 'fuse_b_address', width: 150, title: 'B相熔断器地址'},
-                {field: 'fuse_b_name', width: 150, title: 'B相熔断器名称'},
+                // {field: 'fuse_b_name', width: 150, title: 'B相熔断器名称'},
                 {field: 'fuse_c_address', width: 150, title: 'C相熔断器地址'},
-                {field: 'fuse_c_name', width: 150, title: 'C相熔断器名称'},
+                // {field: 'fuse_c_name', width: 150, title: 'C相熔断器名称'},
                 {title: '操作', width: 220, templet: '#currentTableBar', fixed: "right", align: "center"}
             ]]
         }));
