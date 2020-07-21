@@ -105,7 +105,7 @@ public class RealDataController extends BaseController<RealData> {
             sql.append(" and t1.update_time >= '"+beginTime+"'");
         }
         if(StringUtils.isNotEmpty(request.getParameter("endTime"))){
-            String endTime = request.getParameter("beginTime");
+            String endTime = request.getParameter("endTime");
             sql.append(" and t1.update_time <= '"+endTime+"'");
         }
         return sql.toString();
