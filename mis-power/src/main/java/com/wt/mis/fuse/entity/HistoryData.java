@@ -1,22 +1,18 @@
 package com.wt.mis.fuse.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wt.mis.core.entity.BaseEntity;
-import com.wt.mis.core.util.FileUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "fuse_real_data")
+@Table(name = "fuse_history_data")
 @EqualsAndHashCode(callSuper = true)
-public class RealData extends BaseEntity {
+public class HistoryData extends BaseEntity {
 
     /**
     * 汇集单元ID

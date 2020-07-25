@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title th:replace="common/base::pagetitle"></title>
+    <link th:replace="common/base::static"/>
+</head>
+<body>
+<div style="padding-bottom: 25px">
+<form class="layui-form layui-form-pane" id="searchForm">
+    <input type="hidden" name="hubId" id="hubId" th:value="${search.hubId}">
+    <input type="hidden" name="dataType" id="dataType" th:value="${search.dataType}">
+    <div class="layui-inline">
+        <input type="text" name="beginTime" id="beginTime" autocomplete="off" class="layui-input" placeholder="更新开始日期" th:value="${beginTime}">
+    </div>
+    -
+    <div class="layui-inline">
+        <input type="text" name="endTime" id="endTime" autocomplete="off" class="layui-input" placeholder="更新结束日期" th:value="${endTime}">
+    </div>
+    <div class="layui-inline">
+        <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>查询</a>
+    </div>
+</form>
+</div>
+
+<div class="layui-tab layui-tab-card">
+    <ul class="layui-tab-title">
+        <li class="layui-this"><i class="layui-icon">&#xe62c;</i>  历史曲线图</li>
+        <li><i class="layui-icon">&#xe62d;</i>  历史数据表</li>
+    </ul>
+    <div class="layui-tab-content" style="height: 100%;">
+        <div class="layui-tab-item layui-show">
+            <div id="echarts-records" style="width: 100%;min-height:500px"></div>
+        </div>
+        <div class="layui-tab-item">
+            <table class="layui-hide" id="searchListTable2" lay-filter="searchListTable2"></table>
+        </div>
+    </div>
+</div>
+
+<script th:replace="common/base::mianJs"></script>
+<script th:inline="none">
+
+    layui.use(['form', 'table','laydate','echarts','element'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            element = layui.element,
+            laydate = layui.laydate,
+            echarts = layui.echarts;
+            table = layui.table;
+
+        var list_current_power_url = '/fuse/realdata/history_list?hubId='+$('#hubId').val()+'&dataType='+$('#dataType').val();
+
+
+        laydate.render({elem: '#beginTime',type:"datetime"});
+        laydate.render({elem: '#endTime',type:"datetime"});
+
+        //当前停电设备列表
+        table.render({
+            area: ['100%', '100%'], //设置窗口宽高
+            toolbar: '#TopTableBar',  //顶部工具栏的默认ID
+            page: false,
+            method:'post', //设置提交方式为post
+            elem: '#searchListTable2',  //默认的查询列表页面中table的ID
+            url: list_current_power_url,
+            cols: [[
+                {field: 'hub_location', width: 150, title: '汇集单元安装位置'},
+                {field: 'hub_address', width: 150, title: '汇集单元地址'},
+                {field: 'update_time', width: 180, title: '更新时间'},
+                {field: 'data_type_name', width: 140, title: '熔断器数据类型'},
+                {field: 'data_5', width: 150, title: '电场值'},
+                {field: 'data_6', width: 150, title: '线路电流(A)'}
+            ]],
+            response: {
+                statusCode: 200 //规定成功的状态码，原框架默认：0
+            },
+            //将返回的列表数据格式化成layui的格式
+            parseData: function (res) { //res 即为原始返回的数据
+                //console.log(res);
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.message, //解析提示文本
+                    "data": res.data //解析数据列表
+                };
+            },
+            done: function (res, curr, count) {
+                var chartTimes = [];
+                var chartLineData5 = [];
+                var chartLineData6 = [];
+                if(res.data != null){
+                    //console.log(res.data.length);
+                    for(let i = 0 ;i<res.data.length;i++){
+                        chartTimes[i] = res.data[i].update_time;
+                        chartLineData5[i] = res.data[i].data_5;
+                        chartLineData6[i] = res.data[i].data_6;
+                    }
+                }
+                /**
+                 * 报表功能
+                 */
+                var echartsRecords = echarts.init(document.getElementById('echarts-records'), 'walden');
+                var optionRecords = {
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data:['电场','电流']
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    toolbox: {
+                        feature: {
+                            saveAsImage: {}
+                        }
+                    },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: chartTimes
+                    },
+                    yAxis: {
+                        type: 'value'
+                        // min: 150,
+                        // max: 250
+                    },
+                    series: [
+                        {
+                            name:'电场',
+                            type:'line',
+                            data: chartLineData5
+                        },
+                        {
+                            name:'电流',
+                            type:'line',
+                            data: chartLineData6
+                        }
+                    ]
+                };
+                echartsRecords.setOption(optionRecords);
+            }
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            table.reload('searchListTable2', {
+                page: false,
+                where: {
+                    "hubId": data.field.hubId,
+                    "dataType": data.field.dataType,
+                    "beginTime": data.field.beginTime,
+                    "endTime": data.field.endTime,
+                    "test" : ""  //为了js不出错而加，
+                }
+            });
+            return false;
+        });
+
+
+        // echarts 窗口缩放自适应
+        window.onresize = function(){
+            echartsRecords.resize();
+        }
+
+
+    });
+
+</script>
+
+</body>
+</html>

@@ -112,6 +112,13 @@
                 {type: "checkbox", width: 50, fixed: "left"},
                 {field: 'hub_address', width: 180, title: '汇集单元地址'},
                 {field: 'hub_location', width: 180, title: '汇集单元安装位置'},
+                {field: 'online_status', width: 120, title: '是否在线', templet:function (d) {
+                        if(d.online_status == 0){
+                            return "<span class=\"layui-badge layui-bg-green\">在线</span>";
+                        }else  if(d.online_status == 1){
+                            return "<span class=\"layui-badge layui-bg-danger\">不在线</span>";
+                        }
+                    }},
                 {field: 'fuse_a_address', width: 150, title: 'A相熔断器地址'},
                 // {field: 'fuse_a_name', width: 150, title: 'A相熔断器名称'},
                 {field: 'fuse_b_address', width: 150, title: 'B相熔断器地址'},

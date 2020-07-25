@@ -119,9 +119,9 @@
                             return d.data_1;
                         }else if(101<=d.event_type<=104||201<=d.event_type<=204||301<=d.event_type<=304){
                             if(d.data_1==0){
-                                return "<span class=\"layui-badge layui-bg-danger\">正常</span>";
+                                return "<span class=\"layui-badge layui-bg-green\">正常</span>";
                             }else if(d.data_1==1){
-                                return "<span class=\"layui-badge layui-bg-green\">异常</span>";
+                                return "<span class=\"layui-badge layui-bg-danger\">异常</span>";
                             }
                         }else{
                             return "";
