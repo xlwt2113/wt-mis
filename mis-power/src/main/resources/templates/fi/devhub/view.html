@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title th:replace="common/base::pagetitle"></title>
+    <link th:replace="common/base::static"/>
+</head>
+<body>
+<form class="layui-form" action="" th:object="${model}">
+    <input type="hidden" th:field="*{id}"> <!--此处必须有业务主键的id-->
+
+    <table class="layui-table">
+        <colgroup>
+            <col width="80">
+            <col width="100">
+            <col width="80">
+            <col width="100">
+            <col>
+        </colgroup>
+        <tbody>
+        <tr>
+            <th class="layui-bg-gray">终端地址</th>
+            <td th:text="*{hubTermaddr}"></td>
+            <th class="layui-bg-gray">安装位置</th>
+            <td th:text="*{hubLocation}"></td>
+        </tr>
+        <tr>
+            <th class="layui-bg-gray">是否在线</th>
+            <td th:text="*{onlineStatusName}"></td>
+            <th class="layui-bg-gray">上级节点</th>
+            <td th:text="${parentName}"></td>
+        </tr>
+        <tr>
+            <th class="layui-bg-gray">1号测温模块地址</th>
+            <td th:text="*{thermometry1}"></td>
+            <th class="layui-bg-gray">2号测温模块地址</th>
+            <td th:text="*{thermometry2}"></td>
+        </tr>
+        <tr>
+            <th class="layui-bg-gray">3号测温模块地址</th>
+            <td th:text="*{thermometry3}"></td>
+            <th class="layui-bg-gray">4号测温模块地址</th>
+            <td th:text="*{thermometry4}"></td>
+        </tr>
+        <tr>
+            <th class="layui-bg-gray">5号测温模块地址</th>
+            <td th:text="*{thermometry5}"></td>
+            <th class="layui-bg-gray">6号测温模块地址</th>
+            <td th:text="*{thermometry6}"></td>
+        </tr>
+        <tr>
+            <th class="layui-bg-gray">7号测温模块地址</th>
+            <td th:text="*{thermometry7}"></td>
+            <th class="layui-bg-gray">8号测温模块地址</th>
+            <td th:text="*{thermometry8}"></td>
+        </tr>
+        <tr>
+            <th class="layui-bg-gray">9号测温模块地址</th>
+            <td th:text="*{thermometry9}"></td>
+            <th class="layui-bg-gray">10号测温模块地址</th>
+            <td th:text="*{thermometry10}"></td>
+        </tr>
+        <tr>
+            <th class="layui-bg-gray">11号测温模块地址</th>
+            <td th:text="*{thermometry11}"></td>
+            <th class="layui-bg-gray">12号测温模块地址</th>
+            <td th:text="*{thermometry12}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+</form>
+</body>
+</html>

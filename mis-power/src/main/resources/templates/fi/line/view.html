@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title th:replace="common/base::pagetitle"></title>
+    <link th:replace="common/base::static"/>
+</head>
+<body>
+<form class="layui-form" action="" th:object="${model}">
+    <input type="hidden" th:field="*{id}"> <!--此处必须有业务主键的id-->
+
+    <table class="layui-table">
+        <colgroup>
+            <col width="15%">
+            <col>
+        </colgroup>
+        <tbody>
+        <tr>
+            <th class="layui-bg-gray">线路名称</th>
+            <td th:text="*{lineName}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+</form>
+</body>
+</html>

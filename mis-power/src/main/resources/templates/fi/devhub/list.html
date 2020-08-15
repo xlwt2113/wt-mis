@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title th:replace="common/base::pagetitle"></title>
+    <link th:replace="common/base::static"/>
+</head>
+<body>
+
+
+<div class="layui-fluid">
+    <div class="layui-row">
+        <div class="layui-col-sm3">
+            <div class="layuimini-container">
+                <div class="layuimini-main">
+
+                <div class="layui-card">
+                    <div class="layui-card-header">设备树</div>
+                        <div id="test1" class="demo-tree demo-tree-box"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm9">
+            <div class="layuimini-container">
+                <div class="layuimini-main">
+
+                    <div class="layui-card">
+                        <div class="layui-card-header">设备信息</div>
+                        <div class="layui-card-body" id="devInfo" style="height:360px">
+                        </div>
+                    </div>
+
+
+
+                    <fieldset class="layui-elem-field layuimini-search">
+                        <div style="margin: 10px 10px 10px 10px">
+                                <div class="layui-form-item">
+                                    <button class="layui-btn data-add-btn layui-btn-sm" id="addBtn" style="display: none"><i class="layui-icon">&#xe654;</i>添加下级</button>
+                                    <button class="layui-btn layui-btn-normal layui-btn-sm" id="editBtn" style="display: none"><i class="layui-icon">&#xe642;</i>修改</button>
+                                    <button class="layui-btn layui-btn-danger data-delete-btn layui-btn-sm" id="deleteBtn" style="display: none"><i class="layui-icon">&#xe640;</i>删除</button>
+                                </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script th:replace="common/base::mianJs"></script>
+<script th:inline="none">
+
+    // config.initQueryCondition();
+
+    var delete_url = '/fi/devhub/delete';
+    var add_page_url = '/fi/devhub/add';
+    var edit_page_url = '/fi/devhub/edit';
+
+    layui.use(['form', 'table','laydate','treeSelect','tree'], function () {
+        var $ = layui.jquery,
+                form = layui.form,
+                tree = layui.tree,
+                laydate = layui.laydate,
+                treeSelect = layui.treeSelect,
+                table = layui.table;
+
+
+        init_tree(tree);
+
+        $("#addBtn").on('click', function () {
+            config.add(add_page_url);
+        });
+
+        $("#editBtn").on('click', function () {
+            config.add(edit_page_url,{title: '修改'});
+        });
+
+        $("#deleteBtn").on('click', function () {
+            layer.confirm('真的删除该设备吗？', {icon:3},function (index) {
+                layer.close(index); //先执行关闭，避免重复点击按钮
+                $.get(delete_url , function (result) {
+                    let r = JSON.parse(result);
+                    if(r.code == 200){
+                        // obj.del();
+                        layer.msg(r.message);
+                        document.location.reload();
+                    }
+                    layer.msg(r.message);
+                })
+            });
+        });
+
+
+
+    });
+
+    function init_tree(tree){
+        $.getJSON('/fi/devhub/tree',function(data){
+            //常规用法
+            tree.render({
+                elem: '#test1' //默认是点击节点可进行收缩
+                ,data: data
+                ,id:'tree1'
+                ,onlyIconControl:true
+                ,click: function(obj){
+                    var temp_delete_url = '/fi/devhub/delete';
+                    var temp_add_page_url = '/fi/devhub/add';
+                    var temp_edit_page_url = '/fi/devhub/edit';
+
+                    // layer.msg(JSON.stringify(obj.data));
+                    if(obj.data.type == 'line'){
+                        $('#devInfo').load('/fi/line/view?id='+obj.data.id);
+                        $('#addBtn').show();
+                        $('#editBtn').hide();
+                        $('#deleteBtn').hide();
+                        add_page_url = temp_add_page_url +'?parentId=0&lineId='+obj.data.id;
+                    }else{
+                        $('#devInfo').load('/fi/devhub/view?id='+obj.data.id);
+                        $('#addBtn').show();
+                        $('#editBtn').show();
+                        $('#deleteBtn').show();
+                        delete_url = temp_delete_url + "?id="+obj.data.id;
+                        add_page_url = temp_add_page_url +'?parentId='+obj.data.id;
+                        edit_page_url = temp_edit_page_url +  '?id='+obj.data.id;
+                    }
+                }
+            });
+        });
+    }
+</script>
+
+</body>
+</html>
