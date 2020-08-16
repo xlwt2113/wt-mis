@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title th:replace="common/base::pagetitle"></title>
+    <link th:replace="common/base::static"/>
+</head>
+<body>
+<form class="layui-form" action="" >
+    <input type="hidden" id="devId" th:value="${devId}">
+    <div class="layui-tab layui-tab-card">
+        <ul class="layui-tab-title">
+            <li class="layui-this">遥测实时数据</li>
+            <li>遥测历史数据</li>
+            <li>遥信实时数据</li>
+            <li>遥信历史数据</li>
+        </ul>
+        <div class="layui-tab-content" style="height: 100%;">
+            <div class="layui-tab-item layui-show" ><table class="layui-hide" id="realYcListTable" lay-filter="realYcListTable"></table></div>
+            <div class="layui-tab-item"><table class="layui-hide" id="historyYcListTable" lay-filter="historyYcListTable"></table></div>
+            <div class="layui-tab-item"><table class="layui-hide" id="realYxListTable" lay-filter="realYxListTable"></table></div>
+            <div class="layui-tab-item"><table class="layui-hide" id="historyYxListTable" lay-filter="historyYxListTable"></table></div>
+        </div>
+    </div>
+
+</form>
+
+<script type="text/html" id="yxStatus">
+    {{#  if(d.yx_value == 0){ }}
+    <font color="green">分</font>
+    {{#  } else if(d.yx_value == 1) { }}
+    <font color="red">合</font>
+    {{#  } else { }}
+    <font color="yellow">不确定</font>
+    {{#  } }}
+</script>
+
+<script th:replace="common/base::mianJs"></script>
+<script th:inline="none">
+
+    var hubId = $('#devId').val();
+    var real_rc_list_url = '/fi/ycreal/list?hubId='+hubId;
+    var history_rc_list_url = '/fi/ychistory/list?hubId='+hubId;
+    var real_rx_list_url = '/fi/yxreal/list?hubId='+hubId;
+    var history_rx_list_url = '/fi/yxhistory/list?hubId='+hubId;
+
+
+    layui.use(['form', 'table','laydate','element'], function(){
+        var $ = layui.jquery
+        ,table = layui.table
+            ,element = layui.element; //Tab的切换功能，切换事件监听等，需要依赖element模块
+
+
+        table.render($.extend(config.searchListTable, {
+            elem: '#realYcListTable',  //默认的查询列表页面中table的ID
+            url: real_rc_list_url,
+            //表格列
+            cols: [[
+                // {type: "checkbox", width: 50, fixed: "left"},
+                {field: 'hub_location', width: 200, title: '汇集单元'},
+                {field: 'update_time', width: 200, title: '更新时间'},
+                {field: 'infor_addr_name', width: 200, title: '遥测名称'},
+                {field: 'infor_addr', width: 200, title: '信息体地址(H)'},
+                {field: 'yc_value', width: 200, title: '遥测值'},
+            ]]
+        }));
+
+        table.render($.extend(config.searchListTable, {
+            elem: '#historyYcListTable',  //默认的查询列表页面中table的ID
+            url: history_rc_list_url,
+            //表格列
+            cols: [[
+                // {type: "checkbox", width: 50, fixed: "left"},
+                {field: 'hub_location', width: 200, title: '汇集单元'},
+                {field: 'update_time', width: 200, title: '更新时间'},
+                {field: 'infor_addr_name', width: 200, title: '遥测名称'},
+                {field: 'infor_addr', width: 200, title: '信息体地址(H)'},
+                {field: 'yc_value', width: 200, title: '遥测值'},
+            ]]
+        }));
+
+        table.render($.extend(config.searchListTable, {
+            elem: '#realYxListTable',  //默认的查询列表页面中table的ID
+            url: real_rx_list_url,
+            //表格列
+            cols: [[
+                // {type: "checkbox", width: 50, fixed: "left"},
+                {field: 'hub_location', width: 200, title: '汇集单元'},
+                {field: 'update_time', width: 200, title: '更新时间'},
+                {field: 'infor_addr_name', width: 200, title: '遥测名称'},
+                {field: 'infor_addr', width: 200, title: '信息体地址(H)'},
+                {field: 'yx_value', width: 200, title: '遥信状态',templet: '#yxStatus'},
+            ]]
+        }));
+
+        table.render($.extend(config.searchListTable, {
+            elem: '#historyYxListTable',  //默认的查询列表页面中table的ID
+            url: history_rx_list_url,
+            //表格列
+            cols: [[
+                // {type: "checkbox", width: 50, fixed: "left"},
+                {field: 'hub_location', width: 200, title: '汇集单元'},
+                {field: 'update_time', width: 200, title: '更新时间'},
+                {field: 'infor_addr_name', width: 200, title: '遥测名称'},
+                {field: 'infor_addr', width: 200, title: '信息体地址(H)'},
+                {field: 'yx_value', width: 200, title: '遥信状态',templet: '#yxStatus'},
+            ]]
+        }));
+    });
+
+</script>
+</body>
+</html>

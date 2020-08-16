@@ -87,7 +87,17 @@ public class FiTopologyController {
     }
 
 
-
+    /**
+     * 根据设备ID及类型查看设备的信息
+     * @param devId
+     * @return
+     */
+    @GetMapping("/dev_info/{devId}")
+    public ModelAndView devInfoView(@PathVariable Long devId){
+        ModelAndView mv = new ModelAndView(this.getUrlPrefix() + "/dev_info");
+        mv.addObject("devId",devId);
+        return mv;
+    }
 
     /**
      * 获取台区下面的拓扑信息
