@@ -1,6 +1,7 @@
 package com.wt.mis.fi.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wt.mis.core.entity.BaseEntity;
 import com.wt.mis.core.util.FileUtil;
 import lombok.Data;
@@ -16,8 +17,13 @@ import java.util.Date;
 @Entity
 @Table(name = "fi_dev_hub")
 @EqualsAndHashCode(callSuper = true)
+@JsonIgnoreProperties(value = { "hibernateLazyInitializer"})
 public class FiDevHub extends BaseEntity {
 
+
+    FiDevHub(){
+
+    }
     /**
     * 终端地址
     */

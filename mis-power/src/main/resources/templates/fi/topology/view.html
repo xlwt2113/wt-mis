@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title th:replace="common/base::pagetitle"></title>
+    <link th:replace="common/base::static"/>
+    <script th:replace="common/base::mianJs"></script>
+    <script th:src="@{/js/jtopo-0.4.8-min.js}" charset="utf-8"></script>
+    <script th:src="@{/js/toolbar.js}" charset="utf-8"></script>
+</head>
+<body style="background-color: #FFFFFF">
+
+<!--工具栏-->
+<div style="margin: 10px 10px 10px 10px">
+    <form class="layui-form layui-form-pane" id="searchForm">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <button type="button" class="layui-btn layui-btn-sm" id="zoomOutButton">
+                    <i class="layui-icon">&#xe654;</i>
+                </button>
+                <button type="button" class="layui-btn layui-btn-sm" id="zoomInButton">
+                    <i class="layui-icon">&#xe67e;</i>
+                </button>
+                <button type="button" class="layui-btn layui-btn-sm" id="centerButton">居中</button>
+            </div>
+            <div class="layui-inline">
+                <input type="checkbox" id="zoomCheckbox" title="鼠标缩放" lay-filter="zoomCheckbox">
+            </div>
+            <div class="layui-inline">
+                <input type="text" name="findText" id="findText" autocomplete="off" class="layui-input" placeholder="输入节点设备名称">
+            </div>
+            <div class="layui-inline">
+                <a class="layui-btn" id="findButton"><i class="layui-icon">&#xe615;</i>查询</a>
+            </div>
+        </div>
+    </form>
+</div>
+<!--拓扑图显示-->
+<canvas  id="canvas"></canvas>
+</body>
+</html>
+<script th:inline="javascript">
+        // $(document).ready(function(){
+
+        layui.use(['layer','form'], function () {
+            var form = layui.form;
+            form.render();
+
+            var canvas = document.getElementById('canvas');
+            var stage = new JTopo.Stage(canvas);
+            var scene = new JTopo.Scene(stage);
+            var allNodes;
+            $('#canvas').attr("height",$(window).height()-100);
+            $('#canvas').attr("width",$(window).width()-40);
+            showJTopoToobar(stage);
+
+            form.on('checkbox(zoomCheckbox)',function (data) {
+                if(data.elem.checked){
+                    stage.wheelZoom = 1.02; // 设置鼠标缩放比例
+                }else{
+                    stage.wheelZoom = null; // 取消鼠标缩放比例
+                }
+            });
+
+            $.getJSON("/fi/topology/line_view_data",function (data) {
+                var lineList = data.lineList;
+                addLine(lineList);
+                allNodes = scene.getDisplayedNodes();
+                stage.centerAndZoom(); //缩放并居中显示
+            });
+
+
+            // setInterval(function () {
+            //     $.getJSON("/dev/topology/all_transform",function (data) {
+            //         var topologyList = data.topologyList;
+            //         for(let i=0;i<allNodes.length;i++){
+            //             for(let j=0;j<topologyList.length;j++){
+            //                 if(allNodes[i].info.devId == topologyList[j].devId && allNodes[i].info.devType == topologyList[j].devType){
+            //                     allNodes[i].setImage('/images/'+topologyList[j].devType+'_'+topologyList[j].devOnline+'.png', true);
+            //                 }
+            //             }
+            //         }
+            //     });
+            // },15000);
+
+            //绘制线路及台区
+            function addLine(line){
+                var baseX = 400,tempX = 400;
+                var baseY = 120,tempY = 180;
+                for(let i=0;i<line.length;i++){
+
+                    //线的说明文字显示
+                    var textNode = new JTopo.TextNode(line[i].lineName);
+                    textNode.fontColor = '35,100,121';
+                    textNode.font = "20px 微软雅黑";
+                    textNode.setLocation((baseX-80), (baseY - 50));
+                    scene.add(textNode);
+
+
+                    let lineHead = newCircleNode(tempX,baseY,2,{lineName:""});
+                    for(let j=0;j<line[i].devHubList.length;j++){
+                        tempX = tempX + 200;
+                        newNode(tempX,baseY-10,30,30,line[i].devHubList[j]);
+                    }
+                    if(tempX == 400){
+                        tempX = tempX + 400
+                    }else{
+                        tempX = tempX + 200;
+                    }
+                    let lineEnd = newCircleNode(tempX,baseY,2,{lineName:""});
+                    // console.log(line[i]);
+                    newLink(lineHead, lineEnd, line[i]);
+                    //重新计算第二行的起始位置
+                    baseY = baseY + tempY;
+                    tempX = baseX;
+                }
+            }
+
+            //圆形节点
+            function newCircleNode(x,y,r,nodeInfo) {
+                var circleNode = new JTopo.CircleNode(nodeInfo.devName);
+                circleNode.radius = r; // 半径
+                circleNode.alpha = 0.7;
+                circleNode.fillColor = '0, 0, 255'; // 填充颜色
+                circleNode.setLocation(x,y);
+                circleNode.textPosition = 'Middle_Center'; // 文本位置
+                circleNode.info = nodeInfo;
+                circleNode.dragable = false;
+                scene.add(circleNode);
+                return circleNode;
+            }
+
+
+            // 节点
+            function newNode(x, y, w, h, nodeInfo){
+                var node = new JTopo.Node(nodeInfo.hubLocation);
+                node.setLocation(x, y);
+                node.setSize(w, h);
+                node.setImage('/images/2_'+nodeInfo.onlineStatus+'.png', true);
+                node.textOffsetY = 10; // 文本偏移量（向下3个像素）
+                node.info = nodeInfo;
+                node.font = '16px  微软雅黑';
+                node.textPosition = 'Bottom_Right'; // 文本位置
+                node.textOffsetX = -50;
+                node.fontColor = '0,0,0'
+                node.dragable = false;
+                node.click(function(event){
+                    // console.log(this.info.devId);
+                    // console.log(this.info.devName);
+                    window.location.href = "/fi/topology/view_transform/"+this.info.id;
+                });
+                scene.add(node);
+                return node;
+            }
+
+            // 简单连线
+            function newLink(nodeA, nodeZ, lineInfo){
+                var link = new JTopo.Link(nodeA, nodeZ);
+                link.lineWidth = 3; // 线宽
+                link.bundleOffset = 60; // 折线拐角处的长度
+                link.bundleGap = 20; // 线条之间的间隔
+                link.textOffsetY = -25; // 文本偏移量（向下3个像素）
+                link.textOffsetX = -200; // 文本偏移量（向下3个像素）
+                link.strokeColor = '83,190,224';
+                link.fontColor = '35,100,121';
+                link.font = "20px Consolas";
+                link.textPosition = 'Top_Left'; // 文本位置
+                link.info = lineInfo;
+                scene.add(link);
+                return link;
+            }
+        });
+</script>

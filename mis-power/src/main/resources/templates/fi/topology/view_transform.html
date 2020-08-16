@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title th:replace="common/base::pagetitle"></title>
+    <link th:replace="common/base::static"/>
+    <script th:replace="common/base::mianJs"></script>
+    <script th:src="@{/js/jtopo-0.4.8-min.js}" charset="utf-8"></script>
+    <script th:src="@{/js/toolbar.js}" charset="utf-8"></script>
+</head>
+<body style="background-color: #FFFFFF">
+<input type="hidden" id="transformId" th:value="${id}">
+<!--工具栏-->
+<div style="margin: 10px 10px 10px 10px">
+    <form class="layui-form layui-form-pane" id="searchForm">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <button type="button" class="layui-btn layui-btn-sm" id="zoomOutButton">
+                    <i class="layui-icon">&#xe654;</i>
+                </button>
+                <button type="button" class="layui-btn layui-btn-sm" id="zoomInButton">
+                    <i class="layui-icon">&#xe67e;</i>
+                </button>
+                <button type="button" class="layui-btn layui-btn-sm" id="centerButton">居中</button>
+            </div>
+            <div class="layui-inline">
+                <input type="checkbox" id="zoomCheckbox" title="鼠标缩放" lay-filter="zoomCheckbox">
+            </div>
+            <div class="layui-inline">
+                <select class="layui-select" name="findText" id="findText"  lay-search>
+                    <option value="">输入或选择设备名称</option>
+                </select>
+
+            </div>
+            <div class="layui-inline">
+                <a class="layui-btn" id="findButton"><i class="layui-icon">&#xe615;</i>查询</a>
+                <a class="layui-btn" id="backBtn"><i class="fa fa-arrow-circle-left icon"></i> 返回上层</a>
+            </div>
+        </div>
+    </form>
+</div>
+<!--拓扑图显示-->
+<canvas  id="canvas"></canvas>
+
+</body>
+</html>
+<script th:inline="javascript">
+    layui.use(['layer','form'], function () {
+        var form = layui.form;
+        form.render();
+
+            var canvas = document.getElementById('canvas');
+            var stage = new JTopo.Stage(canvas);
+            var scene = new JTopo.Scene(stage);
+            $('#canvas').attr("height",$(window).height()-100);
+            $('#canvas').attr("width",$(window).width()-10);
+            $('#backBtn').click(function () {
+                window.location.href = "/fi/topology/view";
+            });
+            showJTopoToobar(stage);
+            stage.eagleEye.visible = true;
+
+            form.on('checkbox(zoomCheckbox)',function (data) {
+                if(data.elem.checked){
+                    stage.wheelZoom = 1.02; // 设置鼠标缩放比例
+                }else{
+                    stage.wheelZoom = null; // 取消鼠标缩放比例
+                }
+            });
+
+            //台区Id
+            var transformId = [[${id}]];
+            //根节点信息（台区信息）
+            var rootNodeInfo;
+            //拓扑数据
+            var topologyList;
+            //画布上的所有节点
+            var allNodes = new Array();
+            //报警定时
+            var alarm;
+            //节点map对象
+            var nodeMap = new Map();
+
+            //页面打开后初始化所有数据
+            $.getJSON("/fi/topology/transform_view_data/"+transformId,function (data) {
+                rootNodeInfo = data.transForm;
+                topologyList = data.topologyList;
+
+
+                if(rootNodeInfo==null){
+                    layer.msg('该设备下没有子设备！', {icon: 2});
+                    return ;
+                }
+
+
+                let rootNode = addNode(rootNodeInfo);
+                for(let i=0; i<topologyList.length;i++){
+                    if(topologyList[i].parentId == rootNodeInfo.id){
+                        let tempNode = addNode(topologyList[i]);
+                        addLink(rootNode,tempNode);
+                        addChildNodes(tempNode,topologyList);
+                    }
+                    $('#findText').append("<option value=\""+topologyList[i].hubLocation+"\" >"+topologyList[i].hubLocation+"</option>");
+
+                }
+                form.render();
+
+                // 树形布局
+                scene.doLayout(JTopo.layout.TreeLayout('right', 200, 120)); //40为图表间隔
+
+
+
+                //获取停电报警数据
+                // setInterval(function () {
+                //     window.clearTimeout(alarm);
+                //     $.getJSON("/event/poweroutage/current_power_list",function (res) {
+                //         data = res.data;
+                //         // console.log(data);
+                //         alarm = setInterval(function(){
+                //             for(let j=0;j<data.length;j++){
+                //                 if(data[j].transformId==transformId){
+                //                     let alarmNode = nodeMap.get(data[j].devId+"="+data[j].devType);
+                //                     if(alarmNode!=undefined){
+                //                         alarmNode.alarmColor = '255,0,0';
+                //                         alarmNode.alarmAlpha = 1;
+                //                         alarmNode.alarm == '设备报警'? alarmNode.alarm = null : alarmNode.alarm = '设备报警';
+                //                     }
+                //                 }
+                //             }
+                //
+                //         },1000);
+                //     });
+                //     $.getJSON("/dev/topology/transform_view_data/"+transformId,function (data) {
+                //         topologyList = data.topologyList;
+                //         for(let i=0;i<allNodes.length;i++){
+                //             for(let j=0;j<topologyList.length;j++){
+                //                 if(allNodes[i].info.devId ==topologyList[j].devId && allNodes[i].info.devType == topologyList[j].devType){
+                //                     allNodes[i].setImage('/images/'+topologyList[j].devType+'_'+topologyList[j].devOnline+'.png', true);
+                //                 }
+                //             }
+                //         }
+                //     });
+                //
+                // },15000);
+
+            });
+
+
+
+
+            //定时扫描停电报警表及设备状态表，更新设备信息
+
+
+
+            //递归实现添加设备子节点并连线
+            function addChildNodes(currentNode,data) {
+                for(let i=0; i<data.length;i++){
+                    if(data[i].parentId == currentNode.info.id){
+                        let tempNode = addNode(data[i]);
+                        addLink(currentNode,tempNode);
+                        addChildNodes(tempNode,data);
+                    }
+                }
+            }
+
+
+            //添加节点
+            function addNode(nodeInfo){
+                var node = new JTopo.Node(nodeInfo.hubLocation);
+                node.textOffsetY = 10; // 文本偏移量（向下3个像素）
+                node.info = nodeInfo;
+                node.setImage('/images/2_'+nodeInfo.onlineStatus+'.png', true);
+                node.alarm = null;
+                node.fontColor = '0,0,0'
+                node.dbclick(function(event){
+                    //console.log(this.info.devId);
+                    //console.log(this.info.devName);
+                    layer.open({
+                        type: 2,
+                        content: '/fi/topology/dev_info/'+node.info.id
+                        , anim: 2 //载入方式
+                        , area: ['100%', '100%'] //设置窗口宽高
+                        , title: '设备详情' //窗口标题
+                        , maxmin: true //允许最大化
+                        , btn: ['关闭']
+                        , btnAlign: 'r' //按钮靠右
+                        , yes: function (index, layerObj) {
+                            layer.close(index);
+                        }
+                    });
+                });
+                scene.add(node);
+                //获取所有添加的节点
+                nodeMap.set(nodeInfo.id,node);
+                return node;
+            }
+
+            //添加连接线
+            function addLink(nodeA, nodeZ){
+                // var link = new JTopo.FlexionalLink(nodeA, nodeZ);
+                var link = new JTopo.Link(nodeA, nodeZ);
+                link.lineWidth = 1;
+                link.strokeColor = '83,190,224';
+                link.fontColor = '83,190,224';
+                scene.add(link);
+                return link;
+            }
+
+        });
+</script>
