@@ -52,6 +52,11 @@ public class YxHistoryController extends BaseController<YxHistory> {
             HashMap<String,String> map = (HashMap) obj;
             String key = DictUtils.getDictItemKey("故障指示器信息体地址",String.valueOf(map.get("infor_addr")));
             map.put("infor_addr_name",key);
+            String addr = Integer.toHexString(Integer.parseInt(String.valueOf(map.get("infor_addr")))).toUpperCase();
+            for(int i=addr.length();i<4;i++){
+                addr = "0" + addr;
+            }
+            map.replace("infor_addr",addr);
         }
     }
 
