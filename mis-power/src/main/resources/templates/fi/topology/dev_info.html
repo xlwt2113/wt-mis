@@ -10,8 +10,42 @@
     <link th:replace="common/base::static"/>
 </head>
 <body>
-<form class="layui-form" action="" >
-    <input type="hidden" id="devId" th:value="${devId}">
+<input type="hidden" id="devId" th:value="${devId}">
+
+<div class="layuimini-main">
+    <fieldset class="layui-elem-field layuimini-search">
+        <div style="margin: 10px 10px 10px 10px">
+            <form class="layui-form layui-form-pane" id="searchForm">
+                <div style="display: none"><input type="text" name="test" value=""></div>
+                <div class="layui-form-item">
+                    <div class="layui-inline" th:text="${hub.hubLocation}"></div>
+                    <div class="layui-inline">
+                        <input type="text" name="beginTime" id="beginTime" autocomplete="off" class="layui-input" placeholder="更新时间开始">
+                    </div>
+                    -
+                    <div class="layui-inline">
+                        <input type="text" name="endTime" id="endTime" autocomplete="off" class="layui-input" placeholder="更新时间结束">
+                    </div>
+                    <div class="layui-inline">
+                        <select class="layui-select" name="inforAddr" id="inforAddr" lay-filter="inforAddr" lay-search>
+                            <option VALUE="">选择遥测名称</option>
+                            <each th:each="item:${T(com.wt.mis.sys.util.DictUtils).getDictItems('故障指示器信息体地址')}">
+                                    <option th:value="${item.itemValue}" th:text="${item.itemKey}"></option>
+                            </each>
+                        </select>
+                    </div>
+                    <div class="layui-inline">
+                        <a class="layui-btn" lay-submit="" lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i>查询</a>
+                    </div>
+                    <div class="layui-inline">
+                        <a class="layui-btn layui-btn-warm data-reset-btn" lay-button=""><i class="layui-icon">&#xe666;</i>重置</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </fieldset>
+</div>
+
     <div class="layui-tab layui-tab-card">
         <ul class="layui-tab-title">
             <li class="layui-this">遥测实时数据</li>
@@ -27,7 +61,12 @@
         </div>
     </div>
 
-</form>
+<!--顶部工具按钮-->
+<script type="text/html" id="TopTableBar">
+    <div class="layui-btn-group">
+        <button class="layui-btn data-add-btn layui-btn-sm" lay-event=""><i class="layui-icon">&#xe62c;</i>统计</button>
+    </div>
+</script>
 
 <script type="text/html" id="yxStatus">
     {{#  if(d.yx_value == 0){ }}
@@ -47,13 +86,19 @@
     var history_rc_list_url = '/fi/ychistory/list?hubId='+hubId;
     var real_rx_list_url = '/fi/yxreal/list?hubId='+hubId;
     var history_rx_list_url = '/fi/yxhistory/list?hubId='+hubId;
+    var chart_page_url = '/fi/topology/chart?hubId='+hubId;
 
 
     layui.use(['form', 'table','laydate','element'], function(){
         var $ = layui.jquery
-        ,table = layui.table
+            ,table = layui.table
+            ,form = layui.form
+            ,laydate = layui.laydate
             ,element = layui.element; //Tab的切换功能，切换事件监听等，需要依赖element模块
 
+
+        laydate.render({elem: '#beginTime',type:"datetime"});
+        laydate.render({elem: '#endTime',type:"datetime"});
 
         table.render($.extend(config.searchListTable, {
             elem: '#realYcListTable',  //默认的查询列表页面中table的ID
@@ -110,6 +155,147 @@
                 {field: 'yx_value', width: 200, title: '遥信状态',templet: '#yxStatus'},
             ]]
         }));
+
+        //监听表格工具栏操作按钮
+        table.on('toolbar(realYcListTable)', function (obj) {
+            layer.open({
+                type: 2 //iframe载入
+                ,content:chart_page_url+"&type=1&inforAddr="+$('#inforAddr').val()+"&beginTime="+$('#beginTime').val()+"&endTime="+$('#endTime').val()
+                , anim: 2 //载入方式
+                , area:['60%','80%']
+                , title: '遥测实时数据统计表' //窗口标题
+                , btnAlign: 'r' //按钮靠右
+                , yes: function (index, layerObj) {
+                    layer.close(index);
+                }
+            });
+        });
+        table.on('toolbar(historyYcListTable)', function (obj) {
+            layer.open({
+                type: 2 //iframe载入
+                ,content:chart_page_url+"&type=2&inforAddr="+$('#inforAddr').val()+"&beginTime="+$('#beginTime').val()+"&endTime="+$('#endTime').val()
+                , anim: 2 //载入方式
+                , area:['60%','80%']
+                , title: '遥测历史数据统计表' //窗口标题
+                , btnAlign: 'r' //按钮靠右
+                , yes: function (index, layerObj) {
+                    layer.close(index);
+                }
+            });
+        });
+        table.on('toolbar(realYxListTable)', function (obj) {
+            layer.open({
+                type: 2 //iframe载入
+                ,content:chart_page_url+"&type=3&inforAddr="+$('#inforAddr').val()+"&beginTime="+$('#beginTime').val()+"&endTime="+$('#endTime').val()
+                , anim: 2 //载入方式
+                , area:['60%','80%']
+                , title: '遥信实时数据统计表' //窗口标题
+                , btnAlign: 'r' //按钮靠右
+                , yes: function (index, layerObj) {
+                    layer.close(index);
+                }
+            });
+        });
+        table.on('toolbar(historyYxListTable)', function (obj) {
+            layer.open({
+                type: 2 //iframe载入
+                ,content:chart_page_url+"&type=4&inforAddr="+$('#inforAddr').val()+"&beginTime="+$('#beginTime').val()+"&endTime="+$('#endTime').val()
+                , anim: 2 //载入方式
+                , area:['60%','80%']
+                , title: '遥信历史数据统计表' //窗口标题
+                , btnAlign: 'r' //按钮靠右
+                , yes: function (index, layerObj) {
+                    layer.close(index);
+                }
+            });
+        });
+
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            table.reload('realYcListTable', {
+                page: {
+                    curr: 1  //重新加载后默认为第一页
+                }
+                , where: {
+                    'inforAddr':data.field.inforAddr,
+                    "beginTime": data.field.beginTime,
+                    "endTime": data.field.endTime
+                }
+            });
+            table.reload('historyYcListTable', {
+                page: {
+                    curr: 1  //重新加载后默认为第一页
+                }
+                , where: {
+                    'inforAddr':data.field.inforAddr,
+                    "beginTime": data.field.beginTime,
+                    "endTime": data.field.endTime
+                }
+            });
+            table.reload('realYxListTable', {
+                page: {
+                    curr: 1  //重新加载后默认为第一页
+                }
+                , where: {
+                    'inforAddr':data.field.inforAddr,
+                    "beginTime": data.field.beginTime,
+                    "endTime": data.field.endTime
+                }
+            });
+            table.reload('historyYxListTable', {
+                page: {
+                    curr: 1  //重新加载后默认为第一页
+                }
+                , where: {
+                    'inforAddr':data.field.inforAddr,
+                    "beginTime": data.field.beginTime,
+                    "endTime": data.field.endTime
+                }
+            });
+            return false;
+        });
+
+
+        //重置按钮操作
+        $(".data-reset-btn").on('click', function () {
+            //清空表单
+            $("#searchForm")[0].reset();
+            //重新加载
+            table.reload('realYcListTable',{
+                page: {curr: 1},
+                where: {
+                    'inforAddr':"",
+                    "eventTypes": "",
+                    "beginTime": ""
+                }
+            });
+            table.reload('historyYcListTable',{
+                page: {curr: 1},
+                where: {
+                    'inforAddr':"",
+                    "eventTypes": "",
+                    "beginTime": ""
+                }
+            });
+            table.reload('realYxListTable',{
+                page: {curr: 1},
+                where: {
+                    'inforAddr':"",
+                    "eventTypes": "",
+                    "beginTime": ""
+                }
+            });
+            table.reload('historyYxListTable',{
+                page: {curr: 1},
+                where: {
+                    'inforAddr':"",
+                    "eventTypes": "",
+                    "beginTime": ""
+                }
+            });
+        });
     });
 
 </script>

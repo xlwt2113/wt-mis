@@ -38,6 +38,19 @@ public class YcHistoryController extends BaseController<YcHistory> {
     protected String generateSearchSql(YcHistory ycHistory, HttpServletRequest request) {
         StringBuffer sql = new StringBuffer("select t1.*,t2.hub_location from fi_yc_history  as t1 left join fi_dev_hub as t2 on t1.hub_id = t2.id   where t1.del = 0 ");
         sql.append(" and t1.hub_id = "+request.getParameter("hubId"));
+
+        if(StringUtils.isNotEmpty(request.getParameter("beginTime"))){
+            String beginTime = request.getParameter("beginTime");
+            sql.append(" and t1.update_time >= '"+beginTime+"'");
+        }
+        if(StringUtils.isNotEmpty(request.getParameter("endTime"))){
+            String endTime = request.getParameter("endTime");
+            sql.append(" and t1.update_time <= '"+endTime+"'");
+        }
+        if(StringUtils.isNotEmpty(request.getParameter("inforAddr"))){
+            sql.append(" and t1.infor_addr = '"+request.getParameter("inforAddr")+"'");
+        }
+        sql.append(" order by t1.id asc");
         return sql.toString();
     }
 

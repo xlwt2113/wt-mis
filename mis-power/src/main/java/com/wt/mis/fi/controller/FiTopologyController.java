@@ -20,6 +20,7 @@ import com.wt.mis.fi.repository.FiDevHubRepository;
 import com.wt.mis.fi.repository.FiLineRepository;
 import com.wt.mis.sys.util.DictUtils;
 import io.swagger.annotations.ApiOperation;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -95,6 +96,8 @@ public class FiTopologyController {
     @GetMapping("/dev_info/{devId}")
     public ModelAndView devInfoView(@PathVariable Long devId){
         ModelAndView mv = new ModelAndView(this.getUrlPrefix() + "/dev_info");
+        FiDevHub fiDevHub = fiDevHubRepository.getOne(devId);
+        mv.addObject("hub",fiDevHub);
         mv.addObject("devId",devId);
         return mv;
     }
@@ -136,6 +139,65 @@ public class FiTopologyController {
             }
         }
         return topologyList;
+    }
+
+    @GetMapping("/chart")
+    public ModelAndView openChartPage(@RequestParam("type") @NonNull int type,@RequestParam("hubId") @NonNull long hubId,@RequestParam("inforAddr") @NonNull String inforAddr,@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime){
+
+        String tableName = "";
+        String colName ="";
+        switch(type){
+            case 1:
+                tableName = "fi_yc_real";
+                colName = "yc_value";
+                break;
+            case 2:
+                colName = "yc_value";
+                tableName = "fi_yc_history";break;
+            case 3:
+                colName = "yx_value";
+                tableName = "fi_yx_real";break;
+            case 4:
+                colName = "yx_value";
+                tableName = "fi_yx_history";break;
+            default:
+                break;
+        }
+
+        StringBuffer sql = new StringBuffer("select t1.*,t2.hub_location from "+tableName+" as t1 left join fi_dev_hub as t2 on t1.hub_id = t2.id  where t1.del = 0 ");
+        sql.append(" and t1.hub_id = "+hubId);
+
+        if(StringUtils.isNotEmpty(beginTime)){
+            sql.append(" and t1.update_time >= '"+beginTime+"'");
+        }
+        if(StringUtils.isNotEmpty(endTime)){
+            sql.append(" and t1.update_time <= '"+endTime+"'");
+        }
+        if(StringUtils.isNotEmpty(inforAddr)){
+            sql.append(" and t1.infor_addr = '"+inforAddr+"'");
+        }
+        sql.append(" order by id asc");
+
+        List list = searchService.findAllBySql(sql.toString());
+        Iterator it = list.iterator();
+        String timeStr = "";
+        String valStr = "";
+        while(it.hasNext()){
+            HashMap map = (HashMap) it.next();
+            timeStr = timeStr + "'"+map.get("update_time")+"',";
+            valStr = valStr + map.get(colName)+",";
+        }
+        if(timeStr.length()>0){
+            timeStr = timeStr.substring(0,timeStr.length()-1);
+        }
+        if(valStr.length()>0){
+            valStr = valStr.substring(0,valStr.length()-1);
+        }
+        ModelAndView mv = new ModelAndView(this.getUrlPrefix() + "/chart");
+        mv.addObject("inforAddr", DictUtils.getDictItemKey("故障指示器信息体地址",inforAddr));
+        mv.addObject("timeStr","["+timeStr+"]");
+        mv.addObject("valStr","["+valStr+"]");
+        return mv;
     }
 
     /**
