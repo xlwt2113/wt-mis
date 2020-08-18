@@ -41,6 +41,19 @@
                         <a class="layui-btn layui-btn-warm data-reset-btn" lay-button=""><i class="layui-icon">&#xe666;</i>重置</a>
                     </div>
                 </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <a class="layui-btn layui-btn-sm layui-btn-normal" id="event1">总召</a>
+                    </div>
+
+                    <div class="layui-inline">
+                        <a class="layui-btn layui-btn-sm layui-btn-normal" id="event2">下发测温模块地址</a>
+                    </div>
+
+                    <div class="layui-inline">
+                        <a class="layui-btn layui-btn-sm layui-btn-normal"  id="event12">关闭特殊帧</a>
+                    </div>
+                </div>
             </form>
         </div>
     </fieldset>
@@ -64,7 +77,7 @@
 <!--顶部工具按钮-->
 <script type="text/html" id="TopTableBar">
     <div class="layui-btn-group">
-        <button class="layui-btn data-add-btn layui-btn-sm" lay-event=""><i class="layui-icon">&#xe62c;</i>统计</button>
+        <button class="layui-btn data-add-btn layui-btn-sm" lay-event=""><i class="layui-icon">&#xe62c;</i>统计图</button>
     </div>
 </script>
 
@@ -103,11 +116,12 @@
         table.render($.extend(config.searchListTable, {
             elem: '#realYcListTable',  //默认的查询列表页面中table的ID
             url: real_rc_list_url,
+            height: 'full-240',       //表格高度微调，适应页面
             //表格列
             cols: [[
                 // {type: "checkbox", width: 50, fixed: "left"},
                 {field: 'hub_location', width: 200, title: '汇集单元'},
-                {field: 'update_time', width: 200, title: '更新时间'},
+                {field: 'update_time_str', width: 200, title: '更新时间'},
                 {field: 'infor_addr_name', width: 200, title: '遥测名称'},
                 {field: 'infor_addr', width: 200, title: '信息体地址(H)'},
                 {field: 'yc_value', width: 200, title: '遥测值'},
@@ -117,11 +131,12 @@
         table.render($.extend(config.searchListTable, {
             elem: '#historyYcListTable',  //默认的查询列表页面中table的ID
             url: history_rc_list_url,
+            height: 'full-240',       //表格高度微调，适应页面
             //表格列
             cols: [[
                 // {type: "checkbox", width: 50, fixed: "left"},
                 {field: 'hub_location', width: 200, title: '汇集单元'},
-                {field: 'update_time', width: 200, title: '更新时间'},
+                {field: 'update_time_str', width: 200, title: '更新时间'},
                 {field: 'infor_addr_name', width: 200, title: '遥测名称'},
                 {field: 'infor_addr', width: 200, title: '信息体地址(H)'},
                 {field: 'yc_value', width: 200, title: '遥测值'},
@@ -131,12 +146,13 @@
         table.render($.extend(config.searchListTable, {
             elem: '#realYxListTable',  //默认的查询列表页面中table的ID
             url: real_rx_list_url,
+            height: 'full-240',       //表格高度微调，适应页面
             //表格列
             cols: [[
                 // {type: "checkbox", width: 50, fixed: "left"},
                 {field: 'hub_location', width: 200, title: '汇集单元'},
-                {field: 'update_time', width: 200, title: '更新时间'},
-                {field: 'infor_addr_name', width: 200, title: '遥测名称'},
+                {field: 'update_time_str', width: 200, title: '更新时间'},
+                {field: 'infor_addr_name', width: 200, title: '遥信名称'},
                 {field: 'infor_addr', width: 200, title: '信息体地址(H)'},
                 {field: 'yx_value', width: 200, title: '遥信状态',templet: '#yxStatus'},
             ]]
@@ -145,12 +161,13 @@
         table.render($.extend(config.searchListTable, {
             elem: '#historyYxListTable',  //默认的查询列表页面中table的ID
             url: history_rx_list_url,
+            height: 'full-240',       //表格高度微调，适应页面
             //表格列
             cols: [[
                 // {type: "checkbox", width: 50, fixed: "left"},
                 {field: 'hub_location', width: 200, title: '汇集单元'},
-                {field: 'update_time', width: 200, title: '更新时间'},
-                {field: 'infor_addr_name', width: 200, title: '遥测名称'},
+                {field: 'update_time_str', width: 200, title: '更新时间'},
+                {field: 'infor_addr_name', width: 200, title: '遥信名称'},
                 {field: 'infor_addr', width: 200, title: '信息体地址(H)'},
                 {field: 'yx_value', width: 200, title: '遥信状态',templet: '#yxStatus'},
             ]]
@@ -274,6 +291,24 @@
                 layer.alert("请选择遥测项目后进行统计！",{icon: 2});
             }
         }
+
+        $('#event1').click(function(){
+            $.getJSON("/fi/notification/send_event/"+hubId+"/1", {}, function (data) {
+                layer.msg(data.message);
+            });
+        });
+
+        $('#event2').click(function(){
+            $.getJSON("/fi/notification/send_event/"+hubId+"/2", {}, function (data) {
+                layer.msg(data.message);
+            });
+        });
+
+        $('#event12').click(function(){
+            $.getJSON("/fi/notification/send_event/"+hubId+"/12", {}, function (data) {
+                layer.msg(data.message);
+            });
+        });
     });
 
 </script>
