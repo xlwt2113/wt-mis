@@ -143,7 +143,15 @@ public class FiTopologyController {
 
     @GetMapping("/chart")
     public ModelAndView openChartPage(@RequestParam("type") @NonNull int type,@RequestParam("hubId") @NonNull long hubId,@RequestParam("inforAddr") @NonNull String inforAddr,@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime){
+        ModelAndView mv = new ModelAndView(this.getUrlPrefix() + "/chart");
+        mv.addObject("inforAddr", DictUtils.getDictItemKey("故障指示器信息体地址",inforAddr));
+        return mv;
+    }
 
+    @GetMapping("/chart_data")
+    @ResponseBody
+    public Map<String ,List> chartJson(@RequestParam("type") @NonNull int type,@RequestParam("hubId") @NonNull long hubId,@RequestParam("inforAddr") @NonNull String inforAddr,@RequestParam("beginTime") String beginTime,@RequestParam("endTime") String endTime){
+        Map result = new HashMap();
         String tableName = "";
         String colName ="";
         switch(type){
@@ -164,7 +172,7 @@ public class FiTopologyController {
                 break;
         }
 
-        StringBuffer sql = new StringBuffer("select t1.*,t2.hub_location from "+tableName+" as t1 left join fi_dev_hub as t2 on t1.hub_id = t2.id  where t1.del = 0 ");
+        StringBuffer sql = new StringBuffer("select t1.*,DATE_FORMAT(t1.update_time,'%Y-%d-%m %H:%i:%s') as update_time_str,t2.hub_location from "+tableName+" as t1 left join fi_dev_hub as t2 on t1.hub_id = t2.id  where t1.del = 0 ");
         sql.append(" and t1.hub_id = "+hubId);
 
         if(StringUtils.isNotEmpty(beginTime)){
@@ -180,30 +188,23 @@ public class FiTopologyController {
 
         List list = searchService.findAllBySql(sql.toString());
         Iterator it = list.iterator();
-        String timeStr = "";
-        String valStr = "";
+        List timeList = new ArrayList();
+        List valList = new ArrayList();
         while(it.hasNext()){
             HashMap map = (HashMap) it.next();
-            timeStr = timeStr + "'"+map.get("update_time")+"',";
-            valStr = valStr + map.get(colName)+",";
+            timeList.add(map.get("update_time_str"));
+            valList.add(map.get(colName));
         }
-        if(timeStr.length()>0){
-            timeStr = timeStr.substring(0,timeStr.length()-1);
-        }
-        if(valStr.length()>0){
-            valStr = valStr.substring(0,valStr.length()-1);
-        }
-        ModelAndView mv = new ModelAndView(this.getUrlPrefix() + "/chart");
-        mv.addObject("inforAddr", DictUtils.getDictItemKey("故障指示器信息体地址",inforAddr));
-        mv.addObject("timeStr","["+timeStr+"]");
-        mv.addObject("valStr","["+valStr+"]");
-        return mv;
+        result.put("time",timeList);
+        result.put("val",valList);
+        return result;
     }
 
-    /**
-     * 获取台区下面的拓扑信息
-     * @return
-     */
+
+        /**
+         * 获取台区下面的拓扑信息
+         * @return
+         */
 //    @GetMapping("/all_transform")
 //    @ResponseBody
 //    public Map<String,Object> getAllTransform(){

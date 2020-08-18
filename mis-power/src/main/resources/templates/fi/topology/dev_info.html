@@ -158,56 +158,16 @@
 
         //监听表格工具栏操作按钮
         table.on('toolbar(realYcListTable)', function (obj) {
-            layer.open({
-                type: 2 //iframe载入
-                ,content:chart_page_url+"&type=1&inforAddr="+$('#inforAddr').val()+"&beginTime="+$('#beginTime').val()+"&endTime="+$('#endTime').val()
-                , anim: 2 //载入方式
-                , area:['60%','80%']
-                , title: '遥测实时数据统计表' //窗口标题
-                , btnAlign: 'r' //按钮靠右
-                , yes: function (index, layerObj) {
-                    layer.close(index);
-                }
-            });
+            openChart(1);
         });
         table.on('toolbar(historyYcListTable)', function (obj) {
-            layer.open({
-                type: 2 //iframe载入
-                ,content:chart_page_url+"&type=2&inforAddr="+$('#inforAddr').val()+"&beginTime="+$('#beginTime').val()+"&endTime="+$('#endTime').val()
-                , anim: 2 //载入方式
-                , area:['60%','80%']
-                , title: '遥测历史数据统计表' //窗口标题
-                , btnAlign: 'r' //按钮靠右
-                , yes: function (index, layerObj) {
-                    layer.close(index);
-                }
-            });
+            openChart(2);
         });
         table.on('toolbar(realYxListTable)', function (obj) {
-            layer.open({
-                type: 2 //iframe载入
-                ,content:chart_page_url+"&type=3&inforAddr="+$('#inforAddr').val()+"&beginTime="+$('#beginTime').val()+"&endTime="+$('#endTime').val()
-                , anim: 2 //载入方式
-                , area:['60%','80%']
-                , title: '遥信实时数据统计表' //窗口标题
-                , btnAlign: 'r' //按钮靠右
-                , yes: function (index, layerObj) {
-                    layer.close(index);
-                }
-            });
+            openChart(3);
         });
         table.on('toolbar(historyYxListTable)', function (obj) {
-            layer.open({
-                type: 2 //iframe载入
-                ,content:chart_page_url+"&type=4&inforAddr="+$('#inforAddr').val()+"&beginTime="+$('#beginTime').val()+"&endTime="+$('#endTime').val()
-                , anim: 2 //载入方式
-                , area:['60%','80%']
-                , title: '遥信历史数据统计表' //窗口标题
-                , btnAlign: 'r' //按钮靠右
-                , yes: function (index, layerObj) {
-                    layer.close(index);
-                }
-            });
+            openChart(4);
         });
 
 
@@ -296,6 +256,24 @@
                 }
             });
         });
+
+        function openChart(type){
+            if($('#inforAddr').val()!=''){
+                layer.open({
+                    type: 2 //iframe载入
+                    ,content:chart_page_url+"&type="+type+"&inforAddr="+$('#inforAddr').val()+"&beginTime="+$('#beginTime').val()+"&endTime="+$('#endTime').val()
+                    , anim: 2 //载入方式
+                    , area:['60%','80%']
+                    , title: '查看数据统计表' //窗口标题
+                    , btnAlign: 'r' //按钮靠右
+                    , yes: function (index, layerObj) {
+                        layer.close(index);
+                    }
+                });
+            }else{
+                layer.alert("请选择遥测项目后进行统计！",{icon: 2});
+            }
+        }
     });
 
 </script>

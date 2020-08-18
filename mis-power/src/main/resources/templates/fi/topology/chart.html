@@ -9,6 +9,11 @@
     <link th:replace="common/base::static"/>
 </head>
 <body>
+<input type="hidden" id="type" name="type" th:value="${#request.getParameter('type')}">
+<input type="hidden" id="hubId" name="hubId" th:value="${#request.getParameter('hubId')}">
+<input type="hidden" id="inforAddr" name="inforAddr" th:value="${#request.getParameter('inforAddr')}">
+<input type="hidden" id="beginTime" name="beginTime" th:value="${#request.getParameter('beginTime')}">
+<input type="hidden" id="endTime" name="endTime" th:value="${#request.getParameter('endTime')}">
 <div class="layuimini-container">
     <div class="layuimini-main">
         <div class="layui-card-body">
@@ -17,10 +22,13 @@
     </div>
 </div>
 
+
 <script th:replace="common/base::mianJs"></script>
 <script>
-    var timeStr = [[${timeStr}]]  ;
-    var valStr = [[${valStr}]]  ;
+    var title = '[[${inforAddr}]]';
+
+    var timeStr ;
+    var valStr ;
 
 </script>
 
@@ -29,54 +37,58 @@
         var $ = layui.jquery,
             echarts = layui.echarts;
 
-        /**
-         * 报表功能
-         */
-        var echartsRecords = echarts.init(document.getElementById('echarts-records'), 'walden');
-        var optionRecords = {
-            tooltip: {
-                trigger: 'axis'
-            },
-            legend: {
-                data:['A相电压']
-            },
-            grid: {
-                left: '3%',
-                right: '4%',
-                bottom: '3%',
-                containLabel: true
-            },
-            toolbox: {
-                feature: {
-                    saveAsImage: {}
-                }
-            },
-            xAxis: {
-                type: 'category',
-                boundaryGap: false,
-                data: timeStr
-            },
-            yAxis: {
-                type: 'value'
-                // min: 150,
-                // max: 250
-            },
-            series: [
-                {
-                    name:'A相电压',
-                    type:'line',
-                    data: valStr
-                }
-            ]
-        };
-        echartsRecords.setOption(optionRecords);
+        $.getJSON("/fi/topology/chart_data?hubId="+$('#hubId').val()+"&type="+$('#type').val()+"&inforAddr="+$('#inforAddr').val()+"&beginTime="+$('#beginTime').val()+"&endTime="+$('#endTime').val()+"", function(data){
 
-        // echarts 窗口缩放自适应
-        window.onresize = function(){
-            echartsRecords.resize();
-        }
+            /**
+             * 报表功能
+             */
+            var echartsRecords = echarts.init(document.getElementById('echarts-records'), 'walden');
+            var optionRecords = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data:[title]
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {}
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: data.time
+                },
+                yAxis: {
+                    type: 'value'
+                    // min: 150,
+                    // max: 250
+                },
+                series: [
+                    {
+                        name: title,
+                        type:'line',
+                        data: data.val
+                    }
+                ]
+            };
+            echartsRecords.setOption(optionRecords);
 
-        //console.log(window.parent.chartTimes);
+            // echarts 窗口缩放自适应
+            window.onresize = function(){
+                echartsRecords.resize();
+            }
+
+
+        });
+
     });
 </script>
 
