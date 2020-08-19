@@ -28,7 +28,7 @@
                     </div>
                     <div class="layui-inline">
                         <select class="layui-select" name="inforAddr" id="inforAddr" lay-filter="inforAddr" lay-search>
-                            <option VALUE="">选择遥测名称</option>
+                            <option VALUE="">选择测量点</option>
                             <each th:each="item:${T(com.wt.mis.sys.util.DictUtils).getDictItems('故障指示器信息体地址')}">
                                     <option th:value="${item.itemValue}" th:text="${item.itemKey}"></option>
                             </each>
@@ -75,7 +75,7 @@
     </div>
 
 <!--顶部工具按钮-->
-<script type="text/html" id="TopTableBar">
+<script type="text/html" id="TopTableBar1">
     <div class="layui-btn-group">
         <button class="layui-btn data-add-btn layui-btn-sm" lay-event=""><i class="layui-icon">&#xe62c;</i>统计图</button>
     </div>
@@ -83,9 +83,9 @@
 
 <script type="text/html" id="yxStatus">
     {{#  if(d.yx_value == 0){ }}
-    <font color="green">分</font>
+    <font color="green">复归</font>
     {{#  } else if(d.yx_value == 1) { }}
-    <font color="red">合</font>
+    <font color="red">动作</font>
     {{#  } else { }}
     <font color="yellow">不确定</font>
     {{#  } }}
@@ -117,6 +117,7 @@
             elem: '#realYcListTable',  //默认的查询列表页面中table的ID
             url: real_rc_list_url,
             height: 'full-240',       //表格高度微调，适应页面
+            toolbar: '#TopTableBar',  //顶部工具栏的默认ID
             //表格列
             cols: [[
                 // {type: "checkbox", width: 50, fixed: "left"},
@@ -132,6 +133,7 @@
             elem: '#historyYcListTable',  //默认的查询列表页面中table的ID
             url: history_rc_list_url,
             height: 'full-240',       //表格高度微调，适应页面
+            toolbar: '#TopTableBar1',  //顶部工具栏的默认ID
             //表格列
             cols: [[
                 // {type: "checkbox", width: 50, fixed: "left"},
@@ -147,6 +149,7 @@
             elem: '#realYxListTable',  //默认的查询列表页面中table的ID
             url: real_rx_list_url,
             height: 'full-240',       //表格高度微调，适应页面
+            toolbar: '#TopTableBar',  //顶部工具栏的默认ID
             //表格列
             cols: [[
                 // {type: "checkbox", width: 50, fixed: "left"},
@@ -162,6 +165,7 @@
             elem: '#historyYxListTable',  //默认的查询列表页面中table的ID
             url: history_rx_list_url,
             height: 'full-240',       //表格高度微调，适应页面
+            toolbar: '#TopTableBar',  //顶部工具栏的默认ID
             //表格列
             cols: [[
                 // {type: "checkbox", width: 50, fixed: "left"},
@@ -288,7 +292,7 @@
                     }
                 });
             }else{
-                layer.alert("请选择遥测项目后进行统计！",{icon: 2});
+                layer.alert("请选择测量点后进行统计！",{icon: 2});
             }
         }
 

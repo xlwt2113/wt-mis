@@ -172,7 +172,7 @@ public class FiTopologyController {
                 break;
         }
 
-        StringBuffer sql = new StringBuffer("select t1.*,DATE_FORMAT(t1.update_time,'%Y-%d-%m %H:%i:%s') as update_time_str,t2.hub_location from "+tableName+" as t1 left join fi_dev_hub as t2 on t1.hub_id = t2.id  where t1.del = 0 ");
+        StringBuffer sql = new StringBuffer("select t1.*,DATE_FORMAT(t1.update_time,'%Y-%m-%d %H:%i:%s') as update_time_str,t2.hub_location from "+tableName+" as t1 left join fi_dev_hub as t2 on t1.hub_id = t2.id  where t1.del = 0 ");
         sql.append(" and t1.hub_id = "+hubId);
 
         if(StringUtils.isNotEmpty(beginTime)){

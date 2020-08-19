@@ -36,7 +36,7 @@ public class YxRealController extends BaseController<YxReal> {
 
     @Override
     protected String generateSearchSql(YxReal yxReal, HttpServletRequest request) {
-        StringBuffer sql = new StringBuffer("select t1.*,t2.hub_location,DATE_FORMAT(t1.update_time,'%Y-%d-%m %H:%i') as update_time_str from fi_yx_real as t1 left join fi_dev_hub as t2 on t1.hub_id = t2.id  where t1.del = 0 ");
+        StringBuffer sql = new StringBuffer("select t1.*,t2.hub_location,DATE_FORMAT(t1.update_time,'%Y-%m-%d %H:%i') as update_time_str from fi_yx_real as t1 left join fi_dev_hub as t2 on t1.hub_id = t2.id  where t1.del = 0 ");
         sql.append(" and t1.hub_id = "+request.getParameter("hubId"));
 
         if(StringUtils.isNotEmpty(request.getParameter("beginTime"))){
