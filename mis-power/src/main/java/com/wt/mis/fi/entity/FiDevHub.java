@@ -28,7 +28,7 @@ public class FiDevHub extends BaseEntity {
     * 终端地址
     */
     @Column(columnDefinition = " int COMMENT '终端地址'")
-    private Integer hubTermaddr;
+    private Long hubTermaddr;
     /**
     * 安装位置
     */

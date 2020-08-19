@@ -13,5 +13,10 @@ public interface FiDevHubRepository extends BaseRepository<FiDevHub,Long> {
 
     List<FiDevHub> findAllByLineIdAndDel(long lineId, int del);
 
+    List<FiDevHub> findAllByHubTermaddrAndAndDel(long address,int del);
+
+    int countAllByDelAndHubTermaddr(int del,long devAddress);
+
+    int countAllByDelAndHubTermaddrAndIdNot(int del,long devAddress,long id);
 
 }

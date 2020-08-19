@@ -65,12 +65,27 @@ public class FiDevHubController extends BaseController<FiDevHub> {
         return sql.toString();
     }
 
+    @Override
+    @ApiOperation("提交修改对象")
+    @PostMapping("/edit")
+    @ResponseBody
+    protected String edit(HttpServletRequest request, FiDevHub fiDevHub) {
+        int cnt = fiDevHubRepository.countAllByDelAndHubTermaddrAndIdNot(0,fiDevHub.getHubTermaddr(),fiDevHub.getId());
+        if(cnt>0){
+            return ResponseUtils.errorJson("终端地址已经存在！",fiDevHub);
+        }
+        return super.edit(request, fiDevHub);
+    }
 
     @Override
     @ApiOperation("提交创建对象")
     @PostMapping("/add")
     @ResponseBody
     protected String add(HttpServletRequest request, FiDevHub fiDevHub) {
+        int cnt = fiDevHubRepository.countAllByDelAndHubTermaddr(0,fiDevHub.getHubTermaddr());
+        if(cnt>0){
+            return ResponseUtils.errorJson("终端地址已经存在！",fiDevHub);
+        }
         fiDevHub.setOnlineStatus(1); //默认设置为不在线
         //添加线路下的节点时不用设置lineid
         if(fiDevHub.getParentId()!=0){
@@ -192,7 +207,7 @@ public class FiDevHubController extends BaseController<FiDevHub> {
         try{
             Workbook wb = ExcelUtil.getWorkbok(excelFile);
             Sheet sheet = wb.getSheetAt(0);
-            if(!ExcelUtil.checkTitle("终端地址,1号测温模块地址,1号测温模块地址,1号测温模块地址,1号测温模块地址,1号测温模块地址,1号测温模块地址,1号测温模块地址,1号测温模块地址,1号测温模块地址,1号测温模块地址,1号测温模块地址,1号测温模块地址",sheet.getRow(0))){
+            if(!ExcelUtil.checkTitle("终端地址,1号测温模块地址,2号测温模块地址,3号测温模块地址,4号测温模块地址,5号测温模块地址,6号测温模块地址,7号测温模块地址,8号测温模块地址,9号测温模块地址,10号测温模块地址,11号测温模块地址,12号测温模块地址",sheet.getRow(0))){
                 result.add("导入的表格格式不正确,请核对标题列是否与模板文件一致！");
             }else{
                 // 第一行从0开始算,先获取总行数
@@ -200,18 +215,34 @@ public class FiDevHubController extends BaseController<FiDevHub> {
                 List<FiDevHub> devList = new ArrayList();
                 for(int rowNum = 1;rowNum<=rowNumber;rowNum++){
                     Row row = sheet.getRow(rowNum);
-
                     try {
+                        long hubTermaddr = Float.valueOf(row.getCell(0).toString()).longValue();
+                        List list = fiDevHubRepository.findAllByHubTermaddrAndAndDel(hubTermaddr,0);
+                        if(list!=null&&list.size()>0){
+                            FiDevHub hub = (FiDevHub)list.get(0);
+                            hub.setThermometry1(row.getCell(1).getStringCellValue());
+                            hub.setThermometry2(row.getCell(2).getStringCellValue());
+                            hub.setThermometry3(row.getCell(3).getStringCellValue());
+                            hub.setThermometry4(row.getCell(4).getStringCellValue());
+                            hub.setThermometry5(row.getCell(5).getStringCellValue());
+                            hub.setThermometry6(row.getCell(6).getStringCellValue());
+                            hub.setThermometry7(row.getCell(7).getStringCellValue());
+                            hub.setThermometry8(row.getCell(8).getStringCellValue());
+                            hub.setThermometry9(row.getCell(9).getStringCellValue());
+                            hub.setThermometry10(row.getCell(10).getStringCellValue());
+                            hub.setThermometry11(row.getCell(11).getStringCellValue());
+                            hub.setThermometry12(row.getCell(12).getStringCellValue());
+                            devList.add(hub);
+                        }
 
-
-                    } catch (Exception e) {
+                    } catch (NumberFormatException e) {
                         e.printStackTrace();
-                        result.add("表格第"+(rowNum + 1)+"行数据存在格式问题，请检查或将内容为数字的列转为文本格式后再试！");
+                        result.add("表格第"+(rowNum + 1)+"行终端地址格式错误！");
                     }
 
                 }
 
-                if(result.size()<=0){
+                if(devList.size()>0){
                     fiDevHubRepository.saveAll(devList);
                 }
             }
@@ -227,4 +258,12 @@ public class FiDevHubController extends BaseController<FiDevHub> {
     }
 
 
+    public static void main(String[] s){
+        try{
+            long id = Float.valueOf("2").longValue();
+        }catch(java.lang.NumberFormatException e){
+            System.out.println("======"+e.getMessage());
+        }
+
+    }
 }
