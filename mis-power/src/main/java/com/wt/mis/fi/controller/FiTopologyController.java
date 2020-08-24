@@ -16,8 +16,11 @@ import com.wt.mis.dev.repository.TransFormRepository;
 import com.wt.mis.event.repository.PowerOutageRepository;
 import com.wt.mis.fi.entity.FiDevHub;
 import com.wt.mis.fi.entity.FiLine;
+import com.wt.mis.fi.entity.YcReal;
+import com.wt.mis.fi.entity.YxReal;
 import com.wt.mis.fi.repository.FiDevHubRepository;
 import com.wt.mis.fi.repository.FiLineRepository;
+import com.wt.mis.fi.repository.YxRealRepository;
 import com.wt.mis.sys.util.DictUtils;
 import io.swagger.annotations.ApiOperation;
 import lombok.NonNull;
@@ -44,6 +47,9 @@ public class FiTopologyController {
 
     @Autowired
     SearchService searchService;
+
+    @Autowired
+    YxRealRepository yxRealRepository;
 
     private String getUrlPrefix() {
         return "fi/topology";
@@ -202,17 +208,15 @@ public class FiTopologyController {
 
 
         /**
-         * 获取台区下面的拓扑信息
+         * 获取报警设备信息
          * @return
          */
-//    @GetMapping("/all_transform")
-//    @ResponseBody
-//    public Map<String,Object> getAllTransform(){
-//        Map<String,Object> resultMap = new HashMap();
-//        List<Topology> transformList = topologyRepository.findAllByDelAndDevType(0,2);
-//        resultMap.put("topologyList",transformList);
-//        return resultMap;
-//    }
+    @GetMapping("/current_alarm_list")
+    @ResponseBody
+    public List getAllTransform(){
+        List list = yxRealRepository.findGroupByHubId();
+        return list;
+    }
 
 
 

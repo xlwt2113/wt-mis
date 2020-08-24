@@ -3,6 +3,7 @@ package com.wt.mis.sys.repository;
 import com.wt.mis.core.repository.BaseRepository;
 import com.wt.mis.sys.entity.Menu;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,6 +75,9 @@ public interface MenuRepository extends BaseRepository<Menu, Long> {
     @Transactional
     @Modifying
     void deleteAllByParId(Long parId);
+
+    @Query("from Menu where del = 0 and parId = (select id from Menu where href = ?1 or title = ?1 and del = 0) and href = ?2")
+    List<Menu> getMenuByTtileAndHref(String title,String opt);
 
 
 }

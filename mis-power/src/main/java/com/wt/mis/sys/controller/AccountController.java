@@ -172,4 +172,11 @@ public class AccountController extends BaseController<Account> {
     }
 
 
+    @GetMapping("/testRole")
+    @ResponseBody
+    public List testRole(){
+        return this.roleService.getAllRoleAccoutByMenuAndOpt("/fi/topology/view","alarm");
+    }
+
+
 }

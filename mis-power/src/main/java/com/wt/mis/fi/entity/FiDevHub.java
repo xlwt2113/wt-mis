@@ -21,9 +21,6 @@ import java.util.Date;
 public class FiDevHub extends BaseEntity {
 
 
-    FiDevHub(){
-
-    }
     /**
     * 终端地址
     */
@@ -109,6 +106,12 @@ public class FiDevHub extends BaseEntity {
     */
     @Column(columnDefinition = " int COMMENT '归属线路'")
     private Long lineId;
+
+    /**
+     * 归属线路
+     */
+    @Column(columnDefinition = " int default 0 COMMENT '节点类型 0 设备  1 虚拟'")
+    private Integer nodeType;
 
     public String getOnlineStatusName(){
         return this.onlineStatus==0?"在线":"不在线";

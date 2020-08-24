@@ -49,9 +49,8 @@
 </html>
 <script th:inline="javascript">
     layui.use(['layer','form'], function () {
-        var form = layui.form;
-        form.render();
-
+            var form = layui.form;
+            form.render();
             var canvas = document.getElementById('canvas');
             var stage = new JTopo.Stage(canvas);
             var scene = new JTopo.Scene(stage);
@@ -113,40 +112,40 @@
 
 
 
+
+
                 //获取停电报警数据
-                // setInterval(function () {
-                //     window.clearTimeout(alarm);
-                //     $.getJSON("/event/poweroutage/current_power_list",function (res) {
-                //         data = res.data;
-                //         // console.log(data);
-                //         alarm = setInterval(function(){
-                //             for(let j=0;j<data.length;j++){
-                //                 if(data[j].transformId==transformId){
-                //                     let alarmNode = nodeMap.get(data[j].devId+"="+data[j].devType);
-                //                     if(alarmNode!=undefined){
-                //                         alarmNode.alarmColor = '255,0,0';
-                //                         alarmNode.alarmAlpha = 1;
-                //                         alarmNode.alarm == '设备报警'? alarmNode.alarm = null : alarmNode.alarm = '设备报警';
-                //                     }
-                //                 }
-                //             }
-                //
-                //         },1000);
-                //     });
-                //     $.getJSON("/dev/topology/transform_view_data/"+transformId,function (data) {
-                //         topologyList = data.topologyList;
-                //         for(let i=0;i<allNodes.length;i++){
-                //             for(let j=0;j<topologyList.length;j++){
-                //                 if(allNodes[i].info.devId ==topologyList[j].devId && allNodes[i].info.devType == topologyList[j].devType){
-                //                     allNodes[i].setImage('/images/'+topologyList[j].devType+'_'+topologyList[j].devOnline+'.png', true);
-                //                 }
-                //             }
-                //         }
-                //     });
-                //
-                // },15000);
+                setInterval(function () {
+                    window.clearTimeout(alarm);
+                    $.getJSON("/fi/topology/current_alarm_list",function (data) {
+                        // console.log(data);
+                        alarm = setInterval(function(){
+                            for(let j=0;j<data.length;j++){
+                                    let alarmNode = nodeMap.get(data[j]);
+                                    if(alarmNode!=undefined){
+                                        alarmNode.alarmColor = '255,0,0';
+                                        alarmNode.alarmAlpha = 1;
+                                        alarmNode.alarm == '设备报警'? alarmNode.alarm = null : alarmNode.alarm = '设备报警';
+                                    }
+                            }
+
+                        },1000);
+                    });
+                    $.getJSON("/fi/topology/transform_view_data/"+transformId,function (data) {
+                        topologyList = data.topologyList;
+                        for(let i=0;i<allNodes.length;i++){
+                            for(let j=0;j<topologyList.length;j++){
+                                if(allNodes[i].info.hubTermaddr == topologyList[j].hubTermaddr ){
+                                    allNodes[i].setImage('/images/2_'+topologyList[j].onlineStatus+'.png', true);
+                                }
+                            }
+                        }
+                    });
+
+                },15000);
 
             });
+
 
 
 
@@ -169,33 +168,48 @@
 
             //添加节点
             function addNode(nodeInfo){
-                var node = new JTopo.Node(nodeInfo.hubLocation);
-                node.textOffsetY = 10; // 文本偏移量（向下3个像素）
-                node.info = nodeInfo;
-                node.setImage('/images/2_'+nodeInfo.onlineStatus+'.png', true);
-                node.alarm = null;
-                node.fontColor = '0,0,0'
-                node.dbclick(function(event){
-                    //console.log(this.info.devId);
-                    //console.log(this.info.devName);
-                    layer.open({
-                        type: 2,
-                        content: '/fi/topology/dev_info/'+node.info.id
-                        , anim: 2 //载入方式
-                        , area: ['100%', '100%'] //设置窗口宽高
-                        , title: '设备数据' //窗口标题
-                        , maxmin: true //允许最大化
-                        , btn: ['关闭']
-                        , btnAlign: 'r' //按钮靠右
-                        , yes: function (index, layerObj) {
-                            layer.close(index);
-                        }
+                if(nodeInfo.nodeType == 0){
+                    var node = new JTopo.Node(nodeInfo.hubLocation);
+                    node.textOffsetY = 10; // 文本偏移量（向下3个像素）
+                    node.info = nodeInfo;
+                    node.setImage('/images/2_'+nodeInfo.onlineStatus+'.png', true);
+                    node.alarm = null;
+                    node.fontColor = '0,0,0'
+                    node.dbclick(function(event){
+                        //console.log(this.info.devId);
+                        //console.log(this.info.devName);
+                        layer.open({
+                            type: 2,
+                            content: '/fi/topology/dev_info/'+node.info.id
+                            , anim: 2 //载入方式
+                            , area: ['100%', '100%'] //设置窗口宽高
+                            , title: '设备数据' //窗口标题
+                            , maxmin: true //允许最大化
+                            , btn: ['关闭']
+                            , btnAlign: 'r' //按钮靠右
+                            , yes: function (index, layerObj) {
+                                layer.close(index);
+                            }
+                        });
                     });
-                });
-                scene.add(node);
-                //获取所有添加的节点
-                nodeMap.set(nodeInfo.id,node);
-                return node;
+                    scene.add(node);
+                    //获取所有添加的节点
+                    nodeMap.set(nodeInfo.hubTermaddr,node);
+                    allNodes.push(node);
+                    return node;
+                }else{
+                    var node = new JTopo.CircleNode();
+                    node.radius = 12; // 半径
+                    node.alpha = 1;
+                    node.fillColor = '255, 0, 0'; // 填充颜色
+                    node.info = nodeInfo;
+                    node.alarm = null;
+                    scene.add(node);
+                    //获取所有添加的节点
+                    nodeMap.set(nodeInfo.hubTermaddr,node);
+                    allNodes.push(node);
+                    return node;
+                }
             }
 
             //添加连接线

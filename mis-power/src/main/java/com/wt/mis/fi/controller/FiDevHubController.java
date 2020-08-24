@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.poifs.filesystem.NotOLE2FileException;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -110,8 +111,21 @@ public class FiDevHubController extends BaseController<FiDevHub> {
             FiDevHub pfiDevHub = fiDevHubRepository.getOne(fiDevHub.getParentId());
             mv.addObject("parentName",pfiDevHub.getHubLocation()+"["+pfiDevHub.getHubTermaddr()+"]");
         }
-
         return mv;
+    }
+
+    @ApiOperation("添加虚拟节点")
+    @PostMapping("/addXnNode")
+    @ResponseBody
+    protected String addXnNode(HttpServletRequest request) {
+        FiDevHub fiDevHub = fiDevHubRepository.getOne(Long.valueOf(request.getParameter("id")));
+        FiDevHub xnNode = new FiDevHub();
+        xnNode.setLineId(fiDevHub.getLineId());
+        xnNode.setParentId(fiDevHub.getId());
+        xnNode.setHubLocation("虚拟节点");
+        xnNode.setNodeType(1);
+        fiDevHubRepository.save(xnNode);
+        return ResponseUtils.okJson("新增成功", xnNode);
     }
 
     @ResponseBody
@@ -133,9 +147,18 @@ public class FiDevHubController extends BaseController<FiDevHub> {
         List<FiDevHub> devList = fiDevHubRepository.findAllByLineIdAndParentIdAndDel(line.getId(),0,0);
         List<FiDevHub> alldevList = fiDevHubRepository.findAllByLineIdAndDel(line.getId().intValue(),0);
         for(FiDevHub dev : devList){
-            TreeView devView = new TreeView(dev.getId().toString(),dev.getHubLocation()+"["+dev.getHubTermaddr().toString()+"]",true,"dev");
-            devView.setChildren(getChildHubDg(dev,alldevList));
-            hubViewList.add(devView);
+            if(dev.getNodeType()==0){
+                //设备节点
+                TreeView devView = new TreeView(dev.getId().toString(),dev.getHubLocation()+"["+dev.getHubTermaddr().toString()+"]",true,"dev");
+                devView.setChildren(getChildHubDg(dev,alldevList));
+                hubViewList.add(devView);
+            }else{
+                //虚拟节点
+                TreeView devView = new TreeView(dev.getId().toString(),dev.getHubLocation(),true,"node");
+                devView.setChildren(getChildHubDg(dev,alldevList));
+                hubViewList.add(devView);
+            }
+
         }
         return hubViewList;
     }
@@ -151,9 +174,16 @@ public class FiDevHubController extends BaseController<FiDevHub> {
         List<TreeView> childList = new ArrayList();
         for (FiDevHub depChild : depList) {
             if (depChild.getParentId().longValue() == dep.getId().longValue()) {
-                TreeView devView = new TreeView(depChild.getId().toString(),depChild.getHubLocation()+"["+depChild.getHubTermaddr().toString()+"]",true,"dev");
-                devView.setChildren(getChildHubDg(depChild, depList));
-                childList.add(devView);
+                if(depChild.getNodeType()==0){
+                    TreeView devView = new TreeView(depChild.getId().toString(),depChild.getHubLocation()+"["+depChild.getHubTermaddr().toString()+"]",true,"dev");
+                    devView.setChildren(getChildHubDg(depChild, depList));
+                    childList.add(devView);
+                }else{
+                    TreeView devView = new TreeView(depChild.getId().toString(),depChild.getHubLocation(),true,"node");
+                    devView.setChildren(getChildHubDg(depChild, depList));
+                    childList.add(devView);
+                }
+
             }
         }
         return childList;

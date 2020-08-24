@@ -3,6 +3,7 @@ package com.wt.mis.sys.service;
 import com.wt.mis.sys.entity.Account;
 import com.wt.mis.sys.entity.Menu;
 import com.wt.mis.sys.entity.Role;
+import com.wt.mis.sys.entity.RoleAccount;
 
 import java.util.List;
 
@@ -40,4 +41,12 @@ public interface RoleService {
      * @return
      */
     List<Role> getAllRoleByMenuId(Long menuId);
+
+    /**
+     * 根据菜单名称及操作名获取有权限的账号
+     * @param menuName
+     * @param opt
+     * @return
+     */
+    List<RoleAccount> getAllRoleAccoutByMenuAndOpt(String menuName,String opt);
 }

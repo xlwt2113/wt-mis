@@ -46,4 +46,7 @@ public interface AccountRepository extends BaseRepository<Account, Long> {
 
     @Query(value = "select t1 from Account as t1 left join Dep as t2 on t1.depId = t2.id where t1.del=0 and t2.level like '_?1%'")
     List<Account> findAllByDepLevel(String depLevel);
+
+
+
 }

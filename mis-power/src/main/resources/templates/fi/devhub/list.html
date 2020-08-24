@@ -39,7 +39,8 @@
                     <fieldset class="layui-elem-field layuimini-search">
                         <div style="margin: 10px 10px 10px 10px">
                                 <div class="layui-form-item">
-                                    <button class="layui-btn data-add-btn layui-btn-sm" id="addBtn" style="display: none"><i class="layui-icon">&#xe654;</i>添加下级</button>
+                                    <button class="layui-btn data-add-btn layui-btn-sm" id="addBtn" style="display: none"><i class="layui-icon">&#xe654;</i>添加下级汇集单元</button>
+                                    <button class="layui-btn data-add-btn layui-btn-sm" id="addXnBtn" style="display: none"><i class="layui-icon">&#xe654;</i>添加下级虚拟节点</button>
                                     <button class="layui-btn layui-btn-normal layui-btn-sm" id="editBtn" style="display: none"><i class="layui-icon">&#xe642;</i>修改</button>
                                     <button class="layui-btn layui-btn-danger data-delete-btn layui-btn-sm" id="deleteBtn" style="display: none"><i class="layui-icon">&#xe640;</i>删除</button>
                                 </div>
@@ -61,8 +62,11 @@
 
     var delete_url = '/fi/devhub/delete';
     var add_page_url = '/fi/devhub/add';
+    var addXnNode_url = '/fi/devhub/addXnNode';
     var edit_page_url = '/fi/devhub/edit';
     var import_page_url = '/fi/devhub/import';
+
+    var selectNodeId;
 
     layui.use(['form', 'table','laydate','treeSelect','tree', 'upload'], function () {
         var $ = layui.jquery,
@@ -79,6 +83,16 @@
         $("#addBtn").on('click', function () {
             config.add(add_page_url);
         });
+
+        $("#addXnBtn").on('click', function () {
+            $.post(addXnNode_url, {"id":selectNodeId}, function (result) {
+                let r = JSON.parse(result);
+                if (r.code == 200) {
+                    location.reload();
+                }
+            });
+        });
+
 
         $("#editBtn").on('click', function () {
             config.add(edit_page_url,{title: '修改'});
@@ -149,12 +163,25 @@
                         $('#addBtn').show();
                         $('#editBtn').hide();
                         $('#deleteBtn').hide();
+                        $('#addXnBtn').hide();
                         add_page_url = temp_add_page_url +'?parentId=0&lineId='+obj.data.id;
-                    }else{
+                    }else if(obj.data.type == 'dev'){
                         $('#devInfo').load('/fi/devhub/view?id='+obj.data.id);
                         $('#addBtn').show();
                         $('#editBtn').show();
                         $('#deleteBtn').show();
+                        $('#addXnBtn').show();
+                        delete_url = temp_delete_url + "?id="+obj.data.id;
+                        add_page_url = temp_add_page_url +'?parentId='+obj.data.id;
+                        edit_page_url = temp_edit_page_url +  '?id='+obj.data.id;
+                        selectNodeId = obj.data.id;
+                    }else if(obj.data.type == 'node'){
+                        //虚拟节点
+                        $('#devInfo').load('/fi/devhub/view?id='+obj.data.id);
+                        $('#deleteBtn').show();
+                        $('#addXnBtn').hide();
+                        $('#addBtn').hide();
+                        $('#editBtn').hide();
                         delete_url = temp_delete_url + "?id="+obj.data.id;
                         add_page_url = temp_add_page_url +'?parentId='+obj.data.id;
                         edit_page_url = temp_edit_page_url +  '?id='+obj.data.id;

@@ -15,13 +15,17 @@ import com.wt.mis.event.entity.PowerOutage;
 import com.wt.mis.event.repository.EeventTaskRepository;
 import com.wt.mis.event.repository.NotificationRepository;
 import com.wt.mis.event.repository.PowerOutageRepository;
+import com.wt.mis.fi.entity.FiEventNotification;
+import com.wt.mis.fi.repository.FiEventNotificationRepository;
 import com.wt.mis.sms.entity.Mobile;
 import com.wt.mis.sms.entity.SmsserverOut;
 import com.wt.mis.sms.repository.MobileRepository;
 import com.wt.mis.sms.repository.SmsserverOutRepository;
 import com.wt.mis.sys.entity.Account;
+import com.wt.mis.sys.entity.RoleAccount;
 import com.wt.mis.sys.repository.AccountRepository;
 import com.wt.mis.sys.repository.DepRespository;
+import com.wt.mis.sys.service.RoleService;
 import com.wt.mis.sys.util.DictUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +47,8 @@ public class EventTaskRun {
     @Autowired
     NotificationRepository notificationRepository;
     @Autowired
+    FiEventNotificationRepository fiEventNotificationRepository;
+    @Autowired
     DevService devService;
     @Autowired
     AccountRepository accountRepository;
@@ -62,6 +68,8 @@ public class EventTaskRun {
     SmsserverOutRepository smsserverOutRepository;
     @Autowired
     PowerOutageRepository powerOutageRepository;
+    @Autowired
+    RoleService roleService;
 
     /**
      * 定时任务执行方法
@@ -182,6 +190,45 @@ public class EventTaskRun {
         }
     }
 
+    //处理故障指示器通知信息
+    private void dealFiNotificationReceive(){
+        List<FiEventNotification> fiEventNotificationList = fiEventNotificationRepository.getAllByDelAndEventTypeAndEventReceiver(0,3,1);
+        for(FiEventNotification event :fiEventNotificationList){
+            event.setEventStatus(2);//处理成功
+            fiEventNotificationRepository.save(event);
+
+
+            List<SmsserverOut> sendList = new ArrayList<>();
+            StringBuffer sendMsg = new StringBuffer();
+
+            //获取通知的接收人员
+            List<RoleAccount> roleAccountList = this.roleService.getAllRoleAccoutByMenuAndOpt("/fi/topology/view","alarm");
+            for(RoleAccount roleAccount:roleAccountList){
+                Account sendUser = accountRepository.getOne(roleAccount.getAccountId());
+                //发送短信
+                SmsserverOut out = new SmsserverOut();
+                out.setType("O");
+                out.setRecipient(sendUser.getMobile());
+                out.setCreateDate(new Date());
+                out.setEncoding("U");
+                out.setStatusReport(0);
+                out.setFlashSms(0);
+                out.setSrcPort(-1);
+                out.setDstPort(-1);
+                out.setPriority(0);
+                out.setStatus("U");
+                out.setErrors(0);
+                out.setGatewayId("*");
+                out.setUserId("admin");
+                out.setText(sendMsg.toString());
+                out.setOriginator("");
+                sendList.add(out);
+                //发送页面通知
+            }
+
+        }
+    }
+
 
     /**
      * 根据设备id及类型获取管理该设备的人员信息
@@ -213,7 +260,7 @@ public class EventTaskRun {
              * 13 查询设备台区号
              * 15 查询拓扑等级
              */
-            if(notification.getEventType()==12 || notification.getEventType()==13 || notification.getEventType()==15){
+            if(notification.getEventType()==12 || notification.getEventType()==13 || notification.getEventType()==15 ){
                 msg.append(",返回结果为："+notification.getEventValue());
             }
 

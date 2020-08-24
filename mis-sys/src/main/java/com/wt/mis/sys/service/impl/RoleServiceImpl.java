@@ -103,6 +103,20 @@ public class RoleServiceImpl implements RoleService {
         } else {
             return roleRepository.findAllByIds(ids);
         }
+    }
 
+    @Override
+    public List<RoleAccount> getAllRoleAccoutByMenuAndOpt(String menuName, String opt) {
+        List allRoleAccountList = new ArrayList();
+        List<Menu> menuList = menuRepository.getMenuByTtileAndHref(menuName,opt);
+        if(menuList!=null&&menuList.size()>0){
+            Menu menu = menuList.get(0);
+            List<RoleMenu> roleMenuList=  this.roleMenuRepository.findAllByMenuId(menu.getId());
+            for(RoleMenu roleMenu : roleMenuList){
+                List<RoleAccount> roleAccountList = this.roleAccountRepository.findAllByRoleId(roleMenu.getRoleId());
+                allRoleAccountList.addAll(roleAccountList);
+            }
+        }
+        return allRoleAccountList;
     }
 }
