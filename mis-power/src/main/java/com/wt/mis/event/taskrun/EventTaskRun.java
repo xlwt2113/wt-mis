@@ -74,11 +74,12 @@ public class EventTaskRun {
     /**
      * 定时任务执行方法
      */
-    @Scheduled(cron = "0/5 * * * * ?")
+    @Scheduled(cron = "0/15 * * * * ?")
     private void configureTasks() {
         log.info("========定时任务启动...");
         this.dealNotificationSend();
         this.dealNotificationReceive();
+        this.dealFiNotificationReceive();
         log.info("========定时任务结束...");
     }
 
@@ -192,7 +193,7 @@ public class EventTaskRun {
 
     //处理故障指示器通知信息
     private void dealFiNotificationReceive(){
-        List<FiEventNotification> fiEventNotificationList = fiEventNotificationRepository.getAllByDelAndEventTypeAndEventReceiver(0,3,1);
+        List<FiEventNotification> fiEventNotificationList = fiEventNotificationRepository.getAllByDelAndEventTypeAndEventReceiverAndEventStatus(0,3,1,0);
         for(FiEventNotification event :fiEventNotificationList){
             event.setEventStatus(2);//处理成功
             fiEventNotificationRepository.save(event);
@@ -220,12 +221,12 @@ public class EventTaskRun {
                 out.setErrors(0);
                 out.setGatewayId("*");
                 out.setUserId("admin");
-                out.setText(sendMsg.toString());
+                out.setText(event.getEventValue()); //短信发送内容从事件通知表中获取
                 out.setOriginator("");
                 sendList.add(out);
                 //发送页面通知
             }
-
+            smsserverOutRepository.saveAll(sendList);
         }
     }
 

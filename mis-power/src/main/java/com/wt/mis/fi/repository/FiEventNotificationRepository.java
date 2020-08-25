@@ -22,5 +22,5 @@ public interface FiEventNotificationRepository extends BaseRepository<FiEventNot
      * @param eventReceiver
      * @return
      */
-    List<FiEventNotification> getAllByDelAndEventTypeAndEventReceiver(int del,int eventType,int eventReceiver);
+    List<FiEventNotification> getAllByDelAndEventTypeAndEventReceiverAndEventStatus(int del,int eventType,int eventReceiver,int eventStatus);
 }
