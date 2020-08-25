@@ -85,6 +85,7 @@
         });
 
         $("#addXnBtn").on('click', function () {
+            console.log(selectNodeId);
             $.post(addXnNode_url, {"id":selectNodeId}, function (result) {
                 let r = JSON.parse(result);
                 if (r.code == 200) {
@@ -156,6 +157,7 @@
                     var temp_delete_url = '/fi/devhub/delete';
                     var temp_add_page_url = '/fi/devhub/add';
                     var temp_edit_page_url = '/fi/devhub/edit';
+                    selectNodeId = obj.data.id;
 
                     // layer.msg(JSON.stringify(obj.data));
                     if(obj.data.type == 'line'){
@@ -174,17 +176,15 @@
                         delete_url = temp_delete_url + "?id="+obj.data.id;
                         add_page_url = temp_add_page_url +'?parentId='+obj.data.id;
                         edit_page_url = temp_edit_page_url +  '?id='+obj.data.id;
-                        selectNodeId = obj.data.id;
                     }else if(obj.data.type == 'node'){
                         //虚拟节点
                         $('#devInfo').load('/fi/devhub/view?id='+obj.data.id);
                         $('#deleteBtn').show();
-                        $('#addXnBtn').hide();
+                        $('#addXnBtn').show();
                         $('#addBtn').hide();
                         $('#editBtn').hide();
                         delete_url = temp_delete_url + "?id="+obj.data.id;
                         add_page_url = temp_add_page_url +'?parentId='+obj.data.id;
-                        edit_page_url = temp_edit_page_url +  '?id='+obj.data.id;
                     }
                 }
             });

@@ -20,11 +20,11 @@
                 <div class="layui-form-item">
                     <div class="layui-inline" th:text="${hub.hubLocation}"></div>
                     <div class="layui-inline">
-                        <input type="text" name="beginTime" id="beginTime" autocomplete="off" class="layui-input" placeholder="更新时间开始">
+                        <input type="text" name="beginTime" id="beginTime" autocomplete="off" class="layui-input" placeholder="更新时间开始" th:value="${beginTime}">
                     </div>
                     -
                     <div class="layui-inline">
-                        <input type="text" name="endTime" id="endTime" autocomplete="off" class="layui-input" placeholder="更新时间结束">
+                        <input type="text" name="endTime" id="endTime" autocomplete="off" class="layui-input" placeholder="更新时间结束"  th:value="${endTime}">
                     </div>
                     <div class="layui-inline">
                         <select class="layui-select" name="inforAddr" id="inforAddr" lay-filter="inforAddr" lay-search>
@@ -86,6 +86,16 @@
     <font color="green">正常</font>
     {{#  } else if(d.yx_value == 1) { }}
     <font color="red">告警</font>
+    {{#  } else { }}
+    <font color="yellow">不确定</font>
+    {{#  } }}
+</script>
+
+<script type="text/html" id="yxHisStatus">
+    {{#  if(d.yx_value == 0){ }}
+    <font color="green">复归</font>
+    {{#  } else if(d.yx_value == 1) { }}
+    <font color="red">动作</font>
     {{#  } else { }}
     <font color="yellow">不确定</font>
     {{#  } }}
@@ -173,7 +183,7 @@
                 {field: 'update_time_str', width: 200, title: '更新时间'},
                 {field: 'infor_addr_name', width: 200, title: 'SOE名称'},
                 {field: 'infor_addr', width: 200, title: '信息体地址(H)'},
-                {field: 'yx_value', width: 200, title: '遥信状态',templet: '#yxStatus'},
+                {field: 'yx_value', width: 200, title: 'SEO状态',templet: '#yxHisStatus'},
             ]]
         }));
 

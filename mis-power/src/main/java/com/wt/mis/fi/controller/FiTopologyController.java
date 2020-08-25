@@ -103,6 +103,8 @@ public class FiTopologyController {
     public ModelAndView devInfoView(@PathVariable Long devId){
         ModelAndView mv = new ModelAndView(this.getUrlPrefix() + "/dev_info");
         FiDevHub fiDevHub = fiDevHubRepository.getOne(devId);
+        mv.addObject("beginTime",DateUtils.dateFormat(new Date())+" 00:00:00");
+        mv.addObject("endTime",DateUtils.dateFormat(new Date())+" 23:59:59");
         mv.addObject("hub",fiDevHub);
         mv.addObject("devId",devId);
         return mv;

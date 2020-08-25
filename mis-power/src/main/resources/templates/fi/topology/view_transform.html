@@ -135,7 +135,7 @@
                         topologyList = data.topologyList;
                         for(let i=0;i<allNodes.length;i++){
                             for(let j=0;j<topologyList.length;j++){
-                                if(allNodes[i].info.hubTermaddr == topologyList[j].hubTermaddr ){
+                                if(allNodes[i].info.id == topologyList[j].id ){
                                     allNodes[i].setImage('/images/2_'+topologyList[j].onlineStatus+'.png', true);
                                 }
                             }
@@ -194,7 +194,7 @@
                     });
                     scene.add(node);
                     //获取所有添加的节点
-                    nodeMap.set(nodeInfo.hubTermaddr,node);
+                    nodeMap.set(nodeInfo.id,node);
                     allNodes.push(node);
                     return node;
                 }else{
@@ -206,7 +206,7 @@
                     node.alarm = null;
                     scene.add(node);
                     //获取所有添加的节点
-                    nodeMap.set(nodeInfo.hubTermaddr,node);
+                    nodeMap.set(nodeInfo.id,node);
                     allNodes.push(node);
                     return node;
                 }

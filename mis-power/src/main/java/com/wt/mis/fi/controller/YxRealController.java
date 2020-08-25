@@ -3,6 +3,7 @@ package com.wt.mis.fi.controller;
 
 import com.wt.mis.core.controller.BaseController;
 import com.wt.mis.core.repository.BaseRepository;
+import com.wt.mis.core.util.DateUtils;
 import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.fi.entity.YxReal;
 import com.wt.mis.fi.repository.YxRealRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -39,18 +41,20 @@ public class YxRealController extends BaseController<YxReal> {
         StringBuffer sql = new StringBuffer("select t1.*,t2.hub_location,DATE_FORMAT(t1.update_time,'%Y-%m-%d %H:%i') as update_time_str from fi_yx_real as t1 left join fi_dev_hub as t2 on t1.hub_id = t2.id  where t1.del = 0 ");
         sql.append(" and t1.hub_id = "+request.getParameter("hubId"));
 
+        String beginTime = DateUtils.dateFormat(new Date())+" 00:00:00";
+        String endTime = DateUtils.dateFormat(new Date())+" 23:59:59";
         if(StringUtils.isNotEmpty(request.getParameter("beginTime"))){
-            String beginTime = request.getParameter("beginTime");
-            sql.append(" and t1.update_time >= '"+beginTime+"'");
+            beginTime = request.getParameter("beginTime");
         }
         if(StringUtils.isNotEmpty(request.getParameter("endTime"))){
-            String endTime = request.getParameter("endTime");
-            sql.append(" and t1.update_time <= '"+endTime+"'");
+            endTime = request.getParameter("endTime");
         }
+        sql.append(" and t1.update_time >= '"+beginTime+"'");
+        sql.append(" and t1.update_time <= '"+endTime+"'");
         if(StringUtils.isNotEmpty(request.getParameter("inforAddr"))){
             sql.append(" and t1.infor_addr = '"+request.getParameter("inforAddr")+"'");
         }
-        sql.append(" order by t1.id asc");
+        sql.append(" order by t1.id desc");
         return sql.toString();
     }
 
