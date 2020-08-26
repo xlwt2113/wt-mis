@@ -88,6 +88,7 @@ public class FiDevHubController extends BaseController<FiDevHub> {
             return ResponseUtils.errorJson("终端地址已经存在！",fiDevHub);
         }
         fiDevHub.setOnlineStatus(1); //默认设置为不在线
+        fiDevHub.setNodeType(0);//默认为设备节点
         //添加线路下的节点时不用设置lineid
         if(fiDevHub.getParentId()!=0){
             FiDevHub pdev = fiDevHubRepository.getOne(fiDevHub.getParentId());
@@ -123,7 +124,7 @@ public class FiDevHubController extends BaseController<FiDevHub> {
         xnNode.setLineId(fiDevHub.getLineId());
         xnNode.setParentId(fiDevHub.getId());
         xnNode.setHubLocation("虚拟节点");
-        xnNode.setNodeType(1);
+        xnNode.setNodeType(1);//虚拟节点
         fiDevHubRepository.save(xnNode);
         return ResponseUtils.okJson("新增成功", xnNode);
     }

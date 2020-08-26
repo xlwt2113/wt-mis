@@ -54,7 +54,7 @@ public class YcHistoryController extends BaseController<YcHistory> {
         if(StringUtils.isNotEmpty(request.getParameter("inforAddr"))){
             sql.append(" and t1.infor_addr = '"+request.getParameter("inforAddr")+"'");
         }
-        sql.append(" order by t1.id desc");
+        sql.append(" order by t1.update_time desc , t1.infor_addr asc");
         return sql.toString();
     }
 
