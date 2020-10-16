@@ -26,8 +26,11 @@ public class DaySms extends BaseEntity {
     /**
     * 用户所选设备id，逗号分隔
     */
-    @Column(columnDefinition = " varchar(100) COMMENT '用户所选设备id，逗号分隔'")
+    @Column(columnDefinition = " varchar(3000) COMMENT '用户所选设备id，逗号分隔'")
     private String devIds;
+
+    @Column(columnDefinition = " varchar(3000) COMMENT '用户所选设备名称，逗号分隔'")
+    private String devNames;
     /**
     * 发送时间
     */
@@ -36,8 +39,11 @@ public class DaySms extends BaseEntity {
     /**
     * 用户所选的的测点，逗号分隔
     */
-    @Column(columnDefinition = " int COMMENT '用户所选的的测点，逗号分隔'")
+    @Column(columnDefinition = " varchar(3000) COMMENT '用户所选的的测点ID，逗号分隔'")
     private String pointTypes;
+
+    @Column(columnDefinition = " varchar(3000) COMMENT '用户所选的的测点名称，逗号分隔'")
+    private String pointTypeNames;
     /**
     * 是否接收故障通知短信
     */

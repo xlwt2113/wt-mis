@@ -13,11 +13,22 @@
 <form class="layui-form" action="" th:object="${model}">
     <input type="hidden" th:field="*{id}"> <!--此处必须有业务主键的id-->
 
+        <div class="layui-form-item">
+            <label class="layui-form-label">发送时间</label>
+            <div class="layui-input-block">
+                <input type="text" th:field="*{sendTime}" class="layui-input" placeholder="HH:mm:ss" lay-verify="sendTime">
+            </div>
+        </div>
 
         <div class="layui-form-item">
             <label class="layui-form-label">用户</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{userId}" autocomplete="off" placeholder="请输入用户id" class="layui-input">
+                <select class="layui-select"  th:field="*{userId}" placeholder="请选择用户"  lay-verify="userId">
+                    <option value="">请选择用户</option>
+                    <each th:each="item:${accountList}">
+                        <option th:value="${item.id}" th:text="${item.realName}"></option>
+                    </each>
+                </select>
             </div>
         </div>
 
@@ -25,15 +36,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">关注设备</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{devIds}" autocomplete="off" placeholder="请输入用户所选设备id，逗号分隔" class="layui-input">
-            </div>
-        </div>
-
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">发送时间</label>
-            <div class="layui-input-block">
-                        <input type="text" th:field="*{sendTime}" class="layui-input" id="test-limit3" placeholder="HH:mm:ss">
+                <div id="devIdsTree"></div>
             </div>
         </div>
 
@@ -41,7 +44,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">关注测点</label>
             <div class="layui-input-block">
-                        <input type="text" th:field="*{pointTypes}" autocomplete="off" placeholder="请选择用户所选的的测点" class="layui-input">
+                <div id="pointTypes"></div>
             </div>
         </div>
 
@@ -74,26 +77,85 @@
     //用于保存所有的上传文件信息
     var uploadFileMap = new Map();
 
-    layui.use(['form', 'laydate', 'upload','treeSelect'], function () {
+    layui.use(['form', 'laydate', 'upload','selectM','xmSelect'], function () {
         var form = layui.form
                 , laydate = layui.laydate
                 , upload = layui.upload
-                ,treeSelect = layui.treeSelect
+                ,selectM = layui.selectM
+                ,xmSelect = layui.xmSelect
                 , $ = layui.jquery;
 
 
         //自定义验证规则
         form.verify({
+            sendTime:function (value) {
+                if (value == '') {
+                    return '必须选择时间';
+                }
+            },
+            userId:function (value) {
+                if (value == '') {
+                    return '必须选择用户';
+                }
+            },
                 "test" :function(){}
         });
 
+        $.getJSON("/fi/devhub/tree", function(treeData){
+            //设备树
+            var devIdsTree = xmSelect.render({
+                el: '#devIdsTree',
+                name: 'devIds',
+                autoRow: true,
+                filterable: true,
+                tips: '请选择关注设备',
+                tree: {
+                    show: true,
+                    showFolderIcon: true,
+                    showLine: true,
+                    indent: 20,
+                    expandedKeys: true,  //默认展开所有节点
+                    strict: false,       //是否严格遵守父子模式
+                },
+                toolbar: {
+                    show: true,
+                    list: ['ALL', 'REVERSE', 'CLEAR']
+                },
+                prop: {
+                    name: 'title',
+                    value: 'id',
+                },
+                filterable: true,
+                height: 'auto',
+                layVerify: 'required',
+                layVerType: '请选择关注设备',
+                data: treeData
+                // data(){
+                //     return [{"id":"3","title":"官渡所-10kV牟3板牟邵线","spread":true,"type":"line","children":[{"id":"21","title":"1#分段开关[9999]","spread":true,"type":"dev","children":[{"id":"22","title":"2#分段开关[9998]","spread":true,"type":"dev","children":[{"id":"23","title":"李庄分支开关[9997]","spread":true,"type":"dev","children":[]},{"id":"24","title":"田庄分支开关[9996]","spread":true,"type":"dev","children":[]},{"id":"25","title":"付庄分支开关[9995]","spread":true,"type":"dev","children":[]},{"id":"26","title":"周庄分支开关[9994]","spread":true,"type":"dev","children":[]}]}]}]},{"id":"4","title":"官渡所-10kV牟27板牟官线","spread":true,"type":"line","children":[{"id":"27","title":"1#分段开关（出站开关）[1]","spread":true,"type":"dev","children":[{"id":"28","title":"2#分段开关（转盘东侧分段开关）[4165]","spread":true,"type":"dev","children":[{"id":"29","title":"转盘西侧大分支开关[4147]","spread":true,"type":"dev","children":[]},{"id":"30","title":"3#分段开关（转盘北侧分段开关）[4163]","spread":true,"type":"dev","children":[{"id":"31","title":"4#分段开关（逐鹿营、前庄、赶帽李）[5]","spread":true,"type":"dev","children":[]},{"id":"32","title":"西周村1#分支开关[6]","spread":true,"type":"dev","children":[{"id":"33","title":"西周村2#分支开关（李庄、邱庄）[7]","spread":true,"type":"dev","children":[]}]}]}]}]}]},{"id":"5","title":"测试线路","spread":true,"type":"line","children":[{"id":"34","title":"科技园[4150]","spread":true,"type":"dev","children":[]}]}]
+                // }
+            });
+        });
 
+
+
+        //日期时间选择
         laydate.render({
-            elem: '#test-limit3'
+            elem: '#sendTime'
             ,type: 'time'
             ,min: '09:00:00'
             ,max: '20:00:00'
             ,btns: ['clear', 'confirm']
+        });
+
+        //多选标签-基本配置
+        var pointTypes = selectM({
+            //元素容器【必填】
+            elem: '#pointTypes'
+            //候选数据【必填】
+            , data: "/fi/daysms/getAllPointTypes"
+            , max: 100
+            , tips: "选择关注测点"
+            , verify:'required'   //必选
         });
 
         //监听提交

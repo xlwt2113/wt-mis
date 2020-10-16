@@ -50,7 +50,6 @@
         <!--表格中操作按钮-->
         <script type="text/html" id="currentTableBar">
             <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-            <a class="layui-btn layui-btn-xs layui-bg-orange" lay-event="view">查看</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">删除</a>
         </script>
     </div>
@@ -82,11 +81,19 @@
             //表格列
             cols: [[
                 {type: "checkbox", width: 50, fixed: "left"},
-                {field: 'user_id', width: 200, title: '用户姓名'},
-                {field: 'dev_ids', width: 200, title: '关注设备'},
-                {field: 'send_time', width: 200, title: '发送时间'},
-                {field: 'point_types', width: 200, title: '关注测点'},
-                {field: 'receive_gz_info', width: 200, title: '接收故障通知'},
+                {field: 'real_name', width: 120, title: '用户姓名'},
+                {field: 'send_time', width: 150, title: '发送时间'},
+                {field: 'receive_gz_info', width: 150, title: '接收故障通知',templet: function (d) {
+                        if (d.receive_gz_info == 1) {
+                            return "<span class=\"layui-badge layui-bg-green\">是</span>";
+                        } else if (d.receive_gz_info == 0) {
+                            return "<span class=\"layui-badge layui-bg-danger\">否</span>";
+                        } else {
+                            return "";
+                        }
+                    }},
+                {field: 'dev_names', width: 300, title: '关注设备'},
+                {field: 'point_type_names', width: 300, title: '关注测点'},
                 {title: '操作', width: 220, templet: '#currentTableBar', fixed: "right", align: "center"}
             ]]
         }));
@@ -143,7 +150,7 @@
                     break;
                     //==============添加按钮点击事件============================
                 case "add":
-                    config.add(add_page_url,{area: ['600px', '650px']});
+                    config.add(add_page_url,{area: ['600px', '550px']});
                     break;
                     //==============查看按钮点击事件============================
                 case "view":

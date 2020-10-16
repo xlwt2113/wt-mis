@@ -22,7 +22,8 @@ layui.config({
     echartsTheme: 'echarts/echartsTheme', // echarts图表主题扩展
     wangEditor: 'wangEditor/wangEditor', // wangEditor富文本扩展
     treeTable: 'treeTable/treeTable', //树形表格（此为最新treeTable）
-    treeSelect: 'treeSelect/treeSelect', //下拉树控件
-    selectM: 'select_ext/selectM', //多选
+    treeSelect: 'treeSelect/treeSelect', //下拉树控件，不支持多选
+    selectM: 'select_ext/selectM', //下拉选择，支持远程加载
+    xmSelect: 'xm-select/xm-select', //下拉树（单选多选），下拉列表,不支持远程加载
     notice: 'notice/notice'
 });
