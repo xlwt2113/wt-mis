@@ -22,7 +22,7 @@ public class DaySms extends BaseEntity {
     * 用户id
     */
     @Column(columnDefinition = " int COMMENT '用户id'")
-    private Integer userId;
+    private Long userId;
     /**
     * 用户所选设备id，逗号分隔
     */

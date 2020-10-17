@@ -116,6 +116,18 @@ public class DateUtils {
         return newTime;
     }
 
+
+    //时间分钟加减
+    public static Date minuteAddNum(Date time, Integer num){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(time);
+        calendar.add(Calendar.MINUTE, num);
+        Date newTime = calendar.getTime();
+        return newTime;
+    }
+
+
+
     public static String parseToChinese(DayOfWeek dayOfWeek) {
         return parseToChinese(dayOfWeek, TextStyle.FULL);
     }
