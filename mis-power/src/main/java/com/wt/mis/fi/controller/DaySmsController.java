@@ -5,7 +5,9 @@ import com.wt.mis.core.controller.BaseController;
 import com.wt.mis.core.repository.BaseRepository;
 import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.fi.entity.DaySms;
+import com.wt.mis.fi.entity.FiDevHub;
 import com.wt.mis.fi.repository.DaySmsRepository;
+import com.wt.mis.fi.repository.FiDevHubRepository;
 import com.wt.mis.sys.entity.DictItem;
 import com.wt.mis.sys.repository.AccountRepository;
 import com.wt.mis.sys.repository.DictItemRepository;
@@ -38,6 +40,9 @@ public class DaySmsController extends BaseController<DaySms> {
 
     @Autowired
     AccountRepository accountRepository;
+
+    @Autowired
+    FiDevHubRepository fiDevHubRepository;
 
     @Override
     public BaseRepository<DaySms, Long> repository() {
@@ -81,6 +86,7 @@ public class DaySmsController extends BaseController<DaySms> {
 
     //用于更新id对应的名称列
     private void initDaySms(DaySms daySms){
+        //关注测点名称更新
         String pointTypeNames = "";
         List<DictItem> dictItemList = DictUtils.getDictItems("熔断器事件类型");
         for(DictItem item : dictItemList){
@@ -92,6 +98,19 @@ public class DaySmsController extends BaseController<DaySms> {
             }
         }
         daySms.setPointTypeNames(pointTypeNames);
+
+        //关注设备名称更新
+        String devNames = "";
+        List<Long> ids = new ArrayList<>();
+        for(String id : daySms.getDevIds().split(",")){
+            ids.add(Long.parseLong(id));
+        }
+        List<FiDevHub> devList = fiDevHubRepository.findAllByIdInAndAndDel(ids,0);
+        for(FiDevHub dev: devList){
+            devNames = devNames + dev.getHubLocation() + ",";
+        }
+        daySms.setDevNames(devNames);
+
     }
 
 

@@ -13,6 +13,8 @@
 <form class="layui-form" action="" th:object="${model}">
     <input type="hidden" th:field="*{id}"> <!--此处必须有业务主键的id-->
 
+        <input type="hidden" id="pointTypesVal" th:value="*{pointTypes}">
+       <input type="hidden" id="devIdsVal" th:value="*{devIds}">
         <div class="layui-form-item">
             <label class="layui-form-label">发送时间</label>
             <div class="layui-input-block">
@@ -77,6 +79,10 @@
     //用于保存所有的上传文件信息
     var uploadFileMap = new Map();
 
+    //默认选中的设备及关注测点
+    pointTypesVal = $('#pointTypesVal').val().split(",");
+    devIdsVal = $('#devIdsVal').val().split(",");
+
     layui.use(['form', 'laydate', 'upload','selectM','xmSelect'], function () {
         var form = layui.form
                 , laydate = layui.laydate
@@ -109,6 +115,7 @@
                 autoRow: true,
                 filterable: true,
                 tips: '请选择关注设备',
+                initValue: devIdsVal,
                 tree: {
                     show: true,
                     showFolderIcon: true,
@@ -130,9 +137,6 @@
                 layVerify: 'required',
                 layVerType: '请选择关注设备',
                 data: treeData
-                // data(){
-                //     return [{"id":"3","title":"官渡所-10kV牟3板牟邵线","spread":true,"type":"line","children":[{"id":"21","title":"1#分段开关[9999]","spread":true,"type":"dev","children":[{"id":"22","title":"2#分段开关[9998]","spread":true,"type":"dev","children":[{"id":"23","title":"李庄分支开关[9997]","spread":true,"type":"dev","children":[]},{"id":"24","title":"田庄分支开关[9996]","spread":true,"type":"dev","children":[]},{"id":"25","title":"付庄分支开关[9995]","spread":true,"type":"dev","children":[]},{"id":"26","title":"周庄分支开关[9994]","spread":true,"type":"dev","children":[]}]}]}]},{"id":"4","title":"官渡所-10kV牟27板牟官线","spread":true,"type":"line","children":[{"id":"27","title":"1#分段开关（出站开关）[1]","spread":true,"type":"dev","children":[{"id":"28","title":"2#分段开关（转盘东侧分段开关）[4165]","spread":true,"type":"dev","children":[{"id":"29","title":"转盘西侧大分支开关[4147]","spread":true,"type":"dev","children":[]},{"id":"30","title":"3#分段开关（转盘北侧分段开关）[4163]","spread":true,"type":"dev","children":[{"id":"31","title":"4#分段开关（逐鹿营、前庄、赶帽李）[5]","spread":true,"type":"dev","children":[]},{"id":"32","title":"西周村1#分支开关[6]","spread":true,"type":"dev","children":[{"id":"33","title":"西周村2#分支开关（李庄、邱庄）[7]","spread":true,"type":"dev","children":[]}]}]}]}]}]},{"id":"5","title":"测试线路","spread":true,"type":"line","children":[{"id":"34","title":"科技园[4150]","spread":true,"type":"dev","children":[]}]}]
-                // }
             });
         });
 
@@ -156,6 +160,7 @@
             , max: 100
             , tips: "选择关注测点"
             , verify:'required'   //必选
+            ,selected: pointTypesVal
         });
 
         //监听提交

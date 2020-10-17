@@ -135,14 +135,14 @@
                         topologyList = data.topologyList;
                         for(let i=0;i<allNodes.length;i++){
                             for(let j=0;j<topologyList.length;j++){
-                                if(allNodes[i].info.id == topologyList[j].id ){
+                                if(allNodes[i].info.id == topologyList[j].id && allNodes[i].info.nodeType == 0){
                                     allNodes[i].setImage('/images/2_'+topologyList[j].onlineStatus+'.png', true);
                                 }
                             }
                         }
                     });
 
-                },15000);
+                },5000);
 
             });
 
@@ -199,9 +199,12 @@
                     return node;
                 }else{
                     var node = new JTopo.CircleNode();
-                    node.radius = 12; // 半径
+                    node.radius = 1; // 半径
                     node.alpha = 1;
-                    node.fillColor = '255, 0, 0'; // 填充颜色
+                    node.fillColor = '83,184,228'; // 填充颜色
+                    node.borderColor = '83,184,228'; //边框颜色
+                    node.borderWidth = 0; // 边框的宽度
+                    node.showSelected = false; // 不显示选中矩形
                     node.info = nodeInfo;
                     node.alarm = null;
                     scene.add(node);
