@@ -83,15 +83,15 @@
                 {type: "checkbox", width: 50, fixed: "left"},
                 {field: 'real_name', width: 120, title: '用户姓名'},
                 {field: 'send_time', width: 150, title: '发送时间'},
-                {field: 'receive_gz_info', width: 150, title: '接收故障通知',templet: function (d) {
-                        if (d.receive_gz_info == 1) {
-                            return "<span class=\"layui-badge layui-bg-green\">是</span>";
-                        } else if (d.receive_gz_info == 0) {
-                            return "<span class=\"layui-badge layui-bg-danger\">否</span>";
-                        } else {
-                            return "";
-                        }
-                    }},
+                // {field: 'receive_gz_info', width: 150, title: '接收故障通知',templet: function (d) {
+                //         if (d.receive_gz_info == 1) {
+                //             return "<span class=\"layui-badge layui-bg-green\">是</span>";
+                //         } else if (d.receive_gz_info == 0) {
+                //             return "<span class=\"layui-badge layui-bg-danger\">否</span>";
+                //         } else {
+                //             return "";
+                //         }
+                //     }},
                 {field: 'dev_names', width: 300, title: '关注设备'},
                 {field: 'point_type_names', width: 300, title: '关注测点'},
                 {title: '操作', width: 220, templet: '#currentTableBar', fixed: "right", align: "center"}

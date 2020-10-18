@@ -52,7 +52,7 @@ public class DaySmsTaskRun {
         List sendList = new ArrayList();
         for(DaySms daySms:list){
             Account account = accountRepository.getOne(daySms.getUserId());
-            msgContent = "请点击 http://127.0.0.1:8080/sms/"+daySms.getId()+" 查看您关注的故障指示器的实时信息";
+            msgContent = "请点击 http://218.28.178.12:18080/sms/"+DateUtils.dateFormat(new Date())+"/"+daySms.getId()+" 查看您关注的故障指示器的实时信息";
             if(StringUtils.isNotEmpty(account.getMobile())){
                 //有手机号码的才发短信
                 SmsserverOut out = new SmsserverOut();

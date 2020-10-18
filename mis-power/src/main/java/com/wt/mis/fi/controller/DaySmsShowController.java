@@ -34,36 +34,43 @@ public class DaySmsShowController {
         Date beginTime = DateUtils.minuteAddNum(sendTime,-15);
         Date endTime = DateUtils.minuteAddNum(sendTime,15);
 
-        //将获取到的历史测量信息按照设备进行分组显示
-        Map devMap = new HashMap<String ,List<HubVal>>();
-        //获取遥测历史数据
-        String sql = "SELECT t1.*,t2.hub_location,t2.line_id,t3.line_name FROM fi_yc_history t1 left join fi_dev_hub t2 on t1.hub_id = t2.id left join fi_line t3 on t2.line_id = t3.id" +
-                "where t1.hub_id in ("+daysms.getDevIds()+") and t1.infor_addr in ("+daysms.getPointTypes()+") and t1.del = 0 and t1.create_time between '"+DateUtils.dateTimeFormat(beginTime)+"' and '"+DateUtils.dateTimeFormat(endTime)+"' order by t2.id, t1.create_time asc";
-        List ycList = searchService.findAllBySql(sql);
-        this.dealSearchList(ycList,devMap,"yc");
+        try{
+            //将获取到的历史测量信息按照设备进行分组显示
+            Map devMap = new HashMap<String ,HubVal>();
+            //获取遥测历史数据
+            String sql = "SELECT t1.*,t2.hub_location,t2.line_id,t3.line_name FROM `fi_yc_history_"+day+"` t1 left join fi_dev_hub t2 on t1.hub_id = t2.id left join fi_line t3 on t2.line_id = t3.id" +
+                    " where t1.hub_id in ("+daysms.getDevIds()+") and t1.infor_addr in ("+daysms.getPointTypes()+") and t1.del = 0 and t1.create_time between '"+DateUtils.dateTimeFormat(beginTime)+"' and '"+DateUtils.dateTimeFormat(endTime)+"' order by t2.id, t1.create_time asc";
+            List ycList = searchService.findAllBySql(sql);
+            devMap = this.dealSearchList(ycList,devMap,"yc");
 
 
 
-        //获取遥信数据
-        sql = "SELECT t1.*,t2.hub_location,t2.line_id,t3.line_name FROM fi_yx_history t1 left join fi_dev_hub t2 on t1.hub_id = t2.id left join fi_line t3 on t2.line_id = t3.id" +
-                "where t1.hub_id in ("+daysms.getDevIds()+") and t1.infor_addr in ("+daysms.getPointTypes()+") and t1.del = 0 and t1.create_time between '"+DateUtils.dateTimeFormat(beginTime)+"' and '"+DateUtils.dateTimeFormat(endTime)+"' order by t2.id, t1.create_time asc";
-        List yxList = searchService.findAllBySql(sql);
-        this.dealSearchList(ycList,devMap,"yx");
+            //获取遥信数据
+            sql = "SELECT t1.*,t2.hub_location,t2.line_id,t3.line_name FROM `fi_yx_history_"+day+"` t1 left join fi_dev_hub t2 on t1.hub_id = t2.id left join fi_line t3 on t2.line_id = t3.id" +
+                    " where t1.hub_id in ("+daysms.getDevIds()+") and t1.infor_addr in ("+daysms.getPointTypes()+") and t1.del = 0 and t1.create_time between '"+DateUtils.dateTimeFormat(beginTime)+"' and '"+DateUtils.dateTimeFormat(endTime)+"' order by t2.id, t1.create_time asc";
+            List yxList = searchService.findAllBySql(sql);
+            devMap = this.dealSearchList(yxList,devMap,"yx");
 
-        List<DaySmsShow> smsShowsList = new ArrayList<>();
+            List<DaySmsShow> smsShowsList = new ArrayList<>();
 
-        Set<String> keys = devMap.keySet();
-        for(String keyName: keys){
-            String[] keyNameArr = keyName.split("=");
-            List<HubVal> list = (List<HubVal>) devMap.get(keyName);
-            DaySmsShow daySmsShow = new DaySmsShow(keyNameArr[0],keyNameArr[1],list);
-            smsShowsList.add(daySmsShow);
+            Set<String> keys = devMap.keySet();
+            for(String keyName: keys){
+                String[] keyNameArr = keyName.split("=");
+                HubVal hubVal = (HubVal) devMap.get(keyName);
+                DaySmsShow daySmsShow = new DaySmsShow(keyNameArr[0],keyNameArr[1],hubVal);
+                smsShowsList.add(daySmsShow);
+            }
+            mv.addObject("smsShowsList",smsShowsList);
+        }catch (Exception e){
+            e.printStackTrace();
+            mv.addObject("error",e.getMessage());
         }
-        mv.addObject("smsShowsList",smsShowsList);
+        mv.addObject("day",day);
+
         return mv;
     }
 
-    private void dealSearchList(List searchResultlist,Map<String,List<HubVal>> devMap,String type) {
+    private Map<String,HubVal> dealSearchList(List searchResultlist,Map<String,HubVal> devMap,String type) {
         //将字典项中的值替换成显示名称
         for(Object obj:searchResultlist){
             HashMap<String,String> map = (HashMap) obj;
@@ -76,29 +83,36 @@ public class DaySmsShowController {
             map.replace("infor_addr",addr);
 
             String keyName = String.valueOf(map.get("line_name"))+"="+String.valueOf(map.get("hub_location"))+"="+String.valueOf(map.get("infor_addr"));
-            if(devMap.containsKey(keyName)){
-                List<HubVal> list = devMap.get(keyName);
-                list.add(new HubVal(String.valueOf(map.get("infor_addr")),String.valueOf(map.get(type+"_value"))));
-                devMap.put(keyName,list);
+            if("yc".equals(type)){
+                devMap.put(keyName,new HubVal(String.valueOf(map.get("infor_addr_name")),String.valueOf(map.get(type+"_value"))));
             }else{
-                List<HubVal> list = new ArrayList<>();
-                list.add(new HubVal(String.valueOf(map.get("infor_addr")),String.valueOf(map.get(type+"_value"))));
-                devMap.put(keyName,list);
+                //0是正常 1告警
+                String val = String.valueOf(map.get(type+"_value"));
+                if("0".equals(val)){
+                    val = "正常";
+                }else{
+                    val = "告警";
+                }
+                devMap.put(keyName,new HubVal(String.valueOf(map.get("infor_addr_name")),val));
             }
+
         }
+        return devMap;
     }
 
     @Data
     class DaySmsShow{
-        DaySmsShow(String lineName,String hubName,List hubValList){
+        DaySmsShow(String lineName,String hubName,HubVal hubVal){
             this.lineName = lineName;
             this.hubName = hubName;
-            this.hubValList = hubValList;
+            this.locationAddr = hubVal.locationAddr;
+            this.val = hubVal.val;
         }
         private String happenTime;
         private String lineName;
         private String hubName;
-        private List<HubVal> hubValList;
+        private String locationAddr;
+        private String val;
     }
 
     @Data
