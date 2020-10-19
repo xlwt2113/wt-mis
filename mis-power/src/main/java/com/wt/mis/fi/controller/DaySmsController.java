@@ -88,7 +88,7 @@ public class DaySmsController extends BaseController<DaySms> {
     private void initDaySms(DaySms daySms){
         //关注测点名称更新
         String pointTypeNames = "";
-        List<DictItem> dictItemList = DictUtils.getDictItems("熔断器事件类型");
+        List<DictItem> dictItemList = DictUtils.getDictItems("故障指示器信息体地址");
         for(DictItem item : dictItemList){
             String[] types = daySms.getPointTypes().split(",");
             for(String type :types){
@@ -141,7 +141,7 @@ public class DaySmsController extends BaseController<DaySms> {
     @ResponseBody
     public List<Node> getAllPointTypes(){
         List nodeList = new ArrayList();
-        List<DictItem> list = DictUtils.getDictItems("熔断器事件类型");
+        List<DictItem> list = DictUtils.getDictItems("故障指示器信息体地址");
         for(DictItem item:list){
             Node node = new Node(item.getItemValue(),item.getItemKey());
             nodeList.add(node);
