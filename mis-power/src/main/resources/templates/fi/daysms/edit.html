@@ -38,7 +38,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">关注设备</label>
             <div class="layui-input-block">
-                <div id="devIdsTree"></div>
+                <div id="devIds"></div>
             </div>
         </div>
 
@@ -107,38 +107,38 @@
                 "test" :function(){}
         });
 
-        $.getJSON("/fi/devhub/tree", function(treeData){
-            //设备树
-            var devIdsTree = xmSelect.render({
-                el: '#devIdsTree',
-                name: 'devIds',
-                autoRow: true,
-                filterable: true,
-                tips: '请选择关注设备',
-                initValue: devIdsVal,
-                tree: {
-                    show: true,
-                    showFolderIcon: true,
-                    showLine: true,
-                    indent: 20,
-                    expandedKeys: true,  //默认展开所有节点
-                    strict: false,       //是否严格遵守父子模式
-                },
-                toolbar: {
-                    show: true,
-                    list: ['ALL', 'REVERSE', 'CLEAR']
-                },
-                prop: {
-                    name: 'title',
-                    value: 'id',
-                },
-                filterable: true,
-                height: 'auto',
-                layVerify: 'required',
-                layVerType: '请选择关注设备',
-                data: treeData
-            });
-        });
+        // $.getJSON("/fi/devhub/tree", function(treeData){
+        //     //设备树
+        //     var devIdsTree = xmSelect.render({
+        //         el: '#devIdsTree',
+        //         name: 'devIds',
+        //         autoRow: true,
+        //         filterable: true,
+        //         tips: '请选择关注设备',
+        //         initValue: devIdsVal,
+        //         tree: {
+        //             show: true,
+        //             showFolderIcon: true,
+        //             showLine: true,
+        //             indent: 20,
+        //             expandedKeys: true,  //默认展开所有节点
+        //             strict: false,       //是否严格遵守父子模式
+        //         },
+        //         toolbar: {
+        //             show: true,
+        //             list: ['ALL', 'REVERSE', 'CLEAR']
+        //         },
+        //         prop: {
+        //             name: 'title',
+        //             value: 'id',
+        //         },
+        //         filterable: true,
+        //         height: 'auto',
+        //         layVerify: 'required',
+        //         layVerType: '请选择关注设备',
+        //         data: treeData
+        //     });
+        // });
 
 
 
@@ -161,6 +161,17 @@
             , tips: "选择关注测点"
             , verify:'required'   //必选
             ,selected: pointTypesVal
+        });
+
+        var devIds = selectM({
+            //元素容器【必填】
+            elem: '#devIds'
+            //候选数据【必填】
+            , data: "/fi/daysms/getAllDev"
+            , max: 100
+            , tips: "选择关注设备"
+            , verify:'required'   //必选
+            ,selected: devIdsVal
         });
 
         //监听提交

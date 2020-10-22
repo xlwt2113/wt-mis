@@ -3,6 +3,7 @@ package com.wt.mis.fi.controller;
 
 import com.wt.mis.core.controller.BaseController;
 import com.wt.mis.core.repository.BaseRepository;
+import com.wt.mis.core.service.SearchService;
 import com.wt.mis.core.util.StringUtils;
 import com.wt.mis.fi.entity.DaySms;
 import com.wt.mis.fi.entity.FiDevHub;
@@ -43,6 +44,9 @@ public class DaySmsController extends BaseController<DaySms> {
 
     @Autowired
     FiDevHubRepository fiDevHubRepository;
+
+    @Autowired
+    SearchService searchService;
 
     @Override
     public BaseRepository<DaySms, Long> repository() {
@@ -122,7 +126,6 @@ public class DaySmsController extends BaseController<DaySms> {
         //获取所有人员
         List accountList = accountRepository.findAllByDel(0);
         mv.addObject("accountList",accountList);
-        //获取关注测点
         return mv;
     }
 
@@ -144,6 +147,20 @@ public class DaySmsController extends BaseController<DaySms> {
         List<DictItem> list = DictUtils.getDictItems("故障指示器信息体地址");
         for(DictItem item:list){
             Node node = new Node(item.getItemValue(),item.getItemKey());
+            nodeList.add(node);
+        }
+        return nodeList;
+    }
+
+    @GetMapping("/getAllDev")
+    @ResponseBody
+    public List<Node> getAllDev(){
+        List<Node> nodeList = new ArrayList();
+        //获取所有设备
+        List devList = searchService.findAllBySql("SELECT t1.id,t1.hub_location,t2.line_name FROM fi_dev_hub as t1 left join fi_line as t2 on t1.line_id = t2.id  where t1.del = 0 and t1.node_type = 0 order by line_id ");
+        for(Object obj:devList){
+            HashMap<String,String> map = (HashMap) obj;
+            Node node = new Node(String.valueOf(map.get("id")),("[" + String.valueOf(map.get("line_name")) + "] " + String.valueOf(map.get("hub_location"))));
             nodeList.add(node);
         }
         return nodeList;
