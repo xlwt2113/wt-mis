@@ -112,11 +112,15 @@
                 scene.doLayout(JTopo.layout.TreeLayout('right', 200, 120)); //40为图表间隔
 
                 //获取所有的坐标
-                allNodes = scene.getDisplayedNodes();
+                // allNodes = scene.getDisplayedNodes();
                 for(var i=0;i<allNodes.length;i++){
+                    if(allNodes[i].info.posX == null || allNodes[i].info.posY == null){
+                        $.post("/fi/topology/save_position", { id: allNodes[i].info.id, posX: allNodes[i].x, posY: allNodes[i].y } );
+                    }
                     if(allNodes[i].info.posX != null && allNodes[i].info.posY != null){
                         allNodes[i].setLocation(allNodes[i].info.posX, allNodes[i].info.posY);
                     }
+
                 }
 
 
@@ -202,7 +206,7 @@
                         //保存设备坐标节点
                         console.log(node.x+"==="+node.y+"==="+node.info.id);
                         $.post("/fi/topology/save_position", { id: node.info.id, posX: node.x, posY: node.y } );
-                    })
+                    });
                     scene.add(node);
                     //获取所有添加的节点
                     nodeMap.set(nodeInfo.id,node);
@@ -218,6 +222,11 @@
                     node.showSelected = false; // 不显示选中矩形
                     node.info = nodeInfo;
                     node.alarm = null;
+                    node.mouseup(function () {
+                        //保存设备坐标节点
+                        console.log(node.x+"==="+node.y+"==="+node.info.id);
+                        $.post("/fi/topology/save_position", { id: node.info.id, posX: node.x, posY: node.y } );
+                    });
                     scene.add(node);
                     //获取所有添加的节点
                     nodeMap.set(nodeInfo.id,node);

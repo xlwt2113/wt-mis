@@ -85,8 +85,10 @@ public class FiTopologyController {
     public ModelAndView view(@PathVariable Long id){
         ModelAndView mv = new ModelAndView(this.getUrlPrefix() + "/view_transform");
         FiDevHub fiDevHub = fiDevHubRepository.getOne(id);
+        FiLine line = fiLineRepository.getOne(fiDevHub.getLineId());
         mv.addObject("id",id);
         mv.addObject("name",fiDevHub.getHubLocation());
+        mv.addObject("line",line);
         return mv;
     }
 

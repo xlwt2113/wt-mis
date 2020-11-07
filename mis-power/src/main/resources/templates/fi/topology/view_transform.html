@@ -18,6 +18,7 @@
     <form class="layui-form layui-form-pane" id="searchForm">
         <div class="layui-form-item">
             <div class="layui-inline">
+                <button type="button" class="layui-btn layui-btn-warm" th:text="${line.lineName}"></button>
                 <button type="button" class="layui-btn layui-btn-sm" id="zoomOutButton">
                     <i class="layui-icon">&#xe654;</i>
                 </button>
@@ -109,7 +110,7 @@
                 form.render();
 
                 // 树形布局
-                scene.doLayout(JTopo.layout.TreeLayout('right', 200, 120)); //40为图表间隔
+                // scene.doLayout(JTopo.layout.TreeLayout('right', 200, 120)); //40为图表间隔
 
 
                 //获取所有的坐标
