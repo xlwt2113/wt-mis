@@ -65,18 +65,15 @@ public class FiTopologyController {
         return mv;
     }
 
-    @GetMapping("/line_view_data")
-    @ResponseBody
-    public Map<String,List<FiLine>> getLineViewData(){
-        Map<String,List<FiLine>> resultMap = new HashMap();
-        List<FiLine> lineList = fiLineRepository.findAllByDel(0);
-        for(FiLine line :lineList){
-            //获取该线路下设备
-            List<FiDevHub> devHubList = fiDevHubRepository.findAllByLineIdAndParentIdAndDel(line.getId(),0,0);
-            line.setDevHubList(devHubList);
-        }
-        resultMap.put("lineList",lineList);
-        return resultMap;
+
+    /**
+     * 打开户变关系维护界面
+     * @return
+     */
+    @GetMapping("/edit")
+    public ModelAndView edit(){
+        ModelAndView mv = new ModelAndView(this.getUrlPrefix() + "/edit");
+        return mv;
     }
 
 
@@ -93,6 +90,43 @@ public class FiTopologyController {
         return mv;
     }
 
+    /**
+     * 打开台区层的管理界面
+     * @return
+     */
+    @GetMapping("/edit_transform/{id}")
+    public ModelAndView edit(@PathVariable Long id){
+        ModelAndView mv = new ModelAndView(this.getUrlPrefix() + "/edit_transform");
+        FiDevHub fiDevHub = fiDevHubRepository.getOne(id);
+        mv.addObject("id",id);
+        mv.addObject("name",fiDevHub.getHubLocation());
+        return mv;
+    }
+
+
+    @GetMapping("/line_view_data")
+    @ResponseBody
+    public Map<String,List<FiLine>> getLineViewData(){
+        Map<String,List<FiLine>> resultMap = new HashMap();
+        List<FiLine> lineList = fiLineRepository.findAllByDel(0);
+        for(FiLine line :lineList){
+            //获取该线路下设备
+            List<FiDevHub> devHubList = fiDevHubRepository.findAllByLineIdAndParentIdAndDel(line.getId(),0,0);
+            line.setDevHubList(devHubList);
+        }
+        resultMap.put("lineList",lineList);
+        return resultMap;
+    }
+
+    @PostMapping("/save_position")
+    @ResponseBody
+    public ResponseEntity savePositon(HttpServletRequest request){
+        FiDevHub hub = fiDevHubRepository.getOne(Long.parseLong(request.getParameter("id")));
+        hub.setPosX(Float.parseFloat(request.getParameter("posX")));
+        hub.setPosY(Float.parseFloat(request.getParameter("posY")));
+        this.fiDevHubRepository.save(hub);
+        return ResponseUtils.ok("", hub);
+    }
 
     /**
      * 根据设备ID及类型查看设备的信息

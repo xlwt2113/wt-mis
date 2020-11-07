@@ -49,27 +49,6 @@
 </html>
 <script th:inline="javascript">
     layui.use(['layer','form'], function () {
-            var form = layui.form;
-            form.render();
-            var canvas = document.getElementById('canvas');
-            var stage = new JTopo.Stage(canvas);
-            var scene = new JTopo.Scene(stage);
-            $('#canvas').attr("height",$(window).height()-100);
-            $('#canvas').attr("width",$(window).width()-10);
-            $('#backBtn').click(function () {
-                window.location.href = "/fi/topology/view";
-            });
-            showJTopoToobar(stage);
-            stage.eagleEye.visible = true;
-            stage.mode ="drag";
-
-            form.on('checkbox(zoomCheckbox)',function (data) {
-                if(data.elem.checked){
-                    stage.wheelZoom = 1.02; // 设置鼠标缩放比例
-                }else{
-                    stage.wheelZoom = null; // 取消鼠标缩放比例
-                }
-            });
 
             //台区Id
             var transformId = [[${id}]];
@@ -83,6 +62,27 @@
             var alarm;
             //节点map对象
             var nodeMap = new Map();
+
+            var form = layui.form;
+            form.render();
+            var canvas = document.getElementById('canvas');
+            var stage = new JTopo.Stage(canvas);
+            var scene = new JTopo.Scene(stage);
+            $('#canvas').attr("height",$(window).height()-100);
+            $('#canvas').attr("width",$(window).width()-10);
+            $('#backBtn').click(function () {
+                window.location.href = "/fi/topology/edit";
+            });
+            showJTopoToobar(stage);
+            stage.eagleEye.visible = true;
+
+            form.on('checkbox(zoomCheckbox)',function (data) {
+                if(data.elem.checked){
+                    stage.wheelZoom = 1.02; // 设置鼠标缩放比例
+                }else{
+                    stage.wheelZoom = null; // 取消鼠标缩放比例
+                }
+            });
 
             //页面打开后初始化所有数据
             $.getJSON("/fi/topology/transform_view_data/"+transformId,function (data) {
@@ -111,7 +111,6 @@
                 // 树形布局
                 scene.doLayout(JTopo.layout.TreeLayout('right', 200, 120)); //40为图表间隔
 
-
                 //获取所有的坐标
                 allNodes = scene.getDisplayedNodes();
                 for(var i=0;i<allNodes.length;i++){
@@ -121,35 +120,35 @@
                 }
 
 
-                //获取停电报警数据
-                setInterval(function () {
-                    window.clearTimeout(alarm);
-                    $.getJSON("/fi/topology/current_alarm_list",function (data) {
-                        // console.log(data);
-                        alarm = setInterval(function(){
-                            for(let j=0;j<data.length;j++){
-                                    let alarmNode = nodeMap.get(data[j]);
-                                    if(alarmNode!=undefined){
-                                        alarmNode.alarmColor = '255,0,0';
-                                        alarmNode.alarmAlpha = 1;
-                                        alarmNode.alarm == '设备报警'? alarmNode.alarm = null : alarmNode.alarm = '设备报警';
-                                    }
-                            }
-
-                        },1000);
-                    });
-                    $.getJSON("/fi/topology/transform_view_data/"+transformId,function (data) {
-                        topologyList = data.topologyList;
-                        for(let i=0;i<allNodes.length;i++){
-                            for(let j=0;j<topologyList.length;j++){
-                                if(allNodes[i].info.id == topologyList[j].id && allNodes[i].info.nodeType == 0){
-                                    allNodes[i].setImage('/images/2_'+topologyList[j].onlineStatus+'.png', true);
-                                }
-                            }
-                        }
-                    });
-
-                },5000);
+                // //获取停电报警数据
+                // setInterval(function () {
+                //     window.clearTimeout(alarm);
+                //     $.getJSON("/fi/topology/current_alarm_list",function (data) {
+                //         // console.log(data);
+                //         alarm = setInterval(function(){
+                //             for(let j=0;j<data.length;j++){
+                //                     let alarmNode = nodeMap.get(data[j]);
+                //                     if(alarmNode!=undefined){
+                //                         alarmNode.alarmColor = '255,0,0';
+                //                         alarmNode.alarmAlpha = 1;
+                //                         alarmNode.alarm == '设备报警'? alarmNode.alarm = null : alarmNode.alarm = '设备报警';
+                //                     }
+                //             }
+                //
+                //         },1000);
+                //     });
+                //     $.getJSON("/fi/topology/transform_view_data/"+transformId,function (data) {
+                //         topologyList = data.topologyList;
+                //         for(let i=0;i<allNodes.length;i++){
+                //             for(let j=0;j<topologyList.length;j++){
+                //                 if(allNodes[i].info.id == topologyList[j].id && allNodes[i].info.nodeType == 0){
+                //                     allNodes[i].setImage('/images/2_'+topologyList[j].onlineStatus+'.png', true);
+                //                 }
+                //             }
+                //         }
+                //     });
+                //
+                // },5000);
 
             });
 
@@ -181,8 +180,7 @@
                     node.info = nodeInfo;
                     node.setImage('/images/2_'+nodeInfo.onlineStatus+'.png', true);
                     node.alarm = null;
-                    node.fontColor = '0,0,0';
-                    node.dragable = false;
+                    node.fontColor = '0,0,0'
                     node.dbclick(function(event){
                         //console.log(this.info.devId);
                         //console.log(this.info.devName);
@@ -200,6 +198,11 @@
                             }
                         });
                     });
+                    node.mouseup(function () {
+                        //保存设备坐标节点
+                        console.log(node.x+"==="+node.y+"==="+node.info.id);
+                        $.post("/fi/topology/save_position", { id: node.info.id, posX: node.x, posY: node.y } );
+                    })
                     scene.add(node);
                     //获取所有添加的节点
                     nodeMap.set(nodeInfo.id,node);
