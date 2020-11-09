@@ -107,10 +107,10 @@ public class FiDevHub extends BaseEntity {
     @Column(columnDefinition = " int COMMENT '归属线路'")
     private Long lineId;
 
-    @Column(columnDefinition = " float(5,2) COMMENT 'x坐标'")
+    @Column(columnDefinition = " float(11,2) COMMENT 'x坐标'")
     private Float posX;
 
-    @Column(columnDefinition = " float(5,2) COMMENT 'y坐标'")
+    @Column(columnDefinition = " float(11,2) COMMENT 'y坐标'")
     private Float posY;
 
     /**

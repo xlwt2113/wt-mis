@@ -144,7 +144,7 @@
                         for(let i=0;i<allNodes.length;i++){
                             for(let j=0;j<topologyList.length;j++){
                                 if(allNodes[i].info.id == topologyList[j].id && allNodes[i].info.nodeType == 0){
-                                    allNodes[i].setImage('/images/2_'+topologyList[j].onlineStatus+'.png', true);
+                                    allNodes[i].setImage('/images/jzq_'+topologyList[j].onlineStatus+'.png', true);
                                 }
                             }
                         }
@@ -180,7 +180,7 @@
                     var node = new JTopo.Node(nodeInfo.hubLocation);
                     node.textOffsetY = 10; // 文本偏移量（向下3个像素）
                     node.info = nodeInfo;
-                    node.setImage('/images/2_'+nodeInfo.onlineStatus+'.png', true);
+                    node.setImage('/images/jzq_'+nodeInfo.onlineStatus+'.png', true);
                     node.alarm = null;
                     node.fontColor = '0,0,0';
                     node.dragable = false;
