@@ -77,7 +77,7 @@
 <!--顶部工具按钮-->
 <script type="text/html" id="TopTableBar1">
     <div class="layui-btn-group">
-        <button class="layui-btn data-add-btn layui-btn-sm" lay-event=""><i class="layui-icon">&#xe62c;</i>统计图</button>
+        <button class="layui-btn data-add-btn layui-btn-sm" lay-event="chart"><i class="layui-icon">&#xe62c;</i>统计图</button>
     </div>
 </script>
 
@@ -188,18 +188,20 @@
         }));
 
         //监听表格工具栏操作按钮
-        table.on('toolbar(realYcListTable)', function (obj) {
-            openChart(1);
-        });
+        // table.on('toolbar(realYcListTable)', function (obj) {
+        //     openChart(1);
+        // });
         table.on('toolbar(historyYcListTable)', function (obj) {
-            openChart(2);
+            if(obj.event == 'chart'){
+                openChart(2);
+            }
         });
-        table.on('toolbar(realYxListTable)', function (obj) {
-            openChart(3);
-        });
-        table.on('toolbar(historyYxListTable)', function (obj) {
-            openChart(4);
-        });
+        // table.on('toolbar(realYxListTable)', function (obj) {
+        //     openChart(3);
+        // });
+        // table.on('toolbar(historyYxListTable)', function (obj) {
+        //     openChart(4);
+        // });
 
 
         // 监听搜索操作

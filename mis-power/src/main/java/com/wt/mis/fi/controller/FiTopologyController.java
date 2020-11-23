@@ -228,7 +228,7 @@ public class FiTopologyController {
         if(StringUtils.isNotEmpty(inforAddr)){
             sql.append(" and t1.infor_addr = '"+inforAddr+"'");
         }
-        sql.append(" order by id asc");
+        sql.append(" order by update_time asc");
 
         List list = searchService.findAllBySql(sql.toString());
         Iterator it = list.iterator();
